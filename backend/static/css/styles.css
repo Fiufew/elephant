@@ -1,0 +1,100 @@
+.custom-table {
+    width: 100%; /* Ширина таблицы */
+    max-height: 400px; /* Максимальная высота таблицы */
+    overflow-y: auto; /* Добавляет прокрутку, если содержимое превышает высоту */
+}
+
+.custom-table tbody tr {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeIn 1s ease-in-out forwards;
+}
+
+.custom-table tbody tr:hover {
+    background-color: #4c4b4b75; /* Изменение цвета строки при наведении курсора */
+}
+
+@keyframes fadeIn {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.sidenav {
+    height: 100%; /* Full-height: remove this if you want "auto" height */
+    width: 250px; /* Set the width of the sidebar */
+    position: fixed; /* Fixed Sidebar (stay in place on scroll) */
+    z-index: 1; /* Stay on top */
+    top: 0; /* Stay at the top */
+    left: 0;
+    background-color: #333; /* Dark background */
+    overflow-x: hidden; /* Disable horizontal scroll */
+    padding-top: 20px;
+    transition: width 0.3s; /* Transition for width */
+}
+
+.sidenav a {
+    padding: 15px 20px;
+    text-decoration: none;
+    font-size: 18px;
+    color: #fbf8f8;
+    display: block;
+    transition: background-color 0.3s, color 0.3s; /* Transition for background and color */
+    margin-top: 20px;
+}
+
+.sidenav a:hover {
+    background-color: #575757; /* Darker background on hover */
+    color: #ffffff; /* Lighter text on hover */
+}
+
+.sidenav .closebtn {
+    position: absolute;
+    top: 10px;
+    right: 25px;
+    font-size: 36px;
+    margin-left: 50px;
+    cursor: pointer; /* Добавлено для указания, что это кликабельный элемент */
+}
+
+.sidenav .closebtn:hover {
+    color: #ffffff; /* Lighter text on hover */
+}
+
+/* Add a hover effect for the sidebar */
+.sidenav:hover {
+    width: 300px; /* Expand the sidebar on hover */
+}
+
+/* Add a transition effect for the sidebar */
+.sidenav:hover .closebtn {
+    right: 30px; /* Move the close button to the right on hover */
+}
+
+#content {
+    transition: margin-left 0.3s; /* Transition for margin-left */
+    padding: 20px;
+}
+
+.openbtn {
+    font-size: 22px;
+    cursor: pointer;
+    background-color: #333;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 50%; /* Сделать кнопку круглой */
+    display: block; /* По умолчанию кнопка видима */
+    position: fixed; /* Stay in place */
+    z-index: 2; /* Stay on top */
+    top: 20px;
+    left: 20px;
+}
+
+.openbtn:hover {
+    background-color: #575757;
+}
+.sidenav-links {
+    margin-top: 100px; /* Добавлен отступ сверху для сдвига текста вниз */
+}

@@ -1,4 +1,5 @@
 from django.db import models
+from autoslug import AutoSlugField
 
 
 class Category(models.Model):
@@ -66,9 +67,6 @@ class Investor(models.Model):
 
 class Model(models.Model):
     name = models.CharField(max_length=255)
-    brand = models.ForeignKey(Brand,
-                              related_name='brands',
-                              on_delete=models.CASCADE)
     slug = models.SlugField(unique=True)
 
     class Meta:
@@ -103,13 +101,13 @@ class Car(models.Model):
     insurance = models.CharField(max_length=255)
     description = models.TextField(blank=True, null=True)
     state_number = models.CharField(max_length=63)
-    slug = models.SlugField(unique=True, max_length=127)
+    slug = AutoSlugField(populate_from='model', unique=True)
     photo = models.ImageField(blank=True, upload_to='cars/%Y/%m/%d')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        ordering = ['brand']
+        ordering = ['-updated_at']
         indexes = [
             models.Index(fields=['brand']),
             models.Index(fields=['-created_at']),
@@ -128,7 +126,15 @@ class Price(models.Model):
     season_one = models.DecimalField(max_digits=10, decimal_places=2)
     season_two = models.DecimalField(max_digits=10, decimal_places=2)
     season_three = models.DecimalField(max_digits=10, decimal_places=2)
-    season_four = models.DecimalField(max_digits=10, decimal_places=2)
+    season_four = models.DecimalField(max_digits=10, decimal_places=2)  # добавить поля для количества дней
+    season_one_upto7 = models.DecimalField(max_digits=10, decimal_places=2)
+    season_two_upto7 = models.DecimalField(max_digits=10, decimal_places=2)
+    season_three_upto7 = models.DecimalField(max_digits=10, decimal_places=2)
+    season_four_upto7 = models.DecimalField(max_digits=10, decimal_places=2)
+    season_one_upto14 = models.DecimalField(max_digits=10, decimal_places=2)
+    season_two_upto14 = models.DecimalField(max_digits=10, decimal_places=2)
+    season_three_upto14 = models.DecimalField(max_digits=10, decimal_places=2)
+    season_four_upto14 = models.DecimalField(max_digits=10, decimal_places=2)
 
     class Meta:
         verbose_name = 'Price'
@@ -146,17 +152,11 @@ class Bid(models.Model):
     ]
     car = models.ForeignKey(Car, related_name='booking_requests',
                             on_delete=models.CASCADE)
-    price = models.ForeignKey(Price, related_name='booking_requests_price',
-                              on_delete=models.CASCADE)
     pickup_location = models.CharField(max_length=511)
     dropoff_location = models.CharField(max_length=511)
     pickup_time = models.DateTimeField()
     dropoff_time = models.DateTimeField()
-    renter_first_name = models.CharField(max_length=255)
-    renter_middle_name = models.CharField(max_length=255,
-                                          blank=True,
-                                          null=True)
-    renter_last_name = models.CharField(max_length=255)
+    renter_name = models.CharField(max_length=255)
     renter_birthdate = models.DateField()
     renter_phone = models.CharField(max_length=20)
     renter_email = models.EmailField()
@@ -169,5 +169,4 @@ class Bid(models.Model):
         verbose_name_plural = 'Bids'
 
     def __str__(self):
-        return f"Bid for {self.car.brand.name} {self.car.model.name} by {self.renter_first_name} {self.renter_last_name}"
-
+        return f'Bid for {self.car.brand.name} {self.car.model.name} by {self.renter_name}'

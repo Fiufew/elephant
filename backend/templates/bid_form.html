@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% load bootstrap4 %}
+
+{% block title %}Add bid{% endblock title %}
+
+{% block meta_description %}Add a new bid to the shop{% endblock meta_description %}
+
+{% block meta_keywords %}add bid new bid, shop{% endblock meta_keywords %}
+
+{% block content %}
+<h1 class="mt-4 mb-4">Add bid</h1>
+<form method="post" class="form">
+    {% csrf_token %}
+    {% bootstrap_form form %}
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+{% endblock content %}

@@ -1,0 +1,55 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Shop{% endblock title %}</title>
+
+    <meta name="description" content="{% block meta_description %}A description of the page{% endblock meta_description %}">
+    <meta name="keywords" content="{% block meta_keywords %}shop, ecommerce, products{% endblock meta_keywords %}">
+    {% load bootstrap4 %}
+    {% bootstrap_css %}
+    {% bootstrap_javascript %}
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+<body>
+    <header class="header">
+        <div class="container-header">
+            <button class="openbtn" onclick="openNav()">&#9776;</button>
+        </div>
+    </header>
+    <div class="sidenav">
+        <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+        <div class="sidenav-links">
+            <a href="{% url 'backend:car_list' %}">Главная</a>
+            <a href="{% url 'backend:bid_list' %}">Все заявки</a>
+            <a href="{% url 'backend:car_create' %}">Добавить автомобиль</a>
+            <a href="{% url 'backend:bid_create' %}">Добавить заявку</a>
+        </div>    
+    </div>
+    <div id="content">
+        <div class="container">
+            {% block content %}
+            {% endblock content %}
+        </div>
+    </div>
+
+    <script>
+        function closeNav() {
+            document.querySelector(".sidenav").style.width = "0";
+            document.getElementById("content").style.marginLeft = "0";
+            document.querySelector(".openbtn").style.display = "block";
+        }
+
+        function openNav() {
+            document.querySelector(".sidenav").style.width = "250px";
+            document.getElementById("content").style.marginLeft = "250px";
+            document.querySelector(".openbtn").style.display = "none";
+        }
+
+        // Закрыть боковую панель при загрузке страницы
+        window.onload = closeNav;
+    </script>
+</body>
+</html>

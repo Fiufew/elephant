@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block title %}Car List{% endblock title %}
+
+{% block meta_description %}List of cars{% endblock meta_description %}
+
+{% block meta_keywords %}car list, shop, ecommerce{% endblock meta_keywords %}
+
+{% block content %}
+<h1 class="mt-4 mb-4">Car List</h1>
+<div class="table-responsive">
+    <table class="table table-striped table-bordered custom-table" id="car-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Brand</th>
+                <th>Model</th>
+                <th>state_number</th>
+                <th>price</th>
+                <th>Is_booked</th>
+                <th>insurance</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for car in cars %}
+                <tr>
+                    <td><a href="{% url 'backend:car_detail' car.slug %}">{{ car.id }}</td></a>
+                    <td>{{ car.brand.name }}</td>
+                    <td>{{ car.model.name }}</td>
+                    <td>{{ car.state_number }}</td>
+                    <td>{{ car.price.season_one }}</td>
+                    <td>{{ car.is_booked }}</td>
+                    <td>{{ car.insurance }}</td>
+                    <td>
+                        <a href="{% url 'backend:car_edit' car.slug %}" class="btn btn-primary">Edit</a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tablesort/5.2.1/tablesort.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        new Tablesort(document.getElementById('car-table'));
+    });
+</script>
+{% endblock content %}
