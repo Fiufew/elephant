@@ -15,13 +15,13 @@ def car_detail(request, slug):
 
 def create_car(request):
     if request.method == 'POST':
-        form = CarForm(request.POST)
+        form = CarForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
             return redirect('backend:car_list')
     else:
         form = CarForm()
-    return render(request, 'car_form.html', {'form': form})
+    return render(request, 'car_form.html', {'form': form})  # не сохраняются фото
 
 
 def bid_list(request):
@@ -40,7 +40,7 @@ def create_bid(request):
         form = BidForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect('backend:car_list')
+            return redirect('backend:bid_list')
     else:
         form = BidForm()
     return render(request, 'bid_form.html', {'form': form})
@@ -49,7 +49,7 @@ def create_bid(request):
 def edit_car(request, slug):
     car = get_object_or_404(Car, slug=slug)
     if request.method == 'POST':
-        form = CarForm(request.POST, instance=car)
+        form = CarForm(request.POST, request.FILES, instance=car)
         if form.is_valid():
             form.save()
             return redirect('backend:car_detail', slug=car.slug)
@@ -59,12 +59,28 @@ def edit_car(request, slug):
 
 
 def edit_bid(request, pk):
-    bid = get_object_or_404(Car, pk=pk)
+    bid = get_object_or_404(Bid, pk=pk)
     if request.method == 'POST':
-        form = CarForm(request.POST, instance=bid)
+        form = BidForm(request.POST, instance=bid)
         if form.is_valid():
             form.save()
             return redirect('backend:bid_detail', pk=bid.id)
     else:
-        form = CarForm(instance=bid)
+        form = BidForm(instance=bid)
     return render(request, 'bid_form.html', {'form': form, 'bid': bid})
+
+
+def remove_car(request, slug):
+    car = get_object_or_404(Car, slug=slug)
+    if request.method == 'POST':
+        car.delete()
+        return redirect('backend:car_list')
+    return redirect('backend:car_edit', slug=car.slug)
+
+
+def remove_bid(request, pk):
+    bid = get_object_or_404(Bid, pk=pk)
+    if request.method == 'POST':
+        bid.delete()
+        return redirect('backend:bid_list')
+    return redirect('backend:bid_list', pk=bid.id)

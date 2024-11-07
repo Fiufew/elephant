@@ -1,19 +1,53 @@
 {% extends 'base.html' %}
 {% load bootstrap4 %}
 
-{% block title %}Add bid{% endblock title %}
+{% block title %}
+    {% if bid %}
+        Edit Bid
+    {% else %}
+        Add Bid
+    {% endif %}
+{% endblock title %}
 
-{% block meta_description %}Add a new bid to the shop{% endblock meta_description %}
+{% block meta_description %}
+    {% if bid %}
+        Edit the bid details
+    {% else %}
+        Add a new bid to the shop
+    {% endif %}
+{% endblock meta_description %}
 
-{% block meta_keywords %}add bid new bid, shop{% endblock meta_keywords %}
+{% block meta_keywords %}
+    {% if bid %}
+        edit bid, bid details, shop
+    {% else %}
+        add bid, new bid, shop
+    {% endif %}
+{% endblock meta_keywords %}
 
 {% block content %}
-<h1 class="mt-4 mb-4">Add bid</h1>
+<h1 class="mt-4 mb-4">
+    {% if bid %}
+        Edit Bid
+    {% else %}
+        Add Bid
+    {% endif %}
+</h1>
 <form method="post" class="form">
     {% csrf_token %}
     {% bootstrap_form form %}
     <button type="submit" class="btn btn-primary">Submit</button>
 </form>
+
+{% if bid %}
+<div class='delete_button mt-4'>
+    <form method="post" action="{% url 'backend:bid_remove' bid.pk %}">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Удалить заявку</button>
+    </form>
+</div>
+{% endif %}
+
 {% endblock content %}
 
 {% block extra_js %}
