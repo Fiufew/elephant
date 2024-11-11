@@ -18,11 +18,11 @@ def car_detail(request, slug):
                                                               today.month)[1])
     bids = Bid.objects.filter(car=car, pickup_time__lte=last_day_of_month,
                               dropoff_time__gte=first_day_of_month)
-    busy_dates = []
+    busy_dates_with_ids = []
     for bid in bids:
         current_date = bid.pickup_time.date()
         while current_date <= bid.dropoff_time.date():
-            busy_dates.append(current_date)
+            busy_dates_with_ids.append((current_date, bid.id))
             current_date += timedelta(days=1)
     date_range = []
     current_date = first_day_of_month
@@ -30,7 +30,8 @@ def car_detail(request, slug):
         date_range.append(current_date.strftime('%Y-%m-%d'))
         current_date += timedelta(days=1)
     context = {
-        'busy_dates': [date.strftime('%Y-%m-%d') for date in busy_dates],
+        'busy_dates_with_ids': [(date.strftime('%Y-%m-%d'), bid_id) for date,
+                                bid_id in busy_dates_with_ids],
         'date_range': date_range,
         'car': car,
     }

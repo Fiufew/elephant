@@ -33,8 +33,15 @@
 <h2>Car Rental Calendar</h2>
 <div class="calendar">
     {% for date in date_range %}
-        <div class="day {% if date in busy_dates %}busy{% endif %}">
+        <div class="day {% for busy_date, bid_id in busy_dates_with_ids %}{% if busy_date == date %}busy{% endif %}{% endfor %}">
             {{ date }}
+            {% for busy_date, bid_id in busy_dates_with_ids %}
+                {% if busy_date == date %}
+                    <a href="{% url 'backend:bid_detail' bid_id %}">
+                        <div class='bid_ids'>ID заявки: {{ bid_id }}</div>
+                    </a>
+                {% endif %}
+            {% endfor %}
         </div>
     {% endfor %}
 </div>
