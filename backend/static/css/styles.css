@@ -98,3 +98,17 @@
 .sidenav-links {
     margin-top: 100px; /* Добавлен отступ сверху для сдвига текста вниз */
 }
+
+.calendar {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 5px;
+}
+.day {
+    border: 1px solid #ccc;
+    padding: 10px;
+    text-align: center;
+}
+.busy {
+    background-color: #ffcccc;
+}

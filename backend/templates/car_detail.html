@@ -30,6 +30,14 @@
         </tbody>
     </table>
 </div>
+<h2>Car Rental Calendar</h2>
+<div class="calendar">
+    {% for date in date_range %}
+        <div class="day {% if date in busy_dates %}busy{% endif %}">
+            {{ date }}
+        </div>
+    {% endfor %}
+</div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/tablesort/5.2.1/tablesort.min.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {

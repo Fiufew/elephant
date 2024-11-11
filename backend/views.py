@@ -1,6 +1,8 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import Car, Brand, Price, Bid
 from .forms import CarForm, BidForm
+from datetime import datetime, timedelta
+import calendar
 
 
 def index(request):
@@ -10,7 +12,29 @@ def index(request):
 
 def car_detail(request, slug):
     car = get_object_or_404(Car, slug=slug)
-    return render(request, 'car_detail.html', {'car': car})
+    today = datetime.today().date()
+    first_day_of_month = today.replace(day=1)
+    last_day_of_month = today.replace(day=calendar.monthrange(today.year,
+                                                              today.month)[1])
+    bids = Bid.objects.filter(car=car, pickup_time__lte=last_day_of_month,
+                              dropoff_time__gte=first_day_of_month)
+    busy_dates = []
+    for bid in bids:
+        current_date = bid.pickup_time.date()
+        while current_date <= bid.dropoff_time.date():
+            busy_dates.append(current_date)
+            current_date += timedelta(days=1)
+    date_range = []
+    current_date = first_day_of_month
+    while current_date <= last_day_of_month:
+        date_range.append(current_date.strftime('%Y-%m-%d'))
+        current_date += timedelta(days=1)
+    context = {
+        'busy_dates': [date.strftime('%Y-%m-%d') for date in busy_dates],
+        'date_range': date_range,
+        'car': car,
+    }
+    return render(request, 'car_detail.html', context)
 
 
 def create_car(request):
@@ -21,7 +45,7 @@ def create_car(request):
             return redirect('backend:car_list')
     else:
         form = CarForm()
-    return render(request, 'car_form.html', {'form': form})  # не сохраняются фото
+    return render(request, 'car_form.html', {'form': form})
 
 
 def bid_list(request):
@@ -84,3 +108,30 @@ def remove_bid(request, pk):
         bid.delete()
         return redirect('backend:bid_list')
     return redirect('backend:bid_list', pk=bid.id)
+
+
+def calendar_view(request):
+    # Получите текущую дату и дату через месяц
+    today = datetime.today().date()
+    next_month = today + timedelta(days=30)
+
+    # Получите все аренды в этом диапазоне
+    bids = Bid.objects.filter(pickup_time__lte=next_month, dropoff_time__gte=today)
+
+    # Создайте список занятых дат
+    busy_dates = []
+    for bid in bids:
+        current_date = bid.pickup_time.date()
+        while current_date <= bid.dropoff_time.date():
+            busy_dates.append(current_date)
+            current_date += timedelta(days=1)
+
+    # Создайте диапазон дат для календаря
+    date_range = [(today + timedelta(days=i)).strftime('%Y-%m-%d') for i in range(30)]
+
+    context = {
+        'busy_dates': [date.strftime('%Y-%m-%d') for date in busy_dates],
+        'date_range': date_range,
+    }
+
+    return render(request, 'calendar.html', context)
