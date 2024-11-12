@@ -7,19 +7,19 @@
 {% block meta_keywords %}car list, shop, ecommerce{% endblock meta_keywords %}
 
 {% block content %}
-<h1 class="mt-4 mb-4">Bid list</h1>
+<h1 class="mt-4 mb-4">Список заявок</h1>
 <div class="table-responsive">
     <table class="table table-striped table-bordered custom-table" id="car-table">
         <thead>
             <tr>
-                <th>ID</th>
-                <th>Car</th>
-                <th>Pickup_location</th>
-                <th>Pickup_time</th>
-                <th>Dropoff_location</th>
-                <th>Dropoff_time</th>
-                <th>Renter_name</th>
-                <th>Desctiption</th>
+                <th>Номер заявки</th>
+                <th>Автомобиль</th>
+                <th>Место получения автомобиля</th>
+                <th>Время получения автомобиля</th>
+                <th>Место возврата автомобиля</th>
+                <th>Время возврата автомобиля</th>
+                <th>Имя арендатора</th>
+                <th>Описание</th>
             </tr>
         </thead>
         <tbody>
@@ -34,7 +34,7 @@
                     <td>{{ bid.renter_name }}</td>
                     <td>{{ bid.comment }}</td>
                     <td>
-                        <a href="{% url 'backend:bid_edit' bid.id %}" class="btn btn-primary">Edit</a>
+                        <a href="{% url 'backend:bid_edit' bid.id %}" class="btn btn-primary">Изменить</a>
                     </td>
                 </tr>
             {% endfor %}

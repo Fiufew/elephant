@@ -1,4 +1,5 @@
 from django.contrib import admin
+
 from .models import Category, Color, Brand, Model, Car, Price, Bid, Investor
 
 

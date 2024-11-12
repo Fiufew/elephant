@@ -4,22 +4,23 @@
     overflow-y: auto; /* Добавляет прокрутку, если содержимое превышает высоту */
 }
 
+/* Удалите или закомментируйте эти стили, чтобы отключить анимацию */
+/*
 .custom-table tbody tr {
     opacity: 0;
     transform: translateY(20px);
     animation: fadeIn 1s ease-in-out forwards;
 }
+*/
 
-.custom-table tbody tr:hover {
-    background-color: #4c4b4b75; /* Изменение цвета строки при наведении курсора */
-}
-
+/*
 @keyframes fadeIn {
     to {
         opacity: 1;
         transform: translateY(0);
     }
 }
+*/
 
 .sidenav {
     height: 100%; /* Full-height: remove this if you want "auto" height */
@@ -75,6 +76,10 @@
 #content {
     transition: margin-left 0.3s; /* Transition for margin-left */
     padding: 20px;
+}
+
+.bold-header {
+    font-weight: bold;
 }
 
 .openbtn {

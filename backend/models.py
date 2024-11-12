@@ -1,8 +1,16 @@
 from django.db import models
+
 from autoslug import AutoSlugField
 
 
 class Category(models.Model):
+    """
+    Модель для представления категорий автомобилей.
+
+    Attributes:
+        name (CharField): Название категории.
+        slug (SlugField): Уникальный идентификатор категории.
+    """
     name = models.CharField(max_length=128)
     slug = models.SlugField(unique=True)
 
@@ -19,6 +27,13 @@ class Category(models.Model):
 
 
 class Color(models.Model):
+    """
+    Модель для представления цветов автомобилей.
+
+    Attributes:
+        name (CharField): Название цвета.
+        slug (SlugField): Уникальный идентификатор цвета.
+    """
     name = models.CharField(max_length=64)
     slug = models.SlugField(unique=True)
 
@@ -35,6 +50,13 @@ class Color(models.Model):
 
 
 class Brand(models.Model):
+    """
+    Модель для представления брендов автомобилей.
+
+    Attributes:
+        name (CharField): Название бренда.
+        slug (SlugField): Уникальный идентификатор бренда.
+    """
     name = models.CharField(max_length=255, unique=True)
     slug = models.SlugField(unique=True)
 
@@ -51,6 +73,12 @@ class Brand(models.Model):
 
 
 class Investor(models.Model):
+    """
+    Модель для представления инвесторов.
+
+    Attributes:
+        name (CharField): Имя инвестора.
+    """
     name = models.CharField(max_length=255)
 
     class Meta:
@@ -66,6 +94,13 @@ class Investor(models.Model):
 
 
 class Model(models.Model):
+    """
+    Модель для представления моделей автомобилей.
+
+    Attributes:
+        name (CharField): Название модели.
+        slug (SlugField): Уникальный идентификатор модели.
+    """
     name = models.CharField(max_length=255)
     slug = models.SlugField(unique=True)
 
@@ -82,20 +117,34 @@ class Model(models.Model):
 
 
 class Car(models.Model):
-    category = models.ForeignKey(Category,
-                                 related_name='categories',
+    """
+    Модель для представления автомобилей.
+
+    Attributes:
+        category (ForeignKey): Категория автомобиля.
+        color (ForeignKey): Цвет автомобиля.
+        brand (ForeignKey): Бренд автомобиля.
+        model (ForeignKey): Модель автомобиля.
+        investor (ForeignKey): Инвестор автомобиля.
+        is_booked (BooleanField): Флаг, указывающий,
+        забронирован ли автомобиль.
+        insurance (CharField): Страховка автомобиля.
+        description (TextField): Описание автомобиля.
+        state_number (CharField): Государственный номер автомобиля.
+        slug (AutoSlugField): Уникальный идентификатор автомобиля.
+        photo (ImageField): Фотография автомобиля.
+        created_at (DateTimeField): Дата и время создания записи.
+        updated_at (DateTimeField): Дата и время последнего обновления записи.
+    """
+    category = models.ForeignKey(Category, related_name='categories',
                                  on_delete=models.CASCADE)
-    color = models.ForeignKey(Color,
-                              related_name='colors',
+    color = models.ForeignKey(Color, related_name='colors',
                               on_delete=models.CASCADE)
-    brand = models.ForeignKey(Brand,
-                              related_name='brands_in_car',
+    brand = models.ForeignKey(Brand, related_name='brands_in_car',
                               on_delete=models.CASCADE)
-    model = models.ForeignKey(Model,
-                              related_name='models_in_car',
+    model = models.ForeignKey(Model, related_name='models_in_car',
                               on_delete=models.CASCADE)
-    investor = models.ForeignKey(Investor,
-                                 related_name='investors',
+    investor = models.ForeignKey(Investor, related_name='investors',
                                  on_delete=models.CASCADE)
     is_booked = models.BooleanField(default=False)
     insurance = models.CharField(max_length=255)
@@ -120,13 +169,30 @@ class Car(models.Model):
 
 
 class Price(models.Model):
-    car_price = models.OneToOneField(Car,
-                                     on_delete=models.CASCADE,
+    """
+    Модель для представления цен на автомобили.
+
+    Attributes:
+        car_price (OneToOneField): Связь с моделью Car.
+        season_one (DecimalField): Цена за сезон 1.
+        season_two (DecimalField): Цена за сезон 2.
+        season_three (DecimalField): Цена за сезон 3.
+        season_four (DecimalField): Цена за сезон 4.
+        season_one_upto7 (DecimalField): Цена за сезон 1 до 7 дней.
+        season_two_upto7 (DecimalField): Цена за сезон 2 до 7 дней.
+        season_three_upto7 (DecimalField): Цена за сезон 3 до 7 дней.
+        season_four_upto7 (DecimalField): Цена за сезон 4 до 7 дней.
+        season_one_upto14 (DecimalField): Цена за сезон 1 до 14 дней.
+        season_two_upto14 (DecimalField): Цена за сезон 2 до 14 дней.
+        season_three_upto14 (DecimalField): Цена за сезон 3 до 14 дней.
+        season_four_upto14 (DecimalField): Цена за сезон 4 до 14 дней.
+    """
+    car_price = models.OneToOneField(Car, on_delete=models.CASCADE,
                                      related_name='price')
     season_one = models.DecimalField(max_digits=10, decimal_places=2)
     season_two = models.DecimalField(max_digits=10, decimal_places=2)
     season_three = models.DecimalField(max_digits=10, decimal_places=2)
-    season_four = models.DecimalField(max_digits=10, decimal_places=2)  # добавить поля для количества дней
+    season_four = models.DecimalField(max_digits=10, decimal_places=2)
     season_one_upto7 = models.DecimalField(max_digits=10, decimal_places=2)
     season_two_upto7 = models.DecimalField(max_digits=10, decimal_places=2)
     season_three_upto7 = models.DecimalField(max_digits=10, decimal_places=2)
@@ -145,6 +211,24 @@ class Price(models.Model):
 
 
 class Bid(models.Model):
+    """
+    Модель для представления заявок на аренду автомобилей.
+
+    Attributes:
+        CONTACT_CHOICES (list): Список доступных методов контакта.
+        car (ForeignKey): Автомобиль, на который подана заявка.
+        pickup_location (CharField): Место получения автомобиля.
+        dropoff_location (CharField): Место возврата автомобиля.
+        pickup_time (DateTimeField): Время получения автомобиля.
+        dropoff_time (DateTimeField): Время возврата автомобиля.
+        renter_name (CharField): Имя арендатора.
+        renter_birthdate (DateField): Дата рождения арендатора.
+        renter_phone (CharField): Телефон арендатора.
+        renter_email (EmailField): Email арендатора.
+        contact_method (CharField): Метод контакта.
+        comment (TextField): Комментарий к заявке.
+        bid_preparer (CharField): Подготовитель заявки.
+    """
     CONTACT_CHOICES = [
         ('telegram', 'Telegram'),
         ('whatsapp', 'WhatsApp'),
@@ -167,6 +251,3 @@ class Bid(models.Model):
     class Meta:
         verbose_name = 'Bid'
         verbose_name_plural = 'Bids'
-
-    def __str__(self):
-        return f'Bid for {self.car.brand.name} {self.car.model.name} by {self.renter_name}'
