@@ -55,8 +55,7 @@ class BidAdmin(admin.ModelAdmin):
                     'renter_birthdate', 'renter_phone', 'renter_email',
                     'contact_method', 'comment', 'bid_preparer')
     list_filter = ('car', 'contact_method')
-    search_fields = ('renter_name',
-                     'renter_email', 'bid_preparer')
+    search_fields = ('renter_name', 'renter_email', 'bid_preparer')
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == "price":

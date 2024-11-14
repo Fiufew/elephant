@@ -3,6 +3,10 @@ from django.db import models
 from autoslug import AutoSlugField
 
 
+class BidFiles(models.Model):
+    file = models.FileField(upload_to='uploads_model')
+
+
 class Category(models.Model):
     """
     Модель для представления категорий автомобилей.
@@ -136,16 +140,16 @@ class Car(models.Model):
         created_at (DateTimeField): Дата и время создания записи.
         updated_at (DateTimeField): Дата и время последнего обновления записи.
     """
-    category = models.ForeignKey(Category, related_name='categories',
-                                 on_delete=models.CASCADE)
-    color = models.ForeignKey(Color, related_name='colors',
-                              on_delete=models.CASCADE)
-    brand = models.ForeignKey(Brand, related_name='brands_in_car',
-                              on_delete=models.CASCADE)
-    model = models.ForeignKey(Model, related_name='models_in_car',
-                              on_delete=models.CASCADE)
-    investor = models.ForeignKey(Investor, related_name='investors',
-                                 on_delete=models.CASCADE)
+    category = models.ForeignKey(
+        Category, related_name='categories', on_delete=models.CASCADE)
+    color = models.ForeignKey(
+        Color, related_name='colors', on_delete=models.CASCADE)
+    brand = models.ForeignKey(
+        Brand, related_name='brands_in_car', on_delete=models.CASCADE)
+    model = models.ForeignKey(
+        Model, related_name='models_in_car', on_delete=models.CASCADE)
+    investor = models.ForeignKey(
+        Investor, related_name='investors', on_delete=models.CASCADE)
     is_booked = models.BooleanField(default=False)
     insurance = models.CharField(max_length=255)
     description = models.TextField(blank=True, null=True)
@@ -187,8 +191,8 @@ class Price(models.Model):
         season_three_upto14 (DecimalField): Цена за сезон 3 до 14 дней.
         season_four_upto14 (DecimalField): Цена за сезон 4 до 14 дней.
     """
-    car_price = models.OneToOneField(Car, on_delete=models.CASCADE,
-                                     related_name='price')
+    car_price = models.OneToOneField(
+        Car, on_delete=models.CASCADE, related_name='price')
     season_one = models.DecimalField(max_digits=10, decimal_places=2)
     season_two = models.DecimalField(max_digits=10, decimal_places=2)
     season_three = models.DecimalField(max_digits=10, decimal_places=2)
@@ -247,6 +251,10 @@ class Bid(models.Model):
     contact_method = models.CharField(max_length=10, choices=CONTACT_CHOICES)
     comment = models.TextField(blank=True, null=True)
     bid_preparer = models.CharField(max_length=127)
+    contract = models.ForeignKey(
+        BidFiles, related_name='contract_in_bid', on_delete=models.CASCADE,
+        null=True, blank=True)
+    doc = models.FileField(upload_to='uploads_model1', null=True, blank=True)
 
     class Meta:
         verbose_name = 'Bid'

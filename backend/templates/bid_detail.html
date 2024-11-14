@@ -10,6 +10,7 @@
 <h1 class="mt-4 mb-4">{{ bid.car }}</h1>
 <div class="table-responsive">
     <table class="table table-striped table-bordered custom-table">
+        
         <thead>
             <tr>
                 <th>ID</th>
@@ -34,6 +35,7 @@
                 <td>{{ bid.renter_name }}</td>
                 <td>{{ bid.comment }}</td>
                 <td>{{ bid.bid_preparer }}</td>
+                <td><a href="{{ bid.doc.url }}">12</a></td>
             </tr>
         </tbody>
     </table>
@@ -42,7 +44,7 @@
 {% if car.photo %}
     <div class="mt-4">
         <h2>Car Photo</h2>
-        <img src="{{ car.photo.url }}" alt="{{ car.brand.name }} {{ car.model.name }}" class="img-fluid">
+        <img src="{{ car.photo.url }}" alt="{{ car.brand.name }} {{ car.model.name }}" class="img-fluid" width="400" height="400">
     </div>
 {% else %}
     <div class="mt-4">
@@ -50,6 +52,12 @@
         <p>No photo available.</p>
     </div>
 {% endif %}
+
+<form action="" method="post" enctype="multipart/form-data" class="addfile">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <p><button type="submit">Отправить</button></p>
+</form>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/tablesort/5.2.1/tablesort.min.js"></script>
 <script>

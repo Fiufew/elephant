@@ -33,7 +33,7 @@
         Добавить заявку
     {% endif %}
 </h1>
-<form method="post" class="form">
+<form method="post" class="form" enctype="multipart/form-data">
     {% csrf_token %}
     {% bootstrap_form form %}
     <button type="submit" class="btn btn-primary">Добавить</button>

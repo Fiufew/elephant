@@ -16,6 +16,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+LOGIN_URL = 'auth/login/'
+LOGIN_REDIRECT_URL = 'backend:car_list'
 
 # Application definition
 
@@ -27,6 +29,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'backend.apps.BackendConfig',
+    'django_bootstrap5',
     'bootstrap4',
     'bootstrap_datepicker_plus',
 ]

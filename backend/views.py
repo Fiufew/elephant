@@ -1,12 +1,20 @@
 from datetime import datetime, timedelta
 import calendar
+import io
 
+import fitz
 from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required
+from reportlab.pdfgen import canvas
+from reportlab.lib.pagesizes import A4
+from reportlab.pdfbase.ttfonts import TTFont
+from reportlab.pdfbase import pdfmetrics
 
-from .models import Car, Bid
-from .forms import CarForm, BidForm
+from .models import Car, Bid, BidFiles
+from .forms import CarForm, BidForm, BidFilesForm
 
 
+@login_required
 def index(request):
     '''
     Отображает список автомобилей
@@ -16,6 +24,7 @@ def index(request):
     return render(request, 'index.html', {'cars': car})
 
 
+@login_required
 def car_detail(request, slug):
     """
     Отображает детали автомобиля и информацию о занятых датах.
@@ -26,7 +35,7 @@ def car_detail(request, slug):
 
     Returns:
         HttpResponse: Отрендеренный HTML-шаблон с деталями автомобиля и
-                      информацией о занятых датах.
+        информацией о занятых датах.
     """
     # Получаем объект автомобиля по уникальному идентификатору (slug)
     car = get_object_or_404(Car, slug=slug)
@@ -38,14 +47,15 @@ def car_detail(request, slug):
     first_day_of_month = today.replace(day=1)
 
     # Вычисляем последний день текущего месяца
-    last_day_of_month = today.replace(day=calendar.monthrange(today.year,
-                                                              today.month)[1])
+    last_day_of_month = today.replace(day=calendar.monthrange(
+        today.year, today.month)[1])
 
     # Получаем все заявки для данного автомобиля,
     # которые начинаются до или в последний день месяца
     # и заканчиваются после или в первый день месяца
-    bids = Bid.objects.filter(car=car, pickup_time__lte=last_day_of_month,
-                              dropoff_time__gte=first_day_of_month)
+    bids = Bid.objects.filter(
+        car=car, pickup_time__lte=last_day_of_month,
+        dropoff_time__gte=first_day_of_month)
 
     # Инициализируем список для хранения занятых дат и их идентификаторов
     busy_dates_with_ids = []
@@ -78,6 +88,7 @@ def car_detail(request, slug):
     return render(request, 'car_detail.html', context)
 
 
+@login_required
 def create_car(request):
     """
     Отображает форму для создания нового автомобиля и
@@ -88,7 +99,7 @@ def create_car(request):
 
     Returns:
         HttpResponse: Отрендеренный HTML-шаблон с формой или перенаправление на
-                      страницу списка автомобилей.
+                    страницу списка автомобилей.
     """
     if request.method == 'POST':
         form = CarForm(request.POST, request.FILES)
@@ -100,6 +111,7 @@ def create_car(request):
     return render(request, 'car_form.html', {'form': form})
 
 
+@login_required
 def bid_list(request):
     """
     Отображает список всех заявок.
@@ -114,6 +126,7 @@ def bid_list(request):
     return render(request, 'bid_list.html', {'bids': bid})
 
 
+@login_required
 def bid_detail(request, pk):
     """
     Отображает детали конкретной заявки.
@@ -125,11 +138,21 @@ def bid_detail(request, pk):
     Returns:
         HttpResponse: Отрендеренный HTML-шаблон с деталями заявки.
     """
+    if request.method == "POST":
+        form = BidFilesForm(request.POST, request.FILES)
+        if form.is_valid():
+            fp = BidFiles(file=form.cleaned_data['file'])
+            fp.save()
+    else:
+        form = BidFilesForm()
     bid = get_object_or_404(Bid, pk=pk)
     car = bid.car
-    return render(request, 'bid_detail.html', {'bid': bid, 'car': car})
+    return render(
+        request, 'bid_detail.html',
+        {'bid': bid, 'car': car, 'form': form})
 
 
+@login_required
 def create_bid(request):
     """
     Отображает форму для создания новой заявки и обрабатывает отправку формы.
@@ -139,18 +162,20 @@ def create_bid(request):
 
     Returns:
         HttpResponse: Отрендеренный HTML-шаблон с формой или перенаправление на
-                      страницу списка заявок.
+                    страницу списка заявок.
     """
     if request.method == 'POST':
-        form = BidForm(request.POST)
+        form = BidForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
+            pdf_create(form.cleaned_data)
             return redirect('backend:bid_list')
     else:
         form = BidForm()
     return render(request, 'bid_form.html', {'form': form})
 
 
+@login_required
 def edit_car(request, slug):
     """
     Отображает форму для редактирования
@@ -162,7 +187,7 @@ def edit_car(request, slug):
 
     Returns:
         HttpResponse: Отрендеренный HTML-шаблон с формой или перенаправление на
-                      страницу с деталями автомобиля.
+                    страницу с деталями автомобиля.
     """
     car = get_object_or_404(Car, slug=slug)
     if request.method == 'POST':
@@ -175,6 +200,7 @@ def edit_car(request, slug):
     return render(request, 'car_form.html', {'form': form, 'car': car})
 
 
+@login_required
 def edit_bid(request, pk):
     """
     Отображает форму для редактирования заявки и обрабатывает отправку формы.
@@ -185,11 +211,11 @@ def edit_bid(request, pk):
 
     Returns:
         HttpResponse: Отрендеренный HTML-шаблон с формой или перенаправление на
-                      страницу с деталями заявки.
+                    страницу с деталями заявки.
     """
     bid = get_object_or_404(Bid, pk=pk)
     if request.method == 'POST':
-        form = BidForm(request.POST, instance=bid)
+        form = BidForm(request.POST, request.FILES, instance=bid)
         if form.is_valid():
             form.save()
             return redirect('backend:bid_detail', pk=bid.id)
@@ -198,6 +224,7 @@ def edit_bid(request, pk):
     return render(request, 'bid_form.html', {'form': form, 'bid': bid})
 
 
+@login_required
 def remove_car(request, slug):
     """
     Удаляет автомобиль и перенаправляет на страницу списка автомобилей.
@@ -216,6 +243,7 @@ def remove_car(request, slug):
     return redirect('backend:car_edit', slug=car.slug)
 
 
+@login_required
 def remove_bid(request, pk):
     """
     Удаляет ставку и перенаправляет на страницу списка заявок.
@@ -232,3 +260,49 @@ def remove_bid(request, pk):
         bid.delete()
         return redirect('backend:bid_list')
     return redirect('backend:bid_list', pk=bid.id)
+
+
+def pdf_create(request, add):
+    template_path = "backend/pdf_create/договор элефант.pdf"
+    output_path = "backend/pdf_create/заполненный договор элефант.pdf"
+    temp_text_pdf = "backend/pdf_create/текст.pdf"
+
+    data = {
+        "Name": add['renter_name'],
+    }
+
+    pdfmetrics.registerFont(TTFont(
+        "Calibri", "backend/pdf_create/ofont.ru_Calibri.ttf"))
+
+    def create_text_layer(temp_text_pdf, data):
+        packet = io.BytesIO()
+        c = canvas.Canvas(packet, pagesize=A4)
+
+        c.setFont("Calibri", 7)
+        c.drawString(160, 648, f"{data['Name']}")
+
+        c.save()
+        packet.seek(0)
+        with open(temp_text_pdf, "wb") as f:
+            f.write(packet.getvalue())
+
+    def merge_pdfs(template_path, temp_text_pdf, output_path):
+        with fitz.open(template_path) as template_pdf:
+            with fitz.open(temp_text_pdf) as text_layer_pdf:
+                for page_num in range(template_pdf.page_count):
+                    page = template_pdf[page_num]
+                    page.show_pdf_page(page.rect, text_layer_pdf, 0)
+                template_pdf.save(output_path)
+
+    create_text_layer(temp_text_pdf, data)
+    merge_pdfs(template_path, temp_text_pdf, output_path)
+    if request.method == 'POST':
+        form = BidForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            pdf_create(form.cleaned_data)
+            return redirect('backend:bid_list')
+    else:
+        form = BidForm()
+    return render(request, 'bid_form.html', {'form': form})
+    return redirect('backend:car_list')
