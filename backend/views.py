@@ -171,8 +171,8 @@ def create_bid(request):
         form = BidForm(request.POST, request.FILES)
         if form.is_valid():
             bid = form.save()
-            print(bid.id)
-            pdf_create(request, bid)
+            pdf_create_contract(request, bid)
+            pdf_create_vaucher(request, bid)
             return redirect('backend:bid_list')
     else:
         form = BidForm()
@@ -266,17 +266,17 @@ def remove_bid(request, pk):
     return redirect('backend:bid_list', pk=bid.id)
 
 
-def pdf_create(request, bid):
-    bid_folder = os.path.join(settings.MEDIA_ROOT, f"contracts/{bid.id}")
+def pdf_create_contract(request, bid):
+    bid_folder = os.path.join(settings.MEDIA_ROOT, f"contracts/Заявка_{bid.id}")
     os.makedirs(bid_folder, exist_ok=True)
-
-    template_path = "backend/pdf_create/договор элефант.pdf"
-    output_path = os.path.join(bid_folder, "договор.pdf")
-    temp_text_pdf = os.path.join(bid_folder, "текст.pdf")
+    template_path = "backend/pdf_create/договор элефант бланк.pdf"
+    output_path = os.path.join(bid_folder, f"Договор_№{bid.id}.pdf")
+    temp_text_pdf = os.path.join(bid_folder, "текст для договора.pdf")
 
     data = {"Name": bid.renter_name}
 
-    pdfmetrics.registerFont(TTFont("Calibri", "backend/pdf_create/ofont.ru_Calibri.ttf"))
+    pdfmetrics.registerFont(TTFont(
+        "Calibri", "backend/pdf_create/ofont.ru_Calibri.ttf"))
 
     def create_text_layer(temp_text_pdf, data):
         packet = io.BytesIO()
@@ -297,6 +297,42 @@ def pdf_create(request, bid):
                 template_pdf.save(output_path)
     create_text_layer(temp_text_pdf, data)
     merge_pdfs(template_path, temp_text_pdf, output_path)
-    bid.contract = f"contracts/{bid.id}/договор.pdf"
+    bid.contract = f"contracts/Заявка_{bid.id}/Договор_№{bid.id}.pdf"
+    bid.save()
+    return HttpResponseRedirect(reverse("backend:bid_detail", args=[bid.id]))
+
+
+def pdf_create_vaucher(request, bid):
+    bid_folder = os.path.join(settings.MEDIA_ROOT, f"vauchers/Заявка_{bid.id}")
+    os.makedirs(bid_folder, exist_ok=True)
+    template_path = "backend/pdf_create/ваучер бланк.pdf"
+    output_path = os.path.join(bid_folder, f"Ваучер_№{bid.id}.pdf")
+    temp_text_pdf = os.path.join(bid_folder, "текст для ваучера.pdf")
+
+    data = {"Name": bid.renter_name}
+
+    pdfmetrics.registerFont(TTFont(
+        "Calibri", "backend/pdf_create/ofont.ru_Calibri.ttf"))
+
+    def create_text_layer(temp_text_pdf, data):
+        packet = io.BytesIO()
+        c = canvas.Canvas(packet, pagesize=A4)
+        c.setFont("Calibri", 7)
+        c.drawString(160, 648, f"{data['Name']}")
+        c.save()
+        packet.seek(0)
+        with open(temp_text_pdf, "wb") as f:
+            f.write(packet.getvalue())
+
+    def merge_pdfs(template_path, temp_text_pdf, output_path):
+        with fitz.open(template_path) as template_pdf:
+            with fitz.open(temp_text_pdf) as text_layer_pdf:
+                for page_num in range(template_pdf.page_count):
+                    page = template_pdf[page_num]
+                    page.show_pdf_page(page.rect, text_layer_pdf, 0)
+                template_pdf.save(output_path)
+    create_text_layer(temp_text_pdf, data)
+    merge_pdfs(template_path, temp_text_pdf, output_path)
+    bid.vaucher = f"vauchers/Заявка_{bid.id}/Ваучер_№{bid.id}.pdf"
     bid.save()
     return HttpResponseRedirect(reverse("backend:bid_detail", args=[bid.id]))
