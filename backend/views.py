@@ -10,8 +10,8 @@ from reportlab.lib.pagesizes import A4
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfbase import pdfmetrics
 
-from .models import Car, Bid, BidFiles
-from .forms import CarForm, BidForm, BidFilesForm
+from .models import Car, Bid
+from .forms import CarForm, BidForm, BidFormAddVaucherContract
 
 
 @login_required
@@ -138,18 +138,17 @@ def bid_detail(request, pk):
     Returns:
         HttpResponse: Отрендеренный HTML-шаблон с деталями заявки.
     """
-    if request.method == "POST":
-        form = BidFilesForm(request.POST, request.FILES)
+    if request.method == 'POST':
+        form = BidFormAddVaucherContract(request.POST, request.FILES)
         if form.is_valid():
-            fp = BidFiles(file=form.cleaned_data['file'])
-            fp.save()
+            form.save()
     else:
-        form = BidFilesForm()
+        form = BidForm()
     bid = get_object_or_404(Bid, pk=pk)
     car = bid.car
     return render(
         request, 'bid_detail.html',
-        {'bid': bid, 'car': car, 'form': form})
+        {'bid': bid, 'car': car})
 
 
 @login_required
@@ -168,7 +167,7 @@ def create_bid(request):
         form = BidForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
-            pdf_create(form.cleaned_data)
+            pdf_create(request, form.cleaned_data)
             return redirect('backend:bid_list')
     else:
         form = BidForm()
@@ -296,13 +295,4 @@ def pdf_create(request, add):
 
     create_text_layer(temp_text_pdf, data)
     merge_pdfs(template_path, temp_text_pdf, output_path)
-    if request.method == 'POST':
-        form = BidForm(request.POST, request.FILES)
-        if form.is_valid():
-            form.save()
-            pdf_create(form.cleaned_data)
-            return redirect('backend:bid_list')
-    else:
-        form = BidForm()
-    return render(request, 'bid_form.html', {'form': form})
     return redirect('backend:car_list')

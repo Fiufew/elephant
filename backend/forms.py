@@ -2,7 +2,7 @@ from django import forms
 
 from bootstrap_datepicker_plus.widgets import DateTimePickerInput
 
-from .models import Car, Bid, BidFiles
+from .models import Car, Bid
 
 
 class CarForm(forms.ModelForm):
@@ -32,7 +32,7 @@ class BidForm(forms.ModelForm):
         fields = ['car', 'pickup_location', 'dropoff_location', 'pickup_time',
                   'dropoff_time', 'renter_name', 'renter_birthdate',
                   'renter_phone', 'renter_email', 'contact_method',
-                  'comment', 'bid_preparer', 'doc']
+                  'comment', 'bid_preparer', 'contract', 'vaucher']
         labels = {
             'car': 'Автомобиль',
             'pickup_location': 'Место получения',
@@ -64,7 +64,7 @@ class BidForm(forms.ModelForm):
         }
 
 
-class BidFilesForm(forms.ModelForm):
+class BidFormAddVaucherContract(forms.ModelForm):
     class Meta:
-        model = BidFiles
-        fields = ['file']
+        model = Bid
+        fields = ['contract', 'vaucher']

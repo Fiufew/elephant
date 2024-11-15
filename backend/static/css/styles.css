@@ -160,7 +160,6 @@
 .container-buttons {
     display: flex;
     justify-content: center;
-    height: 95px;
     margin-top: 50px;
 }
 .center-absolutely {

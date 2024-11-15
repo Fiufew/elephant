@@ -3,10 +3,6 @@ from django.db import models
 from autoslug import AutoSlugField
 
 
-class BidFiles(models.Model):
-    file = models.FileField(upload_to='uploads_model')
-
-
 class Category(models.Model):
     """
     Модель для представления категорий автомобилей.
@@ -193,18 +189,30 @@ class Price(models.Model):
     """
     car_price = models.OneToOneField(
         Car, on_delete=models.CASCADE, related_name='price')
-    season_one = models.DecimalField(max_digits=10, decimal_places=2)
-    season_two = models.DecimalField(max_digits=10, decimal_places=2)
-    season_three = models.DecimalField(max_digits=10, decimal_places=2)
-    season_four = models.DecimalField(max_digits=10, decimal_places=2)
-    season_one_upto7 = models.DecimalField(max_digits=10, decimal_places=2)
-    season_two_upto7 = models.DecimalField(max_digits=10, decimal_places=2)
-    season_three_upto7 = models.DecimalField(max_digits=10, decimal_places=2)
-    season_four_upto7 = models.DecimalField(max_digits=10, decimal_places=2)
-    season_one_upto14 = models.DecimalField(max_digits=10, decimal_places=2)
-    season_two_upto14 = models.DecimalField(max_digits=10, decimal_places=2)
-    season_three_upto14 = models.DecimalField(max_digits=10, decimal_places=2)
-    season_four_upto14 = models.DecimalField(max_digits=10, decimal_places=2)
+    season_one = models.DecimalField(
+        max_digits=10, decimal_places=2)
+    season_two = models.DecimalField(
+        max_digits=10, decimal_places=2)
+    season_three = models.DecimalField(
+        max_digits=10, decimal_places=2)
+    season_four = models.DecimalField(
+        max_digits=10, decimal_places=2)
+    season_one_upto7 = models.DecimalField(
+        max_digits=10, decimal_places=2)
+    season_two_upto7 = models.DecimalField(
+        max_digits=10, decimal_places=2)
+    season_three_upto7 = models.DecimalField(
+        max_digits=10, decimal_places=2)
+    season_four_upto7 = models.DecimalField(
+        max_digits=10, decimal_places=2)
+    season_one_upto14 = models.DecimalField(
+        max_digits=10, decimal_places=2)
+    season_two_upto14 = models.DecimalField(
+        max_digits=10, decimal_places=2)
+    season_three_upto14 = models.DecimalField(
+        max_digits=10, decimal_places=2)
+    season_four_upto14 = models.DecimalField(
+        max_digits=10, decimal_places=2)
 
     class Meta:
         verbose_name = 'Price'
@@ -248,13 +256,14 @@ class Bid(models.Model):
     renter_birthdate = models.DateField()
     renter_phone = models.CharField(max_length=20)
     renter_email = models.EmailField()
-    contact_method = models.CharField(max_length=10, choices=CONTACT_CHOICES)
+    contact_method = models.CharField(
+        max_length=10, choices=CONTACT_CHOICES)
     comment = models.TextField(blank=True, null=True)
     bid_preparer = models.CharField(max_length=127)
-    contract = models.ForeignKey(
-        BidFiles, related_name='contract_in_bid', on_delete=models.CASCADE,
-        null=True, blank=True)
-    doc = models.FileField(upload_to='uploads_model1', null=True, blank=True)
+    contract = models.FileField(
+        upload_to='contract_dir', null=True, blank=True)
+    vaucher = models.FileField(
+        upload_to='vaucher_dir', null=True, blank=True)
 
     class Meta:
         verbose_name = 'Bid'

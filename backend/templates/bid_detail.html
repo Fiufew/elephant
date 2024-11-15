@@ -13,15 +13,15 @@
         
         <thead>
             <tr>
-                <th>ID</th>
-                <th>Car</th>
-                <th>Pickup_location</th>
-                <th>Pickup_time</th>
-                <th>Dropoff_location</th>
-                <th>Dropoff_time</th>
-                <th>Renter_name</th>
+                <th>№</th>
+                <th>Auto</th>
+                <th>Delivery</th>
+                <th>Delivery time</th>
+                <th>Return</th>
+                <th>Return time</th>
+                <th>Client</th>
                 <th>Description</th>
-                <th>Bid_preparer</th>
+                <th>Employee</th>
             </tr>
         </thead>
         <tbody>
@@ -35,7 +35,8 @@
                 <td>{{ bid.renter_name }}</td>
                 <td>{{ bid.comment }}</td>
                 <td>{{ bid.bid_preparer }}</td>
-                <td><a href="{{ bid.doc.url }}">12</a></td>
+                <td><a href="{{ bid.vaucher.url }}">Ваучер №{{ bid.id }}</a></td>
+                <td><a href="{{ bid.contract.url }}">Договор №{{ bid.id }}</a></td>
             </tr>
         </tbody>
     </table>
@@ -52,12 +53,6 @@
         <p>No photo available.</p>
     </div>
 {% endif %}
-
-<form action="" method="post" enctype="multipart/form-data" class="addfile">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <p><button type="submit">Отправить</button></p>
-</form>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/tablesort/5.2.1/tablesort.min.js"></script>
 <script>
