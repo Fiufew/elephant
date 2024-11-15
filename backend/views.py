@@ -1,10 +1,14 @@
 from datetime import datetime, timedelta
 import calendar
 import io
+import os
 
 import fitz
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
+from django.conf import settings
+from django.http import HttpResponseRedirect
+from django.urls import reverse
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfbase.ttfonts import TTFont
@@ -166,8 +170,9 @@ def create_bid(request):
     if request.method == 'POST':
         form = BidForm(request.POST, request.FILES)
         if form.is_valid():
-            form.save()
-            pdf_create(request, form.cleaned_data)
+            bid = form.save()
+            print(bid.id)
+            pdf_create(request, bid)
             return redirect('backend:bid_list')
     else:
         form = BidForm()
@@ -261,25 +266,23 @@ def remove_bid(request, pk):
     return redirect('backend:bid_list', pk=bid.id)
 
 
-def pdf_create(request, add):
+def pdf_create(request, bid):
+    bid_folder = os.path.join(settings.MEDIA_ROOT, f"contracts/{bid.id}")
+    os.makedirs(bid_folder, exist_ok=True)
+
     template_path = "backend/pdf_create/договор элефант.pdf"
-    output_path = "backend/pdf_create/заполненный договор элефант.pdf"
-    temp_text_pdf = "backend/pdf_create/текст.pdf"
+    output_path = os.path.join(bid_folder, "договор.pdf")
+    temp_text_pdf = os.path.join(bid_folder, "текст.pdf")
 
-    data = {
-        "Name": add['renter_name'],
-    }
+    data = {"Name": bid.renter_name}
 
-    pdfmetrics.registerFont(TTFont(
-        "Calibri", "backend/pdf_create/ofont.ru_Calibri.ttf"))
+    pdfmetrics.registerFont(TTFont("Calibri", "backend/pdf_create/ofont.ru_Calibri.ttf"))
 
     def create_text_layer(temp_text_pdf, data):
         packet = io.BytesIO()
         c = canvas.Canvas(packet, pagesize=A4)
-
         c.setFont("Calibri", 7)
         c.drawString(160, 648, f"{data['Name']}")
-
         c.save()
         packet.seek(0)
         with open(temp_text_pdf, "wb") as f:
@@ -292,7 +295,8 @@ def pdf_create(request, add):
                     page = template_pdf[page_num]
                     page.show_pdf_page(page.rect, text_layer_pdf, 0)
                 template_pdf.save(output_path)
-
     create_text_layer(temp_text_pdf, data)
     merge_pdfs(template_path, temp_text_pdf, output_path)
-    return redirect('backend:car_list')
+    bid.contract = f"contracts/{bid.id}/договор.pdf"
+    bid.save()
+    return HttpResponseRedirect(reverse("backend:bid_detail", args=[bid.id]))
