@@ -14,14 +14,16 @@
         <thead>
             <tr>
                 <th>№</th>
-                <th>Auto</th>
-                <th>Delivery</th>
-                <th>Delivery time</th>
-                <th>Return</th>
-                <th>Return time</th>
-                <th>Client</th>
-                <th>Description</th>
-                <th>Employee</th>
+                <th>Автомобиль</th>
+                <th>Место доставки</th>
+                <th>Время доставки</th>
+                <th>Место возврата</th>
+                <th>Время возврата</th>
+                <th>Клиент</th>
+                <th>Описание</th>
+                <th>Работник</th>
+                <th>Ваучер</th>
+                <th>Контракт</th>
             </tr>
         </thead>
         <tbody>
@@ -44,13 +46,13 @@
 
 {% if car.photo %}
     <div class="mt-4">
-        <h2>Car Photo</h2>
+        <h2>Фото автомобиля</h2>
         <img src="{{ car.photo.url }}" alt="{{ car.brand.name }} {{ car.model.name }}" class="img-fluid" width="400" height="400">
     </div>
 {% else %}
     <div class="mt-4">
-        <h2>Car Photo</h2>
-        <p>No photo available.</p>
+        <h2>Фото автомобиля</h2>
+        <p>Нет доступного фото.</p>
     </div>
 {% endif %}
 

@@ -19,7 +19,6 @@
                 <th>Место возврата автомобиля</th>
                 <th>Время возврата автомобиля</th>
                 <th>Имя арендатора</th>
-                <th>Описание</th>
             </tr>
         </thead>
         <tbody>
@@ -32,7 +31,6 @@
                     <td>{{ bid.dropoff_location }}</td>
                     <td>{{ bid.dropoff_time }}</td>
                     <td>{{ bid.renter_name }}</td>
-                    <td>{{ bid.comment }}</td>
                     <td>
                         <a href="{% url 'backend:bid_edit' bid.id %}" class="btn btn-primary">Изменить</a>
                     </td>

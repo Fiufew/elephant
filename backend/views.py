@@ -267,7 +267,8 @@ def remove_bid(request, pk):
 
 
 def pdf_create_contract(request, bid):
-    bid_folder = os.path.join(settings.MEDIA_ROOT, f"contracts/Заявка_{bid.id}")
+    bid_folder = os.path.join(settings.MEDIA_ROOT,
+                              f"contracts/Заявка_{bid.id}")
     os.makedirs(bid_folder, exist_ok=True)
     template_path = "backend/pdf_create/договор элефант бланк.pdf"
     output_path = os.path.join(bid_folder, f"Договор_№{bid.id}.pdf")
