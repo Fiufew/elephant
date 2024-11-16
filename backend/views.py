@@ -271,7 +271,7 @@ def pdf_create_contract(request, bid):
     os.makedirs(bid_folder, exist_ok=True)
     template_path = "backend/pdf_create/договор элефант бланк.pdf"
     output_path = os.path.join(bid_folder, f"Договор_№{bid.id}.pdf")
-    temp_text_pdf = os.path.join(bid_folder, "текст для договора.pdf")
+    temp_text_pdf = "C:/Work/elephant/backend/pdf_create/текст для договора.pdf"
 
     data = {"Name": bid.renter_name}
 
@@ -307,7 +307,7 @@ def pdf_create_vaucher(request, bid):
     os.makedirs(bid_folder, exist_ok=True)
     template_path = "backend/pdf_create/ваучер бланк.pdf"
     output_path = os.path.join(bid_folder, f"Ваучер_№{bid.id}.pdf")
-    temp_text_pdf = os.path.join(bid_folder, "текст для ваучера.pdf")
+    temp_text_pdf = "C:/Work/elephant/backend/pdf_create/текст для ваучера.pdf"
 
     data = {"Name": bid.renter_name}
 
