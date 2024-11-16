@@ -240,6 +240,8 @@ class Bid(models.Model):
         contact_method (CharField): Метод контакта.
         comment (TextField): Комментарий к заявке.
         bid_preparer (CharField): Подготовитель заявки.
+        contract = (models.FileField) Контракт
+        vaucher = (models.FileField) Ваучер
     """
     CONTACT_CHOICES = [
         ('telegram', 'Telegram'),

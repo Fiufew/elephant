@@ -1,4 +1,5 @@
 from django import forms
+from django.core.exceptions import ValidationError
 
 from bootstrap_datepicker_plus.widgets import DateTimePickerInput
 
@@ -62,6 +63,23 @@ class BidForm(forms.ModelForm):
                 }
             ),
         }
+
+    def clean(self):
+        cleaned_data = super().clean()
+        car = cleaned_data.get('car')
+        pickup_time = cleaned_data.get('pickup_time')
+        dropoff_time = cleaned_data.get('dropoff_time')
+        if pickup_time and dropoff_time:
+            if dropoff_time <= pickup_time:
+                raise ValidationError('Дата возврата должна быть позже даты получения.')
+            existing_bids = Bid.objects.filter(
+                car=car,
+                pickup_time__lte=dropoff_time,
+                dropoff_time__gte=pickup_time
+            )
+            if existing_bids.exists():
+                raise ValidationError('Выбранные даты пересекаются с уже существующими бронированиями.')
+        return cleaned_data
 
 
 class BidFormAddVaucherContract(forms.ModelForm):

@@ -1,26 +1,9 @@
 .custom-table {
     width: 100%; /* Ширина таблицы */
-    max-height: 300px; /* Максимальная высота таблицы */
+    max-height: 100%; /* Максимальная высота таблицы */
     overflow-y: auto; /* Добавляет прокрутку, если содержимое превышает высоту */
 }
 
-/* Удалите или закомментируйте эти стили, чтобы отключить анимацию */
-/*
-.custom-table tbody tr {
-    opacity: 0;
-    transform: translateY(20px);
-    animation: fadeIn 1s ease-in-out forwards;
-}
-*/
-
-/*
-@keyframes fadeIn {
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-*/
 
 .sidenav {
     height: 100%; /* Full-height: remove this if you want "auto" height */
