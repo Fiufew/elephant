@@ -23,17 +23,17 @@
         </thead>
         <tbody>
             {% for bid in bids %}
-                <tr>
-                    <td><a href="{% url 'backend:bid_detail' bid.id %}">{{ bid.id }}</td></a>
+                <tr><td>
+                    <div class="clickable-div" data-url="{% url 'backend:bid_detail' bid.id %}">
+                        {{ bid.id }}
+                    </div>
+                </td>
                     <td>{{ bid.car }}</td>
                     <td>{{ bid.pickup_location }}</td>
                     <td>{{ bid.pickup_time }}</td>
                     <td>{{ bid.dropoff_location }}</td>
                     <td>{{ bid.dropoff_time }}</td>
                     <td>{{ bid.renter_name }}</td>
-                    <td>
-                        <a href="{% url 'backend:bid_edit' bid.id %}" class="btn btn-primary">Изменить</a>
-                    </td>
                 </tr>
             {% endfor %}
         </tbody>
@@ -43,6 +43,12 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         new Tablesort(document.getElementById('car-table'));
+
+        document.querySelectorAll('.clickable-div').forEach(div => {
+            div.addEventListener('click', function() {
+                window.location.href = this.getAttribute('data-url');
+            });
+        });
     });
 </script>
 {% endblock content %}

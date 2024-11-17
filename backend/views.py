@@ -6,8 +6,9 @@ import os
 import fitz
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
+from django.db.models import Q
 from django.conf import settings
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse
 from django.urls import reverse
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import A4
@@ -24,8 +25,37 @@ def index(request):
     Отображает список автомобилей
     на главной странице
     '''
-    car = Car.objects.all()
-    return render(request, 'index.html', {'cars': car})
+    search_query = request.GET.get('search', '')
+    booked_only = request.GET.get('booked_only') == 'true'
+    cars = Car.objects.all()
+
+    if search_query:
+        cars = cars.filter(
+            Q(brand__name__icontains=search_query) |
+            Q(model__name__icontains=search_query) |
+            Q(category__name__icontains=search_query) |
+            Q(state_number__icontains=search_query)
+        )
+
+    if booked_only:
+        cars = cars.filter(is_booked=True)
+
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        cars_data = [
+            {
+                'brand': car.brand.name,
+                'model': car.model.name,
+                'color': car.color.name,
+                'state_number': car.state_number,
+                'is_booked': car.is_booked,
+                'detail_url': reverse('backend:car_detail', args=[car.slug]),
+                'edit_url': reverse('backend:car_edit', args=[car.slug]),
+            }
+            for car in cars
+        ]
+        return JsonResponse({'cars': cars_data})
+
+    return render(request, 'index.html', {'cars': cars})
 
 
 @login_required
@@ -272,7 +302,7 @@ def pdf_create_contract(request, bid):
     os.makedirs(bid_folder, exist_ok=True)
     template_path = "backend/pdf_create/договор элефант бланк.pdf"
     output_path = os.path.join(bid_folder, f"Договор_№{bid.id}.pdf")
-    temp_text_pdf = "C:/Work/elephant/backend/pdf_create/текст для договора.pdf"
+    temp_text_pdf = os.path.join(bid_folder, "текст для договора.pdf")
 
     data = {"Name": bid.renter_name}
 
@@ -308,7 +338,7 @@ def pdf_create_vaucher(request, bid):
     os.makedirs(bid_folder, exist_ok=True)
     template_path = "backend/pdf_create/ваучер бланк.pdf"
     output_path = os.path.join(bid_folder, f"Ваучер_№{bid.id}.pdf")
-    temp_text_pdf = "C:/Work/elephant/backend/pdf_create/текст для ваучера.pdf"
+    temp_text_pdf = os.path.join(bid_folder, "текст для ваучера.pdf")
 
     data = {"Name": bid.renter_name}
 

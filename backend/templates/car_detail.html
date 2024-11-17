@@ -25,6 +25,7 @@
                 </th>
                 <th>Забронирован</th>
                 <th>Страховка</th>
+                <th>Действия</th>
             </tr>
         </thead>
         <tbody>
@@ -40,6 +41,7 @@
                 {% endif %}
             </td>
             <td>{{ car.insurance }}</td>
+            <td><a href="{% url 'backend:car_edit' car.slug %}" class="btn btn-primary">Изменить</a></td>
         </tbody>
     </table>
 </div>
