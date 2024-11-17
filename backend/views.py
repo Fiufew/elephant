@@ -10,6 +10,7 @@ from django.db.models import Q
 from django.conf import settings
 from django.http import HttpResponseRedirect, JsonResponse
 from django.urls import reverse
+from django.views.decorators.http import require_POST
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfbase.ttfonts import TTFont
@@ -367,3 +368,14 @@ def pdf_create_vaucher(request, bid):
     bid.vaucher = f"vauchers/Заявка_{bid.id}/Ваучер_№{bid.id}.pdf"
     bid.save()
     return HttpResponseRedirect(reverse("backend:bid_detail", args=[bid.id]))
+
+
+@require_POST
+def take_in_work(request, pk):
+    try:
+        bid = Bid.objects.get(id=pk)
+        bid.bid_preparer = request.user.username
+        bid.save()
+    except Bid.DoesNotExist:
+        pass
+    return redirect('backend:bid_list')

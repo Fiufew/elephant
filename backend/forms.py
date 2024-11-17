@@ -4,7 +4,7 @@ from django.core.exceptions import ValidationError
 from bootstrap_datepicker_plus.widgets import DateTimePickerInput
 
 from .models import Car, Bid
-
+from .validators import contains_digits
 
 class CarForm(forms.ModelForm):
     class Meta:
@@ -33,7 +33,7 @@ class BidForm(forms.ModelForm):
         fields = ['car', 'pickup_location', 'dropoff_location', 'pickup_time',
                   'dropoff_time', 'renter_name', 'renter_birthdate',
                   'renter_phone', 'renter_email', 'contact_method',
-                  'comment', 'bid_preparer', 'contract', 'vaucher']
+                  'comment', 'contract', 'vaucher']
         labels = {
             'car': 'Автомобиль',
             'pickup_location': 'Место получения',
@@ -47,7 +47,8 @@ class BidForm(forms.ModelForm):
             'contact_method': 'Метод контакта',
             'comment': 'Комментарий',
             'bid_preparer': 'Подготовитель заявки',
-            'doc': 'Договор'
+            'contract': 'Договор',
+            'vaucher': 'Ваучер'
         }
         widgets = {
             'pickup_time': DateTimePickerInput(
@@ -67,6 +68,9 @@ class BidForm(forms.ModelForm):
     def clean(self):
         cleaned_data = super().clean()
         car = cleaned_data.get('car')
+        pickup_location = cleaned_data.get('pickup_location')
+        dropoff_location = cleaned_data.get('dropoff_location')
+        renter_name = cleaned_data.get('renter_name')
         pickup_time = cleaned_data.get('pickup_time')
         dropoff_time = cleaned_data.get('dropoff_time')
         if pickup_time and dropoff_time:
@@ -77,8 +81,14 @@ class BidForm(forms.ModelForm):
                 pickup_time__lte=dropoff_time,
                 dropoff_time__gte=pickup_time
             )
-            if existing_bids.exists():
-                raise ValidationError('Выбранные даты пересекаются с уже существующими бронированиями.')
+        if existing_bids.exists():
+            raise ValidationError('Выбранные даты пересекаются с уже существующими бронированиями.')
+        if pickup_location and contains_digits(pickup_location):
+            raise ValidationError('Место получения не может содержать цифры.')
+        if dropoff_location and contains_digits(dropoff_location):
+            raise ValidationError('Место возврата не может содержать цифры.')
+        if renter_name and contains_digits(renter_name):
+            raise ValidationError('Имя не может содержать цифры. Только если ты не сын Илона Маска')
         return cleaned_data
 
 

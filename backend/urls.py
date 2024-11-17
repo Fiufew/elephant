@@ -15,4 +15,6 @@ urlpatterns = [
     path('bids/<int:pk>/', views.bid_detail, name='bid_detail'),
     path('bids/<int:pk>/edit/', views.edit_bid, name='bid_edit'),
     path('bids/<int:pk>/delete', views.remove_bid, name='bid_remove'),
+    path('bids/take_in_work/<int:pk>/', views.take_in_work,
+         name='take_in_work'),
 ]

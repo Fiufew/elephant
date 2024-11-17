@@ -19,21 +19,33 @@
                 <th>Место возврата автомобиля</th>
                 <th>Время возврата автомобиля</th>
                 <th>Имя арендатора</th>
+                <th>Взята в работу</th>
             </tr>
         </thead>
         <tbody>
             {% for bid in bids %}
-                <tr><td>
-                    <div class="clickable-div" data-url="{% url 'backend:bid_detail' bid.id %}">
-                        {{ bid.id }}
-                    </div>
-                </td>
+                <tr>
+                    <td>
+                        <div class="clickable-div" data-url="{% url 'backend:bid_detail' bid.id %}">
+                            {{ bid.id }}
+                        </div>
+                    </td>
                     <td>{{ bid.car }}</td>
                     <td>{{ bid.pickup_location }}</td>
                     <td>{{ bid.pickup_time }}</td>
                     <td>{{ bid.dropoff_location }}</td>
                     <td>{{ bid.dropoff_time }}</td>
                     <td>{{ bid.renter_name }}</td>
+                    <td>
+                        {% if bid.bid_preparer %}
+                            {{ bid.bid_preparer }}
+                        {% else %}
+                            <form action="{% url 'backend:take_in_work' bid.id %}" method="post">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-primary">Взять</button>
+                            </form>
+                        {% endif %}
+                    </td>
                 </tr>
             {% endfor %}
         </tbody>
@@ -42,13 +54,14 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/tablesort/5.2.1/tablesort.min.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        new Tablesort(document.getElementById('car-table'));
-
         document.querySelectorAll('.clickable-div').forEach(div => {
             div.addEventListener('click', function() {
                 window.location.href = this.getAttribute('data-url');
             });
         });
+    });
+    document.addEventListener('DOMContentLoaded', function() {
+        new Tablesort(document.getElementById('car-table'));
     });
 </script>
 {% endblock content %}
