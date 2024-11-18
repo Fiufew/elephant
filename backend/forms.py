@@ -1,9 +1,9 @@
 from django import forms
 from django.core.exceptions import ValidationError
 
-from bootstrap_datepicker_plus.widgets import DateTimePickerInput
+from bootstrap_datepicker_plus.widgets import DateTimePickerInput, DatePickerInput
 
-from .models import Car, Bid, Files
+from .models import Car, Bid, Files, Price
 from .validators import contains_digits
 
 
@@ -54,13 +54,19 @@ class BidForm(forms.ModelForm):
         widgets = {
             'pickup_time': DateTimePickerInput(
                 options={
-                    'format': 'YYYY-MM-DD HH:mm:ss',
+                    'format': 'DD.MM.YYYY HH:mm',
                     'locale': 'ru',
                 }
             ),
             'dropoff_time': DateTimePickerInput(
                 options={
-                    'format': 'YYYY-MM-DD HH:mm:ss',
+                    'format': 'DD.MM.YYYY HH:mm',
+                    'locale': 'ru',
+                }
+            ),
+            'renter_birthdate': DatePickerInput(
+                options={
+                    'format': 'YYYY.MM.DD',
                     'locale': 'ru',
                 }
             ),
@@ -97,3 +103,10 @@ class BidFormAddFiles(forms.ModelForm):
     class Meta:
         model = Files
         fields = ['files']
+
+
+class PriceForm(forms.ModelForm):
+    class Meta:
+        model = Price
+        exclude = ('car_price',)
+

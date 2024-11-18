@@ -6,6 +6,9 @@ app_name = 'backend'
 
 urlpatterns = [
     path('', views.index, name='car_list'),
+    path('price/list/', views.price_list, name='price_list'),
+    path('create_price/<int:pk>/', views.create_price, name='create_price'),
+    path('update_price/<int:pk>/', views.update_price, name='update_price'),
     path('car/create/', views.create_car, name='car_create'),
     path('car/<slug:slug>/', views.car_detail, name='car_detail'),
     path('car/<slug:slug>/edit/', views.edit_car, name='car_edit'),
