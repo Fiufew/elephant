@@ -266,6 +266,8 @@ class Bid(models.Model):
         upload_to='contract_dir', null=True, blank=True)
     vaucher = models.FileField(
         upload_to='vaucher_dir', null=True, blank=True)
+    files = models.FileField(
+        upload_to='other_files', null=True, blank=True)
 
     class Meta:
         verbose_name = 'Bid'

@@ -16,7 +16,7 @@ from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfbase import pdfmetrics
 
 from .models import Car, Bid
-from .forms import CarForm, BidForm, BidFormAddVaucherContract
+from .forms import CarForm, BidForm, BidFormAddFiles
 
 
 @login_required
@@ -173,7 +173,7 @@ def bid_detail(request, pk):
         HttpResponse: Отрендеренный HTML-шаблон с деталями заявки.
     """
     if request.method == 'POST':
-        form = BidFormAddVaucherContract(request.POST, request.FILES)
+        form = BidFormAddFiles(request.POST, request.FILES)
         if form.is_valid():
             form.save()
     else:

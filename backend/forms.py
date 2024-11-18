@@ -82,7 +82,7 @@ class BidForm(forms.ModelForm):
         return cleaned_data
 
 
-class BidFormAddVaucherContract(forms.ModelForm):
+class BidFormAddFiles(forms.ModelForm):
     class Meta:
         model = Bid
-        fields = ['contract', 'vaucher']
+        fields = ['files']
