@@ -261,7 +261,7 @@ class Bid(models.Model):
     contact_method = models.CharField(
         max_length=10, choices=CONTACT_CHOICES)
     comment = models.TextField(blank=True, null=True)
-    bid_preparer = models.CharField(max_length=127)
+    bid_preparer = models.CharField(max_length=127, blank=True, null=True)
     contract = models.FileField(
         upload_to='contract_dir', null=True, blank=True)
     vaucher = models.FileField(
