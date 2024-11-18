@@ -16,7 +16,7 @@ from reportlab.lib.pagesizes import A4
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfbase import pdfmetrics
 
-from .models import Car, Bid
+from .models import Car, Bid, Files
 from .forms import CarForm, BidForm, BidFormAddFiles
 
 
@@ -173,17 +173,20 @@ def bid_detail(request, pk):
     Returns:
         HttpResponse: Отрендеренный HTML-шаблон с деталями заявки.
     """
+    bid = get_object_or_404(Bid, pk=pk)
     if request.method == 'POST':
         form = BidFormAddFiles(request.POST, request.FILES)
         if form.is_valid():
-            form.save()
+            file_instance = form.save(commit=False)
+            file_instance.bid = bid
+            file_instance.save()
     else:
-        form = BidForm()
-    bid = get_object_or_404(Bid, pk=pk)
+        form = BidFormAddFiles()
+    all_files = Files.objects.filter(bid_id=bid.id)
     car = bid.car
     return render(
         request, 'bid_detail.html',
-        {'bid': bid, 'car': car})
+        {'bid': bid, 'car': car, 'form': form, 'all_files': all_files})
 
 
 @login_required

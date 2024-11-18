@@ -1,5 +1,4 @@
 {% extends 'base.html' %}
-{% load bootstrap4 %}
 
 {% block title %}Bid detail{% endblock title %}
 
@@ -57,9 +56,13 @@
     </div>
 {% endif %}
 
+{% for file in all_files %}
+    <p><a href="{{ file.files.url }}">{{ file.files }}</a></p>
+{% endfor %}
+
 <form method="post" class="form" enctype="multipart/form-data">
     {% csrf_token %}
-    {% bootstrap_form form %}
+    {{ form.as_p }}
     <button type="submit" class="btn btn-primary">Добавить</button>
 </form>
 

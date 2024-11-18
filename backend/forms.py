@@ -3,8 +3,9 @@ from django.core.exceptions import ValidationError
 
 from bootstrap_datepicker_plus.widgets import DateTimePickerInput
 
-from .models import Car, Bid
+from .models import Car, Bid, Files
 from .validators import contains_digits
+
 
 class CarForm(forms.ModelForm):
     class Meta:
@@ -94,5 +95,5 @@ class BidForm(forms.ModelForm):
 
 class BidFormAddFiles(forms.ModelForm):
     class Meta:
-        model = Bid
+        model = Files
         fields = ['files']

@@ -2,6 +2,8 @@ from django.db import models
 
 from autoslug import AutoSlugField
 
+from .validators import other_files_path
+
 
 class Category(models.Model):
     """
@@ -266,9 +268,14 @@ class Bid(models.Model):
         upload_to='contract_dir', null=True, blank=True)
     vaucher = models.FileField(
         upload_to='vaucher_dir', null=True, blank=True)
-    files = models.FileField(
-        upload_to='other_files', null=True, blank=True)
 
     class Meta:
         verbose_name = 'Bid'
         verbose_name_plural = 'Bids'
+
+
+class Files(models.Model):
+    bid = models.ForeignKey(
+        Bid, related_name='files', on_delete=models.CASCADE
+    )
+    files = models.FileField(upload_to=other_files_path, null=True, blank=True)
