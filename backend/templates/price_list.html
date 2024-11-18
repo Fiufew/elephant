@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block title %}Car List{% endblock title %}
+
+{% block meta_description %}List of cars{% endblock meta_description %}
+
+{% block meta_keywords %}car list, shop, ecommerce{% endblock meta_keywords %}
+
+{% block content %}
+<h1 class="mt-4 mb-4">Менеджер цен</h1>
+<div class="table-responsive">
+    <table class="table table-striped table-bordered custom-table" id="car-table">
+        <thead>
+            <tr>
+                <th>Автомобиль</th>
+                <th>первый сезон</th>
+                <th>второй сезон</th>
+                <th>третий сезон</th>
+                <th>четвертый сезон</th>
+                <th>Действия</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for car in cars %}
+            <tr>
+                <td>{{ car.brand.name }}: {{ car.model.name }}</td>
+                <td>{{ car.price.season_one }}</td>
+                <td>{{ car.price.season_two }}</td>
+                <td>{{ car.price.season_three }}</td>
+                <td>{{ car.price.season_four }}</td>
+                <td>
+                    {% if car.price %}
+                        <a href="{% url 'backend:update_price' car.id %}" class="btn btn-primary">Изменить цену</a>
+                    {% else %}
+                        <a href="{% url 'backend:create_price' car.id %}" class="btn btn-primary">Установить цену</a>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tablesort/5.2.1/tablesort.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.clickable-div').forEach(div => {
+            div.addEventListener('click', function() {
+                window.location.href = this.getAttribute('data-url');
+            });
+        });
+    });
+    document.addEventListener('DOMContentLoaded', function() {
+        new Tablesort(document.getElementById('car-table'));
+    });
+</script>
+{% endblock content %}

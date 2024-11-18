@@ -16,8 +16,8 @@ from reportlab.lib.pagesizes import A4
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfbase import pdfmetrics
 
-from .models import Car, Bid, Files
-from .forms import CarForm, BidForm, BidFormAddFiles
+from .models import Car, Bid, Files, Price
+from .forms import CarForm, BidForm, BidFormAddFiles, PriceForm
 
 
 @login_required
@@ -89,10 +89,10 @@ def car_detail(request, slug):
     date_range = []
     current_date = first_day_of_month
     while current_date <= last_day_of_month:
-        date_range.append(current_date.strftime('%Y-%m-%d'))
+        date_range.append(current_date.strftime('%Y.%m.%d'))
         current_date += timedelta(days=1)
     context = {
-        'busy_dates_with_ids': [(date.strftime('%Y-%m-%d'), bid_id)
+        'busy_dates_with_ids': [(date.strftime('%Y.%m.%d'), bid_id)
                                 for date, bid_id in busy_dates_with_ids],
         'date_range': date_range,
         'car': car,
@@ -139,6 +139,11 @@ def bid_list(request):
     bid = Bid.objects.all()
     return render(request, 'bid_list.html', {'bids': bid})
 
+
+@login_required
+def price_list(request):
+    cars = Car.objects.all()
+    return render(request, 'price_list.html', {'cars': cars})
 
 @login_required
 def bid_detail(request, pk):
@@ -364,3 +369,36 @@ def take_in_work(request, pk):
     except Bid.DoesNotExist:
         pass
     return redirect('backend:bid_list')
+
+
+@login_required
+def create_price(request, pk):
+    car = Car.objects.get(id=pk)
+    if request.method == 'POST':
+        form = PriceForm(request.POST)
+        if form.is_valid():
+            price = form.save(commit=False)
+            price.car_price = car
+            price.save()
+            return redirect('backend:price_list')
+    else:
+        form = PriceForm(initial={'car_price': car})
+    return render(request, 'price_form.html', {'form': form,
+                                               'car': car,
+                                               'price_exists': False})
+
+
+@login_required
+def update_price(request, pk):
+    car = Car.objects.get(id=pk)
+    price = car.price
+    if request.method == 'POST':
+        form = PriceForm(request.POST, instance=price)
+        if form.is_valid():
+            form.save()
+            return redirect('backend:price_list')
+    else:
+        form = PriceForm(instance=price)
+    return render(request, 'price_form.html', {'form': form,
+                                               'car': car,
+                                               'price_exists': True})
