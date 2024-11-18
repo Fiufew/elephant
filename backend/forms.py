@@ -34,7 +34,7 @@ class BidForm(forms.ModelForm):
         fields = ['car', 'pickup_location', 'dropoff_location', 'pickup_time',
                   'dropoff_time', 'renter_name', 'renter_birthdate',
                   'renter_phone', 'renter_email', 'contact_method',
-                  'comment', 'contract', 'vaucher']
+                  'comment']
         labels = {
             'car': 'Автомобиль',
             'pickup_location': 'Место получения',

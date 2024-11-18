@@ -17,4 +17,5 @@ urlpatterns = [
     path('bids/<int:pk>/delete', views.remove_bid, name='bid_remove'),
     path('bids/take_in_work/<int:pk>/', views.take_in_work,
          name='take_in_work'),
+    path('file/<int:file_id>/delete/', views.delete_file, name='delete_file'),
 ]

@@ -56,10 +56,22 @@
     </div>
 {% endif %}
 
-{% for file in all_files %}
-    <p><a href="{{ file.files.url }}">{{ file.files }}</a></p>
-{% endfor %}
+{% if all_files %}
+    <h2>Список файлов</h2>
+    {% for file in all_files %}
+        {% if file.files %}
+            <p><a href="{{ file.files.url }}">{{ file.files }}</a></p>
+            <form method="post" action="{% url 'backend:delete_file' file.id %}" class="d-inline">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger">Удалить</button>
+            </form>
+        {% endif %}
+    {% endfor %}
+{% else %}
+    <p>Файлы отсутствуют.</p>
+{% endif %}
 
+<h2>Добавить новый файл</h2>
 <form method="post" class="form" enctype="multipart/form-data">
     {% csrf_token %}
     {{ form.as_p }}

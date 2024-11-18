@@ -72,46 +72,25 @@ def car_detail(request, slug):
         HttpResponse: Отрендеренный HTML-шаблон с деталями автомобиля и
         информацией о занятых датах.
     """
-    # Получаем объект автомобиля по уникальному идентификатору (slug)
     car = get_object_or_404(Car, slug=slug)
-
-    # Получаем текущую дату
     today = datetime.today().date()
-
-    # Вычисляем первый день текущего месяца
     first_day_of_month = today.replace(day=1)
-
-    # Вычисляем последний день текущего месяца
     last_day_of_month = today.replace(day=calendar.monthrange(
         today.year, today.month)[1])
-
-    # Получаем все заявки для данного автомобиля,
-    # которые начинаются до или в последний день месяца
-    # и заканчиваются после или в первый день месяца
     bids = Bid.objects.filter(
         car=car, pickup_time__lte=last_day_of_month,
         dropoff_time__gte=first_day_of_month)
-
-    # Инициализируем список для хранения занятых дат и их идентификаторов
     busy_dates_with_ids = []
-
-    # Заполняем список занятых дат и их идентификаторов
     for bid in bids:
         current_date = bid.pickup_time.date()
         while current_date <= bid.dropoff_time.date():
             busy_dates_with_ids.append((current_date, bid.id))
             current_date += timedelta(days=1)
-
-    # Инициализируем список для хранения всех дат в текущем месяце
     date_range = []
     current_date = first_day_of_month
-
-    # Заполняем список всех дат в текущем месяце
     while current_date <= last_day_of_month:
         date_range.append(current_date.strftime('%Y-%m-%d'))
         current_date += timedelta(days=1)
-
-    # Создаем контекст для передачи в шаблон
     context = {
         'busy_dates_with_ids': [(date.strftime('%Y-%m-%d'), bid_id)
                                 for date, bid_id in busy_dates_with_ids],
@@ -164,14 +143,7 @@ def bid_list(request):
 @login_required
 def bid_detail(request, pk):
     """
-    Отображает детали конкретной заявки.
-
-    Args:
-        request (HttpRequest): Объект запроса.
-        pk (int): Первичный ключ заявки.
-
-    Returns:
-        HttpResponse: Отрендеренный HTML-шаблон с деталями заявки.
+    Отображает детали конкретной заявки и позволяет добавлять/изменять файлы.
     """
     bid = get_object_or_404(Bid, pk=pk)
     if request.method == 'POST':
@@ -180,13 +152,23 @@ def bid_detail(request, pk):
             file_instance = form.save(commit=False)
             file_instance.bid = bid
             file_instance.save()
+            return redirect('backend:bid_detail', pk=pk)
     else:
         form = BidFormAddFiles()
     all_files = Files.objects.filter(bid_id=bid.id)
     car = bid.car
     return render(
         request, 'bid_detail.html',
-        {'bid': bid, 'car': car, 'form': form, 'all_files': all_files})
+        {'bid': bid, 'car': car, 'form': form, 'all_files': all_files}
+    )
+
+
+@login_required
+def delete_file(request, file_id):
+    file_instance = get_object_or_404(Files, id=file_id)
+    bid_pk = file_instance.bid.id
+    file_instance.delete()
+    return redirect('backend:bid_detail', pk=bid_pk)
 
 
 @login_required
