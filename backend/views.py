@@ -155,16 +155,33 @@ def bid_list(request):
         request (HttpRequest): Объект запроса.
 
     Returns:
-        HttpResponse: Отрендеренный HTML-шаблон со списком заявок.
+        HttpResponse: Отрендеренный HTML-шаблон со списком заявок или JSON-ответ для AJAX-запросов.
     """
-    bid = Bid.objects.all()
-    return render(request, 'bid_list.html', {'bids': bid})
+    bids = Bid.objects.all()
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        bids_data = [
+            {
+                'id': bid.id,
+                'car': str(bid.car),
+                'pickup_location': bid.pickup_location,
+                'pickup_time': bid.pickup_time.isoformat(),
+                'dropoff_location': bid.dropoff_location,
+                'dropoff_time': bid.dropoff_time.isoformat(),
+                'renter_name': bid.renter_name,
+                'bid_preparer': bid.bid_preparer,
+                'is_expired': bid.is_expired,
+            }
+            for bid in bids
+        ]
+        return JsonResponse({'bids': bids_data})
+    return render(request, 'bid_list.html', {'bids': bids})
 
 
 @login_required
 def price_list(request):
     cars = Car.objects.all()
     return render(request, 'price_list.html', {'cars': cars})
+
 
 @login_required
 def bid_detail(request, pk):
