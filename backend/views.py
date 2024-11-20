@@ -1,21 +1,14 @@
 from datetime import datetime, timedelta
 import calendar
-import io
-import os
 
-import fitz
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
-from django.conf import settings
-from django.http import HttpResponseRedirect, JsonResponse
+from django.http import JsonResponse
 from django.urls import reverse
 from django.views.decorators.http import require_POST
-from reportlab.pdfgen import canvas
-from reportlab.lib.pagesizes import A4
-from reportlab.pdfbase.ttfonts import TTFont
-from reportlab.pdfbase import pdfmetrics
 
+from .utils import pdf_create_contract, pdf_create_vaucher
 from .models import Car, Bid, Files, Price
 from .forms import CarForm, BidForm, BidFormAddFiles, PriceForm
 
@@ -144,6 +137,7 @@ def bid_list(request):
 def price_list(request):
     cars = Car.objects.all()
     return render(request, 'price_list.html', {'cars': cars})
+
 
 @login_required
 def bid_detail(request, pk):
@@ -285,79 +279,6 @@ def remove_bid(request, pk):
         bid.delete()
         return redirect('backend:bid_list')
     return redirect('backend:bid_list', pk=bid.id)
-
-
-def pdf_create_contract(request, bid):
-    bid_folder = os.path.join(settings.MEDIA_ROOT,
-                              f"contracts/Заявка_{bid.id}")
-    os.makedirs(bid_folder, exist_ok=True)
-    template_path = "backend/pdf_create/договор элефант бланк.pdf"
-    output_path = os.path.join(bid_folder, f"Договор_№{bid.id}.pdf")
-    temp_text_pdf = os.path.join(bid_folder, "текст для договора.pdf")
-
-    data = {"Name": bid.renter_name}
-
-    pdfmetrics.registerFont(TTFont(
-        "Calibri", "backend/pdf_create/ofont.ru_Calibri.ttf"))
-
-    def create_text_layer(temp_text_pdf, data):
-        packet = io.BytesIO()
-        c = canvas.Canvas(packet, pagesize=A4)
-        c.setFont("Calibri", 7)
-        c.drawString(160, 648, f"{data['Name']}")
-        c.save()
-        packet.seek(0)
-        with open(temp_text_pdf, "wb") as f:
-            f.write(packet.getvalue())
-
-    def merge_pdfs(template_path, temp_text_pdf, output_path):
-        with fitz.open(template_path) as template_pdf:
-            with fitz.open(temp_text_pdf) as text_layer_pdf:
-                for page_num in range(template_pdf.page_count):
-                    page = template_pdf[page_num]
-                    page.show_pdf_page(page.rect, text_layer_pdf, 0)
-                template_pdf.save(output_path)
-    create_text_layer(temp_text_pdf, data)
-    merge_pdfs(template_path, temp_text_pdf, output_path)
-    bid.contract = f"contracts/Заявка_{bid.id}/Договор_№{bid.id}.pdf"
-    bid.save()
-    return HttpResponseRedirect(reverse("backend:bid_detail", args=[bid.id]))
-
-
-def pdf_create_vaucher(request, bid):
-    bid_folder = os.path.join(settings.MEDIA_ROOT, f"vauchers/Заявка_{bid.id}")
-    os.makedirs(bid_folder, exist_ok=True)
-    template_path = "backend/pdf_create/ваучер бланк.pdf"
-    output_path = os.path.join(bid_folder, f"Ваучер_№{bid.id}.pdf")
-    temp_text_pdf = os.path.join(bid_folder, "текст для ваучера.pdf")
-
-    data = {"Name": bid.renter_name}
-
-    pdfmetrics.registerFont(TTFont(
-        "Calibri", "backend/pdf_create/ofont.ru_Calibri.ttf"))
-
-    def create_text_layer(temp_text_pdf, data):
-        packet = io.BytesIO()
-        c = canvas.Canvas(packet, pagesize=A4)
-        c.setFont("Calibri", 7)
-        c.drawString(160, 648, f"{data['Name']}")
-        c.save()
-        packet.seek(0)
-        with open(temp_text_pdf, "wb") as f:
-            f.write(packet.getvalue())
-
-    def merge_pdfs(template_path, temp_text_pdf, output_path):
-        with fitz.open(template_path) as template_pdf:
-            with fitz.open(temp_text_pdf) as text_layer_pdf:
-                for page_num in range(template_pdf.page_count):
-                    page = template_pdf[page_num]
-                    page.show_pdf_page(page.rect, text_layer_pdf, 0)
-                template_pdf.save(output_path)
-    create_text_layer(temp_text_pdf, data)
-    merge_pdfs(template_path, temp_text_pdf, output_path)
-    bid.vaucher = f"vauchers/Заявка_{bid.id}/Ваучер_№{bid.id}.pdf"
-    bid.save()
-    return HttpResponseRedirect(reverse("backend:bid_detail", args=[bid.id]))
 
 
 @require_POST

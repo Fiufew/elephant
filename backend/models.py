@@ -2,7 +2,7 @@ from django.db import models
 
 from autoslug import AutoSlugField
 
-from .validators import other_files_path
+from .utils import other_files_path
 
 
 class Category(models.Model):
@@ -147,7 +147,8 @@ class Car(models.Model):
     model = models.ForeignKey(
         Model, related_name='models_in_car', on_delete=models.CASCADE)
     investor = models.ForeignKey(
-        Investor, related_name='investors', on_delete=models.CASCADE)
+        Investor, related_name='investors', on_delete=models.CASCADE,
+        blank=True, null=True)
     is_booked = models.BooleanField(default=False)
     insurance = models.CharField(max_length=255)
     description = models.TextField(blank=True, null=True)
@@ -250,8 +251,9 @@ class Bid(models.Model):
         ('whatsapp', 'WhatsApp'),
         ('viber', 'Viber'),
     ]
+    car_info = models.CharField(max_length=100, blank=True, null=True)
     car = models.ForeignKey(Car, related_name='booking_requests',
-                            on_delete=models.CASCADE)
+                            on_delete=models.SET_NULL, null=True)
     pickup_location = models.CharField(max_length=511)
     dropoff_location = models.CharField(max_length=511)
     pickup_time = models.DateTimeField()
@@ -268,6 +270,11 @@ class Bid(models.Model):
         upload_to='contract_dir', null=True, blank=True)
     vaucher = models.FileField(
         upload_to='vaucher_dir', null=True, blank=True)
+
+    def save(self, *args, **kwargs):
+        if self.car:
+            self.car_info = f"{self.car.brand.name}: {self.car.model.name}"
+        super().save(*args, **kwargs)
 
     class Meta:
         verbose_name = 'Bid'
