@@ -339,3 +339,4 @@ def update_price(request, pk):
     return render(request, 'price_form.html', {'form': form,
                                                'car': car,
                                                'price_exists': True})
+# test
