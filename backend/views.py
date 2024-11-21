@@ -1,5 +1,5 @@
-from datetime import datetime, timedelta
 import calendar
+from datetime import datetime, timedelta
 
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
@@ -9,7 +9,7 @@ from django.urls import reverse
 from django.views.decorators.http import require_POST
 
 from .utils import pdf_create_contract, pdf_create_vaucher
-from .models import Car, Bid, Files, Price
+from .models import Car, Bid, Files
 from .forms import CarForm, BidForm, BidFormAddFiles, PriceForm
 
 

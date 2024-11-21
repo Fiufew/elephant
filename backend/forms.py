@@ -1,8 +1,10 @@
 from django import forms
 from django.core.exceptions import ValidationError
 
-from bootstrap_datepicker_plus.widgets import DateTimePickerInput, DatePickerInput
-
+from bootstrap_datepicker_plus.widgets import (
+    DateTimePickerInput,
+    DatePickerInput
+    )
 from .models import Car, Bid, Files, Price
 from .validators import contains_digits
 
@@ -10,10 +12,12 @@ from .validators import contains_digits
 class CarForm(forms.ModelForm):
     class Meta:
         model = Car
-        fields = ['category', 'color', 'brand',
-                  'model', 'investor', 'is_booked',
-                  'insurance', 'description',
-                  'state_number', 'photo']
+        fields = [
+            'category', 'color', 'brand',
+            'model', 'investor', 'is_booked',
+            'insurance', 'description',
+            'state_number', 'photo'
+            ]
         labels = {
             'category': 'Категория',
             'color': 'Цвет',
@@ -31,10 +35,12 @@ class CarForm(forms.ModelForm):
 class BidForm(forms.ModelForm):
     class Meta:
         model = Bid
-        fields = ['car', 'pickup_location', 'dropoff_location', 'pickup_time',
-                  'dropoff_time', 'renter_name', 'renter_birthdate',
-                  'renter_phone', 'renter_email', 'contact_method',
-                  'comment']
+        fields = [
+            'car', 'pickup_location', 'dropoff_location',
+            'pickup_time', 'dropoff_time', 'renter_name', 'renter_birthdate',
+            'renter_phone', 'renter_email', 'contact_method',
+            'comment'
+            ]
         labels = {
             'car': 'Автомобиль',
             'pickup_location': 'Место получения',
@@ -82,20 +88,27 @@ class BidForm(forms.ModelForm):
         dropoff_time = cleaned_data.get('dropoff_time')
         if pickup_time and dropoff_time:
             if dropoff_time <= pickup_time:
-                raise ValidationError('Дата возврата должна быть позже даты получения.')
+                raise ValidationError(
+                    'Дата возврата должна быть позже даты получения.')
             existing_bids = Bid.objects.filter(
                 car=car,
                 pickup_time__lte=dropoff_time,
                 dropoff_time__gte=pickup_time
             )
         if existing_bids.exists():
-            raise ValidationError('Выбранные даты пересекаются с уже существующими бронированиями.')
+            raise ValidationError(
+                'Выбранные даты пересекаются с '
+                'уже существующими бронированиями.')
         if pickup_location and contains_digits(pickup_location):
-            raise ValidationError('Место получения не может содержать цифры.')
+            raise ValidationError(
+                'Место получения не может содержать цифры.')
         if dropoff_location and contains_digits(dropoff_location):
-            raise ValidationError('Место возврата не может содержать цифры.')
+            raise ValidationError(
+                'Место возврата не может содержать цифры.')
         if renter_name and contains_digits(renter_name):
-            raise ValidationError('Имя не может содержать цифры. Только если ты не сын Илона Маска')
+            raise ValidationError(
+                'Имя не может содержать цифры. '
+                'Только если ты не сын Илона Маска')
         return cleaned_data
 
 
@@ -109,4 +122,3 @@ class PriceForm(forms.ModelForm):
     class Meta:
         model = Price
         exclude = ('car_price',)
-

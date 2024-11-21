@@ -11,6 +11,9 @@ from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfbase import pdfmetrics
 
 
+FONT_SIZE = 7
+NUMBER_PDF_PAGE = 0
+
 def other_files_path(instance, filename):
     folder = os.path.join(
         settings.MEDIA_ROOT, f"other_files/Заявка_{instance.bid_id}")
@@ -20,8 +23,8 @@ def other_files_path(instance, filename):
 
 
 def pdf_create_contract(request, bid):
-    bid_folder = os.path.join(settings.MEDIA_ROOT,
-                              f"contracts/Заявка_{bid.id}")
+    bid_folder = os.path.join(
+        settings.MEDIA_ROOT, f"contracts/Заявка_{bid.id}")
     os.makedirs(bid_folder, exist_ok=True)
     template_path = "backend/pdf_create/договор элефант бланк.pdf"
     output_path = os.path.join(bid_folder, f"Договор_№{bid.id}.pdf")
@@ -35,7 +38,7 @@ def pdf_create_contract(request, bid):
     def create_text_layer(temp_text_pdf, data):
         packet = io.BytesIO()
         c = canvas.Canvas(packet, pagesize=A4)
-        c.setFont("Calibri", 7)
+        c.setFont("Calibri", FONT_SIZE)
         c.drawString(160, 648, f"{data['Name']}")
         c.save()
         packet.seek(0)
@@ -47,7 +50,8 @@ def pdf_create_contract(request, bid):
             with fitz.open(temp_text_pdf) as text_layer_pdf:
                 for page_num in range(template_pdf.page_count):
                     page = template_pdf[page_num]
-                    page.show_pdf_page(page.rect, text_layer_pdf, 0)
+                    page.show_pdf_page(
+                        page.rect, text_layer_pdf, NUMBER_PDF_PAGE)
                 template_pdf.save(output_path)
     create_text_layer(temp_text_pdf, data)
     merge_pdfs(template_path, temp_text_pdf, output_path)
@@ -57,7 +61,8 @@ def pdf_create_contract(request, bid):
 
 
 def pdf_create_vaucher(request, bid):
-    bid_folder = os.path.join(settings.MEDIA_ROOT, f"vauchers/Заявка_{bid.id}")
+    bid_folder = os.path.join(
+        settings.MEDIA_ROOT, f"vauchers/Заявка_{bid.id}")
     os.makedirs(bid_folder, exist_ok=True)
     template_path = "backend/pdf_create/ваучер бланк.pdf"
     output_path = os.path.join(bid_folder, f"Ваучер_№{bid.id}.pdf")
@@ -71,7 +76,7 @@ def pdf_create_vaucher(request, bid):
     def create_text_layer(temp_text_pdf, data):
         packet = io.BytesIO()
         c = canvas.Canvas(packet, pagesize=A4)
-        c.setFont("Calibri", 7)
+        c.setFont("Calibri", FONT_SIZE)
         c.drawString(160, 648, f"{data['Name']}")
         c.save()
         packet.seek(0)
@@ -83,10 +88,12 @@ def pdf_create_vaucher(request, bid):
             with fitz.open(temp_text_pdf) as text_layer_pdf:
                 for page_num in range(template_pdf.page_count):
                     page = template_pdf[page_num]
-                    page.show_pdf_page(page.rect, text_layer_pdf, 0)
+                    page.show_pdf_page(
+                        page.rect, text_layer_pdf, NUMBER_PDF_PAGE)
                 template_pdf.save(output_path)
     create_text_layer(temp_text_pdf, data)
     merge_pdfs(template_path, temp_text_pdf, output_path)
     bid.vaucher = f"vauchers/Заявка_{bid.id}/Ваучер_№{bid.id}.pdf"
     bid.save()
-    return HttpResponseRedirect(reverse("backend:bid_detail", args=[bid.id]))
+    return HttpResponseRedirect(
+        reverse("backend:bid_detail", args=[bid.id]))
