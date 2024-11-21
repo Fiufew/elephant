@@ -4,6 +4,6 @@ from celery.schedules import crontab
 CELERY_BEAT_SCHEDULE = {
     'send-rental-expiration-notification': {
         'task': 'backend.tasks.check_rental_expiration',
-        'schedule': crontab(minute='*/2'),  # Каждые 2 минут
+        'schedule': crontab(minute='*/1'),  # Каждые 2 минут
     },
 }
