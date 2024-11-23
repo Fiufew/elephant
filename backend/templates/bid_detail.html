@@ -36,7 +36,13 @@
                 <td>{{ bid.dropoff_time }}</td>
                 <td>{{ bid.renter_name }}</td>
                 <td>{{ bid.comment }}</td>
-                <td>{{ bid.bid_preparer }}</td>
+                <td>
+                    {% if bid.bid_preparer %}
+                      {{ bid.bid_preparer }}
+                    {% else %}
+                      {{ '' }}
+                    {% endif %}
+                  </td>
                 <td><a href="{{ bid.vaucher.url }}">Ваучер №{{ bid.id }}</a></td>
                 <td><a href="{{ bid.contract.url }}">Договор №{{ bid.id }}</a></td>
                 <td><a href="{% url 'backend:bid_edit' bid.id %}" class="btn btn-primary">Изменить</a></td>

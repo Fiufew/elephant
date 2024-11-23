@@ -14,6 +14,7 @@ from reportlab.pdfbase import pdfmetrics
 FONT_SIZE = 7
 NUMBER_PDF_PAGE = 0
 
+
 def other_files_path(instance, filename):
     folder = os.path.join(
         settings.MEDIA_ROOT, f"other_files/Заявка_{instance.bid_id}")

@@ -23,7 +23,11 @@
         <tbody>
             {% for car in cars %}
             <tr>
-                <td>{{ car.brand.name }}: {{ car.model.name }}</td>
+                <td>
+                    <div class="clickable-div" data-url="{% url 'backend:car_detail' car.slug %}">
+                        {{ car.brand.name }}: {{ car.model.name }}
+                    </div>
+                </td>
                 <td>{{ car.price.season_one }}</td>
                 <td>{{ car.price.season_two }}</td>
                 <td>{{ car.price.season_three }}</td>

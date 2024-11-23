@@ -1,5 +1,6 @@
 import calendar
 from datetime import datetime, timedelta
+from aiogram import types
 
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
@@ -11,6 +12,7 @@ from django.views.decorators.http import require_POST
 from .utils import pdf_create_contract, pdf_create_vaucher
 from .models import Car, Bid, Files
 from .forms import CarForm, BidForm, BidFormAddFiles, PriceForm
+from .management.commands.telegram import send_bid_sync
 
 
 @login_required
@@ -204,6 +206,8 @@ def create_bid(request):
             bid = form.save()
             pdf_create_contract(request, bid)
             pdf_create_vaucher(request, bid)
+            message = types.Message(from_user=types.User(id='1671979968'))
+            send_bid_sync(message, bid)
             return redirect('backend:bid_list')
     else:
         form = BidForm()
@@ -339,4 +343,3 @@ def update_price(request, pk):
     return render(request, 'price_form.html', {'form': form,
                                                'car': car,
                                                'price_exists': True})
-# test2

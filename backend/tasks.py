@@ -1,22 +1,8 @@
 from celery import shared_task
-from aiogram import Bot
-import asyncio
 from django.utils import timezone
 
 from .models import Bid
-
-
-TELEGRAM_BOT_TOKEN = '7774904564:AAF3VXreAZV2SM-Lc5-arwjfomJnaD1SBCg'
-CHAT_ID = '1671979968'
-
-
-async def send_telegram_message(message):
-    bot = Bot(token=TELEGRAM_BOT_TOKEN)
-    await bot.send_message(chat_id=CHAT_ID, text=message)
-
-
-def send_message_sync(message):
-    asyncio.run(send_telegram_message(message))
+from .management.commands.telegram import send_message_sync
 
 
 @shared_task
@@ -25,7 +11,7 @@ def check_rental_expiration():
     expired_list = []
     bids_to_update = []
     for bid in bids:
-        if bid.dropoff_time < timezone.now() and not bid.is_expired:
+        if bid.dropoff_time < timezone.now() and not bid.is_expired and not bid.is_pending:
             expired_list.append(f'Заявка №{bid.id} истекла')
             bid.is_expired = True
             bids_to_update.append(bid)

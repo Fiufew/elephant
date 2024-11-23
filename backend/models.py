@@ -267,6 +267,7 @@ class Bid(models.Model):
     comment = models.TextField(blank=True, null=True)
     bid_preparer = models.CharField(max_length=127, blank=True, null=True)
     is_expired = models.BooleanField(default=False)
+    is_pending = models.BooleanField(default=True)
     contract = models.FileField(
         upload_to='contract_dir', null=True, blank=True)
     vaucher = models.FileField(
