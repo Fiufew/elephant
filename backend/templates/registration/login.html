@@ -1,0 +1,29 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}ElephantRent{% endblock title %}</title>
+
+    <meta name="description" content="{% block meta_description %}A description of the page{% endblock meta_description %}">
+    <meta name="keywords" content="{% block meta_keywords %}shop, ecommerce, products{% endblock meta_keywords %}">
+    {% load bootstrap4 %}
+    {% bootstrap_css %}
+    {% bootstrap_javascript %}
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+{% load django_bootstrap5 %}
+
+{% block content %}
+  <div class="center-absolutely card col-3 m-3 ">
+    <div class="card-body">
+      <form method="post" action="{% url 'login' %}">
+        {% csrf_token %}
+        {% bootstrap_form form %}
+        <input type="hidden" name="next" value="{{ next }}">
+        {% bootstrap_button button_type="submit" content="Войти" %}
+      </form>
+    </div>
+  </div>
+{% endblock %}

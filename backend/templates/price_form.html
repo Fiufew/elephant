@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% load bootstrap4 %}
+
+{% block title %}
+{% if price_exists %}
+    Изменить цену
+{% else %}
+    Добавить цену
+{% endif %}
+{% endblock title %}
+
+{% block meta_description %}
+{% endblock meta_description %}
+
+{% block meta_keywords %}
+{% endblock meta_keywords %}
+
+{% block content %}
+<h1 class="mt-4 mb-4">
+    {% if price_exists %}
+        Изменить цену для {{ car.brand.name }}: {{ car.model.name }}
+    {% else %}
+        Добавить цену для {{ car.brand.name }}: {{ car.model.name }}
+    {% endif %}
+</h1>
+<form method="post" class="form" enctype="multipart/form-data">
+    {% csrf_token %}
+    {% bootstrap_form form %}
+    <button type="submit" class="btn btn-primary">
+        {% if price_exists %}
+            Изменить
+        {% else %}
+            Добавить
+        {% endif %}
+    </button>
+</form>
+{% endblock content %}
+
+{% block extra_js %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+{{ form.media }}
+{% endblock extra_js %}

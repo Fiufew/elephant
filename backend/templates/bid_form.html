@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% load bootstrap4 %}
+
+{% block title %}
+    {% if bid %}
+        Edit Bid
+    {% else %}
+        Add Bid
+    {% endif %}
+{% endblock title %}
+
+{% block meta_description %}
+    {% if bid %}
+        Edit the bid details
+    {% else %}
+        Add a new bid to the shop
+    {% endif %}
+{% endblock meta_description %}
+
+{% block meta_keywords %}
+    {% if bid %}
+        edit bid, bid details, shop
+    {% else %}
+        add bid, new bid, shop
+    {% endif %}
+{% endblock meta_keywords %}
+
+{% block content %}
+<h1 class="mt-4 mb-4">
+    {% if bid %}
+        Редактировать заявку
+    {% else %}
+        Добавить заявку
+    {% endif %}
+</h1>
+<form method="post" class="form" enctype="multipart/form-data">
+    {% csrf_token %}
+    {% bootstrap_form form %}
+    <button type="submit" class="btn btn-primary">Добавить</button>
+</form>
+
+{% if bid %}
+<div class='delete_button mt-4'>
+    <form method="post" action="{% url 'backend:bid_remove' bid.pk %}">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Удалить заявку</button>
+    </form>
+</div>
+{% endif %}
+
+{% endblock content %}
+
+{% block extra_js %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+{{ form.media }}
+{% endblock extra_js %}

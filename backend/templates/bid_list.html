@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+
+{% block title %}Car List{% endblock title %}
+
+{% block meta_description %}List of cars{% endblock meta_description %}
+
+{% block meta_keywords %}car list, shop, ecommerce{% endblock meta_keywords %}
+
+{% block content %}
+<h1 class="mt-4 mb-4">Список заявок</h1>
+<div class="form-check mb-3">
+    <input class="form-check-input" type="checkbox" id="expired-checkbox">
+    <label class="form-check-label" for="expired-checkbox">
+        Закрытые заявки
+    </label>
+</div>
+<div class="table-responsive">
+    <table class="table table-striped table-bordered custom-table" id="car-table">
+        <thead>
+            <tr>
+                <th>Номер заявки</th>
+                <th>Автомобиль</th>
+                <th>Место получения автомобиля</th>
+                <th>Время получения автомобиля</th>
+                <th>Место возврата автомобиля</th>
+                <th>Время возврата автомобиля</th>
+                <th>Имя арендатора</th>
+                <th>Взята в работу</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for bid in bids %}
+                <tr data-expired="{{ bid.is_expired }}">
+                    <td>
+                        <div class="clickable-div" data-url="{% url 'backend:bid_detail' bid.id %}">
+                            {{ bid.id }}
+                        </div>
+                    </td>
+                    <td>{{ bid.car_info }}</td>
+                    <td>{{ bid.pickup_location }}</td>
+                    <td>{{ bid.pickup_time }}</td>
+                    <td>{{ bid.dropoff_location }}</td>
+                    <td>{{ bid.dropoff_time }}</td>
+                    <td>{{ bid.renter_name }}</td>
+                    <td>
+                        {% if bid.bid_preparer %}
+                            {{ bid.bid_preparer }}
+                        {% else %}
+                            <form action="{% url 'backend:take_in_work' bid.id %}" method="post">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-primary">Взять</button>
+                            </form>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tablesort/5.2.1/tablesort.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.clickable-div').forEach(div => {
+            div.addEventListener('click', function() {
+                window.location.href = this.getAttribute('data-url');
+            });
+        });
+
+        new Tablesort(document.getElementById('car-table'));
+
+        const checkbox = document.getElementById('expired-checkbox');
+        const rows = document.querySelectorAll('#car-table tbody tr');
+
+        checkbox.addEventListener('change', function() {
+            rows.forEach(row => {
+                const isExpired = row.getAttribute('data-expired') === 'True';
+                if (checkbox.checked && !isExpired) {
+                    row.style.display = 'none';
+                } else {
+                    row.style.display = '';
+                }
+            });
+        });
+    });
+</script>
+{% endblock content %}
