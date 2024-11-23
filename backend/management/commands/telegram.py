@@ -41,13 +41,23 @@ async def process_callback_button(callback_query: types.CallbackQuery):
         bid = await sync_to_async(Bid.objects.get)(id=bid_id)
         bid.is_pending = False
         await sync_to_async(bid.save)()
-        await bot.answer_callback_query(callback_query.id, text='Bid is now active.')
+        await bot.edit_message_reply_markup(
+            chat_id=callback_query.message.chat.id,
+            message_id=callback_query.message.message_id,
+            reply_markup=None
+        )
+        await bot.answer_callback_query(callback_query.id, text='Вы отклонили заявку.')
     elif action == 'button2':
         bid = await sync_to_async(Bid.objects.get)(id=bid_id)
         bid.is_pending = False
-        bid.is_expired = False
+        bid.is_expired = True
         await sync_to_async(bid.save)()
-        await bot.answer_callback_query(callback_query.id, text='You pressed Button 2')
+        await bot.edit_message_reply_markup(
+            chat_id=callback_query.message.chat.id,
+            message_id=callback_query.message.message_id,
+            reply_markup=None
+        )
+        await bot.answer_callback_query(callback_query.id, text='Вы подтвердили заявку')
 
 
 
