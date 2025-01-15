@@ -99,14 +99,6 @@ class Car(models.Model):
     investor = models.ForeignKey(Investor,
                                  related_name='investors',
                                  on_delete=models.CASCADE)
-    is_booked = models.BooleanField(default=False)
-    insurance = models.CharField(max_length=255)
-    description = models.TextField(blank=True, null=True)
-    state_number = models.CharField(max_length=63)
-    slug = models.SlugField(unique=True, max_length=127)
-    photo = models.ImageField(blank=True, upload_to='cars/%Y/%m/%d')
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         ordering = ['brand']
@@ -122,13 +114,10 @@ class Car(models.Model):
 
 
 class Price(models.Model):
-    car_price = models.OneToOneField(Car,
-                                     on_delete=models.CASCADE,
+    car_price = models.OneToOneField(Car, on_delete=models.CASCADE,
                                      related_name='price')
-    season_one = models.DecimalField(max_digits=10, decimal_places=2)
-    season_two = models.DecimalField(max_digits=10, decimal_places=2)
-    season_three = models.DecimalField(max_digits=10, decimal_places=2)
-    season_four = models.DecimalField(max_digits=10, decimal_places=2)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    currency = models.CharField(max_length=10)
 
     class Meta:
         verbose_name = 'Price'
@@ -138,36 +127,12 @@ class Price(models.Model):
         return 'Актуальная цена'
 
 
-class Bid(models.Model):
-    CONTACT_CHOICES = [
-        ('telegram', 'Telegram'),
-        ('whatsapp', 'WhatsApp'),
-        ('viber', 'Viber'),
-    ]
+class Application(models.Model):
     car = models.ForeignKey(Car, related_name='booking_requests',
                             on_delete=models.CASCADE)
     price = models.ForeignKey(Price, related_name='booking_requests_price',
                               on_delete=models.CASCADE)
-    pickup_location = models.CharField(max_length=511)
-    dropoff_location = models.CharField(max_length=511)
-    pickup_time = models.DateTimeField()
-    dropoff_time = models.DateTimeField()
-    renter_first_name = models.CharField(max_length=255)
-    renter_middle_name = models.CharField(max_length=255,
-                                          blank=True,
-                                          null=True)
-    renter_last_name = models.CharField(max_length=255)
-    renter_birthdate = models.DateField()
-    renter_phone = models.CharField(max_length=20)
-    renter_email = models.EmailField()
-    contact_method = models.CharField(max_length=10, choices=CONTACT_CHOICES)
-    comment = models.TextField(blank=True, null=True)
-    bid_preparer = models.CharField(max_length=127)
 
     class Meta:
-        verbose_name = 'Bid'
-        verbose_name_plural = 'Bids'
-
-    def __str__(self):
-        return f"Bid for {self.car.brand.name} {self.car.model.name} by {self.renter_first_name} {self.renter_last_name}"
-
+        verbose_name = 'Application'
+        verbose_name_plural = 'Applications'
