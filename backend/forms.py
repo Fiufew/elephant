@@ -22,4 +22,5 @@ class CarForm(forms.ModelForm):
 class PriceForm(forms.ModelForm):
     class Meta:
         model = Price
-        fields = ['amount', 'currency']
+        fields = ['winter_price', 'spring_price', 'summer_price',
+                  'autumn_price', 'currency']

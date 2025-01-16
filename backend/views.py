@@ -14,7 +14,8 @@ def index(request):
     Отображает список автомобилей
     на главной странице
     '''
-    cars = ...
+    cars = Car.objects.values('license_plate', 'is_availaible', 'car_name')
+    print(cars)
 
     return render(request, 'index.html', {'cars': cars})
 

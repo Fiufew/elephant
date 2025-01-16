@@ -24,7 +24,6 @@
         <thead>
             <tr>
                 <th>Автомобиль</th>
-                <th>Цвет</th>
                 <th>Гос.номер</th>
                 <th>Забронирован</th>
             </tr>
@@ -32,15 +31,10 @@
         <tbody id="car-table-body">
             {% for car in cars %}
                 <tr>
+                    <td>{{ car.car_name }}</td>
+                    <td>{{ car.license_plate }}</td>
                     <td>
-                        <div class="clickable-div" data-url="{% url 'backend:car_detail' car.slug %}">
-                            {{ car.brand.name }}:{{ car.model.name }}
-                        </div>
-                    </td>
-                    <td>{{ car.color.name }}</td>
-                    <td>{{ car.state_number }}</td>
-                    <td>
-                        {% if car.is_booked %}
+                        {% if car.is_availaible %}
                             Да
                         {% else %}
                             Нет
