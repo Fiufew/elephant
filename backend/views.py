@@ -165,7 +165,7 @@ def create_application(request):
         form = ApplicationForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
-            # pdf_create_contract(request, application)  # noqa
+            # pdf_create_contract(request, application)  # noq
             # pdf_create_vaucher(request, application)  # noqa  
             return redirect('backend:applications')
     else:
