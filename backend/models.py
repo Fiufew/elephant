@@ -68,12 +68,15 @@ class Investor(models.Model):
 
 
 class Insurance(models.Model):
-    symbol = models.CharField(max_length=128)
+    symbol = models.CharField(max_length=128, null=True)
     start_date = models.DateTimeField()
     expired_date = models.DateTimeField()
 
     def check_expiration(self):
         return self.expired_date < self.start_date
+
+    def __str__(self):
+        return self.symbol
 
     class Meta:
         ordering = ['symbol']
@@ -140,7 +143,7 @@ class Car(models.Model):
         self.save()
 
     def save(self, *args, **kwargs):
-        self.car_name = f"{self.brand}: {self.model}"
+        self.car_name = f"{self.brand} {self.model}"
         super().save(*args, **kwargs)
 
     class Meta:
@@ -175,10 +178,28 @@ class Price(models.Model):
 
 
 class Application(models.Model):
+
+    CANCELED = 'canceled'
+    EXPIRED = 'expired'
+    ACTIVE = 'active'
+
+    STATUS_CHOICES = [
+        (CANCELED, 'Canceled'),
+        (EXPIRED, 'Expired'),
+        (ACTIVE, 'Active'),
+    ]
+
+    AGGREGATOR_CHOICES = [
+        ('aggregator1', 'Aggregator 1'),
+        ('aggregator2', 'Aggregator 2'),
+        ('aggregator3', 'Aggregator 3'),
+    ]
+
     car = models.ForeignKey(Car, related_name='booking_requests',
                             on_delete=models.CASCADE)
     price = models.ForeignKey(Price, related_name='booking_requests_price',
-                              on_delete=models.CASCADE)
+                              on_delete=models.CASCADE,
+                              null=True, blank=True)
     pickup_location = models.CharField(max_length=512)
     dropoff_location = models.CharField(max_length=512)
     pickup_time = models.DateTimeField()
@@ -186,13 +207,25 @@ class Application(models.Model):
     renter_name = models.CharField(max_length=128)
     renter_phone = models.CharField(max_length=32)
     renter_email = models.EmailField(null=True, blank=True)
-    is_expired = models.BooleanField(default=False)
+    status = models.CharField(max_length=16, choices=STATUS_CHOICES,
+                              blank=True, default=ACTIVE)
+    application_preparer = models.CharField(max_length=64, null=True)
+    aggregator_id = models.IntegerField(null=True, blank=True)
+    aggregator = models.CharField(max_length=32, choices=AGGREGATOR_CHOICES,
+                                  null=True, blank=True)
     comment = models.TextField(blank=True, null=True)
     vaucher = ...
     contract = ...
 
     def check_expiration(self):
         return self.dropoff_time < timezone.now()
+
+    def change_status(self, new_status):
+        if new_status in [self.CANCELED, self.EXPIRED, self.ACTIVE]:
+            self.status = new_status
+            self.save()
+        else:
+            raise ValueError(f"Invalid status: {new_status}")
 
     class Meta:
         verbose_name = 'Application'

@@ -59,5 +59,5 @@ class ApplicationAdmin(admin.ModelAdmin):
                     'dropoff_location', 'pickup_time', 'dropoff_time',
                     'renter_name', 'renter_phone',
                     'renter_email',
-                    'comment', 'is_expired')
+                    'comment', 'status')
     list_filter = ('car', 'price')

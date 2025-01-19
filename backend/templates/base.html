@@ -16,17 +16,17 @@
 <body>
     <header class="header">
         <div class="container-buttons">
-            <button class="btn btn-primary">Главная</button></a>
+            <a href="{% url 'backend:car_list' %}"><button class="btn btn-primary">Главная</button></a>
             <span class='fake'></span>
-            <button class="btn btn-primary">Все заявки</button></a>
+            <button class="btn btn-primary">Все заявки</button>
             <span class='fake'></span>
-            <button class="btn btn-primary">Добавить автомобиль</button></a>
+            <a href="{% url 'backend:car_create' %}"><button class="btn btn-primary">Добавить автомобиль</button></a>
             <span class='fake'></span>
-            <button class="btn btn-primary">Добавить заявку</button></a>
+            <button class="btn btn-primary">Добавить заявку</button>
             <span class='fake'></span>
-            <button class="btn btn-primary">Менеджер цен</button></a>
+            <button class="btn btn-primary">Менеджер цен</button>
             <span class='fake'></span>
-            <button class="btn btn-primary">Выйти</button></a>
+            <button class="btn btn-primary">Выйти</button>
         </div>
     </header>
     <div id="content">
@@ -35,10 +35,8 @@
             {% endblock content %}
         </div>
     </div>
-
-    <script>
-        
-    </script>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    {{ form.media }}
     {% block extra_js %}{% endblock extra_js %}
 </body>
 </html>

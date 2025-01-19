@@ -4,8 +4,8 @@ from django.http import JsonResponse
 from django.urls import reverse
 from django.shortcuts import render, get_object_or_404, redirect
 
-from .models import Car
-from .forms import CarForm, PriceForm
+from .models import Car, Application
+from .forms import CarForm, PriceForm, ApplicationForm
 from .services import ApplicationService, PriceService
 
 
@@ -15,7 +15,6 @@ def index(request):
     на главной странице
     '''
     cars = Car.objects.values('license_plate', 'is_availaible', 'car_name')
-    print(cars)
 
     return render(request, 'index.html', {'cars': cars})
 
@@ -32,9 +31,10 @@ def car_detail(request, slug):
         HttpResponse: Отрендеренный HTML-шаблон с деталями автомобиля и
         информацией о занятых датах.
     """
-    car = ...
+    car = get_object_or_404(Car, slug=slug)
 
     context = {
+        'car': car
     }
     return render(request, 'car_detail.html', context)
 
@@ -74,7 +74,7 @@ def edit_car(request, slug):
         HttpResponse: Отрендеренный HTML-шаблон с формой или перенаправление на
                     страницу с деталями автомобиля.
     """
-    car = ...
+    car = get_object_or_404(Car, slug=slug)
     if request.method == 'POST':
         form = CarForm(request.POST, request.FILES, instance=car)
         if form.is_valid():
@@ -96,7 +96,7 @@ def remove_car(request, slug):
     Returns:
         HttpResponse: Перенаправление на страницу списка автомобилей.
     """
-    car = ...
+    car = get_object_or_404(Car, slug=slug)
     if request.method == 'POST':
         car.delete()
         return redirect('backend:car_list')
@@ -114,9 +114,19 @@ def applications_list(request):
         HttpResponse: Отрендеренный HTML-шаблон со списком заявок или
         JSON-ответ для AJAX-запросов.
     """
-    applications = ...
-
-    return render(request, 'application_list.html', {'applications': applications})
+    applications = Application.objects.select_related('car').values(
+        'id',
+        'status',
+        'dropoff_time',
+        'renter_name',
+        'pickup_time',
+        'dropoff_location',
+        'pickup_location',
+        'car__car_name',
+    )
+    return render(request, 'application_list.html', {
+        'applications': applications
+        })
 
 
 def application_detail(request, pk):
@@ -152,14 +162,14 @@ def create_application(request):
                     страницу списка заявок.
     """
     if request.method == 'POST':
-        form = ...
+        form = ApplicationForm(request.POST, request.FILES)
         if form.is_valid():
-            application = form.save()
-            pdf_create_contract(request, application)  # noqa
-            pdf_create_vaucher(request, application)  # noqa  
-            return redirect('backend:application_list')
+            form.save()
+            # pdf_create_contract(request, application)  # noqa
+            # pdf_create_vaucher(request, application)  # noqa  
+            return redirect('backend:applications')
     else:
-        form = ...
+        form = ApplicationForm()
     return render(request, 'application_form.html', {'form': form})
 
 
@@ -175,14 +185,16 @@ def edit_application(request, pk):
         HttpResponse: Отрендеренный HTML-шаблон с формой или перенаправление на
                     страницу с деталями заявки.
     """
-    application = ...
+    application = get_object_or_404(Application, pk=pk)
     if request.method == 'POST':
-        form = ...
+        form = ApplicationForm(
+            request.POST, request.FILES, instance=application
+        )
         if form.is_valid():
             form.save()
-            return redirect('backend:application_detail', pk=application.id)
+            return redirect('backend:applications')
     else:
-        form = ...
+        form = ApplicationForm(instance=application)
     return render(request,
                   'application_form.html',
                   {'form': form, 'application': application})
@@ -199,11 +211,11 @@ def remove_application(request, pk):
     Returns:
         HttpResponse: Перенаправление на страницу списка заявки.
     """
-    application = ...
+    application = get_object_or_404(Application, pk=pk)
     if request.method == 'POST':
         application.delete()
-        return redirect('backend:application')
-    return redirect('backend:application', pk=application.id)
+        return redirect('backend:applications')
+    return redirect('backend:applications')
 
 
 def take_in_work_view(request, pk):
@@ -222,9 +234,11 @@ def create_price(request, pk):
             return redirect('backend:price_list')
     else:
         form = PriceForm(initial={'car_price': car})
-    return render(request, 'price_form.html', {'form': form,
-                                               'car': car,
-                                               'price_exists': False})
+    return render(request, 'price_form.html', {
+        'form': form,
+        'car': car,
+        'price_exists': False
+        })
 
 
 def update_price(request, pk):

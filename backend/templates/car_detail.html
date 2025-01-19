@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% load bootstrap4 %}
+
+{% block title %}Car List{% endblock title %}
+
+{% block meta_description %}List of cars{% endblock meta_description %}
+
+{% block meta_keywords %}car list, shop, ecommerce{% endblock meta_keywords %}
+
+{% block content %}
+<h1 class="mt-4 mb-4">{{car.brand.name}}: {{car.model.name}}</h1>
+<div class="table-responsive">
+    <table class="table table-striped table-bordered custom-table">
+        <thead>
+            <tr>
+                <th>Бренд</th>
+                <th>Модель</th>
+                <th>Гос.номер</th>
+                <th>Забронирован</th>
+                <th>Страховка</th>
+                <th>Действия</th>
+            </tr>
+        </thead>
+        <tbody>
+            <td>{{ car.brand.name }}</td>
+            <td>{{ car.model.name }}</td>
+            <td>{{ car.license_plate     }}</td>
+            <td>
+                {% if car.is_is_availaible %}
+                    Да
+                {% else %}
+                    Нет
+                {% endif %}
+            </td>
+            <td>{{ car.insurance }}</td>
+            <td>
+                
+            </td>
+        </tbody>
+    </table>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tablesort/5.2.1/tablesort.min.js"></script>
+{% endblock content %}
+
+{% block extra_js %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+{{ form.media }}
+{% endblock extra_js %}
