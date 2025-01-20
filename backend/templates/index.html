@@ -24,6 +24,7 @@
         <thead>
             <tr>
                 <th>Автомобиль</th>
+                <th>Год выпуска</th>
                 <th>Гос.номер</th>
                 <th>Забронирован</th>
             </tr>
@@ -31,8 +32,25 @@
         <tbody id="car-table-body">
             {% for car in cars %}
                 <tr>
-                    <td>{{ car.car_name }}</td>
-                    <td>{{ car.license_plate }}</td>
+                    <td>
+                        <div class="clickable-div" data-url="{% url 'backend:car_detail' car.slug %}">
+                            {{ car.car_name }}
+                        </div>
+                    </td>
+                    <td>
+                        {% if car.year_manufactored %}
+                            {{ car.year_manufactored }}
+                        {% else %}
+                            Не задан
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if car.license_plate %}
+                            {{ car.license_plate }}
+                        {% else %}
+                            Отсутствует
+                        {% endif %}
+                    </td>
                     <td>
                         {% if car.is_availaible %}
                             Да
@@ -82,15 +100,17 @@
                     tableBody.innerHTML = '';
                     data.cars.forEach(car => {
                         const row = document.createElement('tr');
+                        const licensePlate = car.license_plate ? car.license_plate : 'Отсутствует';
+                        const year_manufactored = car.year_manufactored ? car.year_manufactored : 'Не задан'
                         row.innerHTML = `
                             <td>
                                 <div class="clickable-div" data-url="${car.detail_url}">
-                                    ${car.brand}:${car.model}
+                                    ${car.brand} ${car.model}
                                 </div>
                             </td>
-                            <td>${car.color}</td>
-                            <td>${car.state_number}</td>
-                            <td>${car.is_booked ? 'Да' : 'Нет'}</td>
+                            <td>${year_manufactored}</td>
+                            <td>${licensePlate}</td>
+                            <td>${car.is_availaible ? 'Да' : 'Нет'}</td>
                         `;
                         tableBody.appendChild(row);
                     });

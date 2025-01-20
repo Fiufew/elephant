@@ -13,6 +13,8 @@ urlpatterns = [
     path('applications/', views.applications_list, name='applications'),
     path('applications/create/', views.create_application,
          name='application_create'),
+    path('applications/<int:pk>/', views.application_detail,
+         name='application_detail'),
     path('applications/<int:pk>/edit/', views.edit_application,
          name='application_edit'),
     path('applications/<int:pk>/delete/', views.remove_application,

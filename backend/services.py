@@ -1,5 +1,6 @@
 from django.shortcuts import redirect
-from .models import Application, Price
+from django.db.models import Q
+from .models import Application, Price, Car
 
 
 class ApplicationService:
@@ -13,6 +14,24 @@ class ApplicationService:
         except Application.DoesNotExist:
             pass
         return redirect('backend:bid_list')
+
+
+class CarService:
+
+    @staticmethod
+    def get_filtered_cars(search_query, booked_only):
+        cars = Car.objects.select_related('brand', 'model', 'color').all()
+        if search_query:
+            cars = cars.filter(
+                Q(brand__name__icontains=search_query) |
+                Q(model__name__icontains=search_query) |
+                Q(category__name__icontains=search_query) |
+                Q(year_manufactored__icontains=search_query) |
+                Q(license_plate__icontains=search_query)
+            )
+        if booked_only:
+            cars = Car.objects.available_cars()
+        return cars
 
 
 class PriceService:
