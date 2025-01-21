@@ -1,6 +1,7 @@
 from django.contrib import admin
 from .models import (Category, Color, Brand, Model, Car,
-                     Price, Application, Investor, Insurance)
+                     Price, Application, Investor, Insurance,
+                     Problem)
 
 
 @admin.register(Category)
@@ -61,3 +62,8 @@ class ApplicationAdmin(admin.ModelAdmin):
                     'renter_email',
                     'comment', 'status')
     list_filter = ('car', 'price')
+
+
+@admin.register(Problem)
+class ProblemAdmin(admin.ModelAdmin):
+    list_display = ('issue', 'is_solved')

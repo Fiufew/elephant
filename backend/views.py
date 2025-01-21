@@ -255,7 +255,7 @@ def create_price(request, pk):
         if form.is_valid():
             price_data = form.cleaned_data
             PriceService.create_price(car, price_data)
-            return redirect('backend:price_list')
+            return redirect('backend:car_list')
     else:
         form = PriceForm(initial={'car_price': car})
     return render(request, 'price_form.html', {
@@ -273,7 +273,7 @@ def update_price(request, pk):
         if form.is_valid():
             price_data = form.cleaned_data
             PriceService.update_price(price, price_data)
-            return redirect('backend:price_list')
+            return redirect('backend:car_list')
     else:
         form = PriceForm(instance=price)
     return render(request, 'price_form.html', {'form': form,

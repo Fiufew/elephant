@@ -19,4 +19,6 @@ urlpatterns = [
          name='application_edit'),
     path('applications/<int:pk>/delete/', views.remove_application,
          name='application_remove'),
+    path('create_price/<int:pk>/', views.create_price, name='create_price'),
+    path('update_price/<int:pk>/', views.update_price, name='update_price'),
 ]
