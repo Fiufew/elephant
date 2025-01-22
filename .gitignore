@@ -1,150 +1,154 @@
-# Файлы, скомпилированные / оптимизированные / DLL файлы
-__pycache__/                  # Папка с скомпилированными байт-кодами Python
-*.py[cod]                     # Скомпилированные файлы Python (например, .pyc, .pyo, .pyd)
-*$py.class                     # Файлы Java, сгенерированные при сборке Python-кода
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
 
-# C расширения
-*.so                           # Файлы с расширением .so (обычно C расширения для Python)
+# C extensions
+*.so
 
-# Распределение / упаковка
-.Python                        # Файл Python для настройки виртуальной среды
-build/                         # Папка для сборки
-develop-eggs/                  # Папка для development-eggs
-dist/                          # Папка для выходных данных, например, архивы дистрибутива
-downloads/                     # Папка для скачанных файлов
-eggs/                          # Папка для egg-файлов
-.eggs/                         # Папка для egg-файлов
-lib/                           # Папка для библиотек
-lib64/                         # Папка для 64-битных библиотек
-parts/                         # Папка для частей сборки
-sdist/                         # Папка для исходного дистрибутива
-var/                           # Папка для переменных данных
-wheels/                        # Папка для сгенерированных файлов wheel
-pip-wheel-metadata/            # Папка с мета-данными для pip-wheel
-share/python-wheels/           # Папка для распределения Python-колес
-*.egg-info/                    # Информация о пакете Egg
-.installed.cfg                 # Конфигурационный файл установки
-*.egg                          # Файлы с расширением .egg
-MANIFEST                       # Манифест для пакетов
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
 
 # PyInstaller
-*.manifest                     # Манифесты для PyInstaller
-*.spec                         # Спецификации для PyInstaller
+#  Usually these files are written by a python script from a template
+#  before PyInstaller builds the exe, so as to inject date/other infos into it.
+*.manifest
+*.spec
 
-# Логи установщика
-pip-log.txt                    # Логи установки pip
-pip-delete-this-directory.txt   # Временные файлы pip
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
 
-# Отчеты тестов / покрытия
-htmlcov/                       # Папка с отчетами покрытия в формате HTML
-.tox/                          # Папка для тестирования через tox
-.nox/                          # Папка для тестов в nox
-.coverage                      # Файл с данными покрытия
-.coverage.*                    # Файлы с данными покрытия с различными расширениями
-.cache                         # Кэш для тестов
-nosetests.xml                  # XML-отчеты для nose
-coverage.xml                   # XML-отчеты для покрытия
-*.cover                        # Файлы покрытия
-*.py,cover                     # Файлы покрытия для Python
-.hypothesis/                   # Папка для данных гипотез
-.pytest_cache/                 # Кэш pytest
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
 
-# Переводы
-*.mo                           # Файлы скомпилированных переводов
-*.pot                          # Шаблоны переводов
+# Translations
+*.mo
+*.pot
 
-# Django файлы:
-*.log                          # Лог-файлы Django
-local_settings.py              # Локальные настройки Django
-db.sqlite3                     # Файл базы данных SQLite
-db.sqlite3-journal             # Журнал базы данных SQLite
+# Django stuff:
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
 
-# Flask файлы:
-instance/                      # Папка для инстансов Flask-приложений
-.webassets-cache               # Кэш для веб-активов Flask
+# Flask stuff:
+instance/
+.webassets-cache
 
-# Scrapy файлы:
-.scrapy                        # Папка для Scrapy-проектов
+# Scrapy stuff:
+.scrapy
 
-# Документация Sphinx
-docs/_build/                   # Папка для собранной документации Sphinx
+# Sphinx documentation
+docs/_build/
 
 # PyBuilder
-target/                        # Папка для целей сборки PyBuilder
+target/
 
 # Jupyter Notebook
-.ipynb_checkpoints             # Папка для контрольных точек Jupyter
+.ipynb_checkpoints
 
 # IPython
-profile_default/               # Профили для IPython
-ipython_config.py              # Конфигурация IPython
+profile_default/
+ipython_config.py
 
 # pyenv
-.python-version                # Файл с версией Python для pyenv
+.python-version
 
 # pipenv
-# Включить Pipfile.lock в Git, если нет платформозависимых зависимостей
+#   According to pypa/pipenv#598, it is recommended to include Pipfile.lock in version control.
+#   However, in case of collaboration, if having platform-specific dependencies or dependencies
+#   having no cross-platform support, pipenv may install dependencies that don't work, or not
+#   install all needed dependencies.
 #Pipfile.lock
 
-# PEP 582; используется в pyflow
-__pypackages__/                # Папка для пакетов, используемая в PEP 582
+# PEP 582; used by e.g. github.com/David-OConnor/pyflow
+__pypackages__/
 
-# Файлы Celery
-celerybeat-schedule            # Планировщик Celery
-celerybeat.pid                 # PID процесс Celery
+# Celery stuff
+celerybeat-schedule
+celerybeat.pid
 
-# Файлы SageMath
-*.sage.py                      # Файлы SageMath
+# SageMath parsed files
+*.sage.py
 
-# Среды
-.env                           # Файл для переменных окружения
-.venv                          # Папка для виртуальных окружений
-env/                           # Папка для окружений
-venv/                          # Папка для виртуальных окружений
-ENV/                           # Папка для окружений
-env.bak/                       # Резервные папки для окружений
-venv.bak/                      # Резервные папки для окружений
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
 
-# Настройки проекта Spyder
-.spyderproject                 # Настройки проекта Spyder
-.spyproject                    # Настройки проекта Spyder
+# Spyder project settings
+.spyderproject
+.spyproject
 
-# Настройки проекта Rope
-.ropeproject                   # Настройки проекта Rope
+# Rope project settings
+.ropeproject
 
-# Документация mkdocs
-/site                           # Папка для сайта, сгенерированного mkdocs
+# mkdocs documentation
+/site
 
 # mypy
-.mypy_cache/                   # Кэш mypy
-.dmypy.json                    # Конфигурация mypy
-dmypy.json                     # Конфигурация mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
 
-# Pyre типизация
-.pyre/                         # Папка для Pyre
+# Pyre type checker
+.pyre/
 
 # Папки, создаваемые средой разработки
-.idea                          # Настройки для IDE JetBrains (например, PyCharm)
-.DS_Store                      # Файл macOS, сохраняющий метаданные
-.AppleDouble                   # Файл для обмена данными с macOS
-.LSOverride                    # Файл для обмена данными с macOS
+.idea
+.DS_Store
+.AppleDouble
+.LSOverride
 
-*.sublime-project              # Настройки проекта Sublime Text
-*.sublime-workspace            # Рабочее пространство Sublime Text
+*.sublime-project
+*.sublime-workspace
 
-.vscode/                       # Папка настроек для VSCode
-*.code-workspace               # Рабочее пространство VSCode
+.vscode/
+*.code-workspace
 
-# Локальная история для Visual Studio Code
-.history/                      # Папка для истории файлов VSCode
+# Local History for Visual Studio Code
+.history/
 
-# Кэш mypy
-.mypy_cache                    # Кэш mypy
+.mypy_cache
 
-# Папки со статикой и медиа
-media/                         # Папка для медиафайлов
-sent_emails/                   # Папка для отправленных писем
+# папки со статикой и медиа
+media/
 
-# Игнорирование папок контрактов и ваучеров
-contracts/                     # Папка для контрактов
-vauchers/                      # Папка для ваучеров
+sent_emails/
+
+contracts/
+vauchers/
