@@ -18,6 +18,7 @@
                 <th>Гос.номер</th>
                 <th>Забронирован</th>
                 <th>Страховка</th>
+                <th>Цена</th>
                 <th>Действия</th>
             </tr>
         </thead>
@@ -34,10 +35,28 @@
             </td>
             <td>{{ car.insurance }}</td>
             <td>
-                
+                {{ car.price.winter_price }} {{car.price.currency}}
+            </td>
+            <td>
+                <a href="{% url 'backend:car_edit' car.slug %}"><button class="btn btn-primary">Изменить</button></a>
             </td>
         </tbody>
     </table>
+</div>
+<h2 class="mt-4 mb-4">Список проблем {{car.brand.name}}: {{car.model.name}}</h2>
+<div class="problems">
+    <ul class="todo-list">
+        {% for problem in car.problem_car.all %}
+            <li class="todo-item {% if problem.is_solved %}solved{% else %}unsolved{% endif %}">
+                <input type="checkbox" {% if problem.is_solved %}checked{% endif %} disabled>
+                <span class="issue">{{ problem.issue }}</span>
+                <span class="solved-at">{% if problem.is_solved %}Solved at: {{ problem.solved_at }}{% endif %}</span>
+                {% if not problem.is_solved %}
+                    <button class="solve-button" data-problem-id="{{ problem.id }}">Устранить</button>
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ul>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/tablesort/5.2.1/tablesort.min.js"></script>

@@ -30,7 +30,9 @@
             {% for application in applications %}
                 <tr data-expired="{{ application.status }}">
                     <td>
-                        {{ application.id }}
+                        <div class="clickable-div" data-url="{% url 'backend:application_detail' application.id %}">
+                            {{ application.id }}
+                        </div>
                     </td>
                     <td>{{ application.car__car_name }}</td>
                     <td>{{ application.pickup_location }}<br>{{ application.dropoff_location }}</td>

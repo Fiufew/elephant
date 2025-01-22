@@ -1,23 +1,49 @@
-from django.shortcuts import render
-from django.db.models import Q
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseBadRequest
 from django.urls import reverse
 from django.shortcuts import render, get_object_or_404, redirect
+from django.core.exceptions import ObjectDoesNotExist
 
 from .models import Car, Application
 from .forms import CarForm, PriceForm, ApplicationForm
+<<<<<<< HEAD
 from .services import ApplicationService, PriceService
 from .utils import pdf_create_contract, pdf_create_vaucher
+=======
+from .services import ApplicationService, PriceService, CarService
+>>>>>>> refactoring
 
 
 def index(request):
     '''
-    Отображает список автомобилей
-    на главной странице
+    Отображает список автомобилей на главной странице
     '''
-    cars = Car.objects.values('license_plate', 'is_availaible', 'car_name')
+    try:
+        search_query = request.GET.get('search', '')
+        booked_only = request.GET.get('booked_only', '').lower() == 'true'
+        cars = CarService.get_filtered_cars(search_query, booked_only)
 
-    return render(request, 'index.html', {'cars': cars})
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            cars_data = [
+                {
+                    'brand': car.brand.name,
+                    'model': car.model.name,
+                    'color': car.color.name,
+                    'year_manufactored': car.year_manufactored,
+                    'license_plate': car.license_plate,
+                    'is_availaible': car.is_availaible,
+                    'detail_url': reverse('backend:car_detail', args=[car.slug]),
+                    'edit_url': reverse('backend:car_edit', args=[car.slug]),
+                }
+                for car in cars
+            ]
+            return JsonResponse({'cars': cars_data})
+
+        return render(request, 'index.html', {'cars': cars})
+
+    except ObjectDoesNotExist:
+        return HttpResponseBadRequest("Объект не найден.")
+    except Exception as e:
+        return HttpResponseBadRequest(f"Произошла ошибка: {str(e)}")
 
 
 def car_detail(request, slug):
@@ -134,20 +160,22 @@ def application_detail(request, pk):
     """
     Отображает детали конкретной заявки и позволяет добавлять/изменять файлы.
     """
-    applications = ...
-    if request.method == 'POST':
-        form = ...(request.POST, request.FILES)
-        if form.is_valid():
-            file_instance = form.save(commit=False)
-            file_instance.applications = applications
-            file_instance.save()
-            return redirect('backend:application_detail', pk=pk)
-    else:
-        form = ...
-    all_files = ...
+    applications = get_object_or_404(Application, pk=pk)
+    car = applications.car
+    # if request.method == 'POST':
+    #     form = ...(request.POST, request.FILES)
+    #     if form.is_valid():
+    #         file_instance = form.save(commit=False)
+    #         file_instance.applications = applications
+    #         file_instance.save()
+    #         return redirect('backend:application_detail', pk=pk)
+    # else:
+    #     form = ...
+    # all_files = ...
     return render(
         request, 'application_detail.html',
-        {'applications': applications, 'form': form, 'all_files': all_files}
+        {'application': applications,
+         'car': car}
     )
 
 
@@ -232,7 +260,7 @@ def create_price(request, pk):
         if form.is_valid():
             price_data = form.cleaned_data
             PriceService.create_price(car, price_data)
-            return redirect('backend:price_list')
+            return redirect('backend:car_list')
     else:
         form = PriceForm(initial={'car_price': car})
     return render(request, 'price_form.html', {
@@ -250,7 +278,7 @@ def update_price(request, pk):
         if form.is_valid():
             price_data = form.cleaned_data
             PriceService.update_price(price, price_data)
-            return redirect('backend:price_list')
+            return redirect('backend:car_list')
     else:
         form = PriceForm(instance=price)
     return render(request, 'price_form.html', {'form': form,

@@ -13,8 +13,12 @@ urlpatterns = [
     path('applications/', views.applications_list, name='applications'),
     path('applications/create/', views.create_application,
          name='application_create'),
+    path('applications/<int:pk>/', views.application_detail,
+         name='application_detail'),
     path('applications/<int:pk>/edit/', views.edit_application,
          name='application_edit'),
     path('applications/<int:pk>/delete/', views.remove_application,
          name='application_remove'),
+    path('create_price/<int:pk>/', views.create_price, name='create_price'),
+    path('update_price/<int:pk>/', views.update_price, name='update_price'),
 ]

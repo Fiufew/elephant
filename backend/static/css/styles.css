@@ -114,3 +114,65 @@
     align-items: left;
     box-sizing: border-box;
 }
+.problems {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+}
+
+.problems h2 {
+    text-align: center;
+    color: #333;
+}
+
+.todo-list {
+    list-style-type: none;
+    padding: 0;
+}
+
+.todo-item {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+.todo-item.solved {
+    background-color: #e0ffe0;
+    text-decoration: line-through;
+}
+
+.todo-item.unsolved {
+    background-color: #fff0f0;
+}
+
+.todo-item input[type="checkbox"] {
+    margin-right: 10px;
+}
+
+.todo-item .issue {
+    flex: 1;
+}
+
+.todo-item .solved-at {
+    margin-left: 10px;
+    font-size: 0.9em;
+    color: #555;
+}
+
+.solve-button {
+    margin-left: 10px;
+    padding: 5px 10px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.solve-button:hover {
+    background-color: #45a049;
+}

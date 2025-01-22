@@ -230,3 +230,22 @@ class Application(models.Model):
     class Meta:
         verbose_name = 'Application'
         verbose_name_plural = 'Applications'
+
+
+class Problem(models.Model):
+    car_problem = models.ForeignKey(Car, related_name='problem_car',
+                                    on_delete=models.CASCADE,
+                                    null=True)
+    issue = models.TextField()
+    is_solved = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    solved_at = models.DateTimeField(blank=True, null=True)
+
+    def solve_problem(self):
+        self.is_solved = True
+        self.solved_at = timezone.now()
+        self.save()
+
+    class Meta:
+        verbose_name = 'Problem'
+        verbose_name_plural = 'Problems'
