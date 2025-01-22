@@ -3,6 +3,7 @@ from django.utils import timezone
 
 from autoslug import AutoSlugField
 
+from .utils import other_files_path
 
 class Category(models.Model):
     name = models.CharField(max_length=128)
@@ -214,8 +215,10 @@ class Application(models.Model):
     aggregator = models.CharField(max_length=32, choices=AGGREGATOR_CHOICES,
                                   null=True, blank=True)
     comment = models.TextField(blank=True, null=True)
-    vaucher = ...
-    contract = ...
+    contract = models.FileField(
+        upload_to='contract_dir', null=True, blank=True)
+    vaucher = models.FileField(
+        upload_to='vaucher_dir', null=True, blank=True)
 
     def check_expiration(self):
         return self.dropoff_time < timezone.now()
@@ -249,3 +252,10 @@ class Problem(models.Model):
     class Meta:
         verbose_name = 'Problem'
         verbose_name_plural = 'Problems'
+
+
+class Files(models.Model):
+    application = models.ForeignKey(
+        Application, related_name='files', on_delete=models.CASCADE
+    )
+    files = models.FileField(upload_to=other_files_path, null=True, blank=True)

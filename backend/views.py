@@ -3,7 +3,7 @@ from django.urls import reverse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.core.exceptions import ObjectDoesNotExist
 
-from .models import Car, Application
+from .models import Car, Application, Files
 from .forms import CarForm, PriceForm, ApplicationForm
 from .utils import pdf_create_contract, pdf_create_vaucher
 from .services import ApplicationService, PriceService, CarService
@@ -156,22 +156,15 @@ def application_detail(request, pk):
     """
     Отображает детали конкретной заявки и позволяет добавлять/изменять файлы.
     """
-    applications = get_object_or_404(Application, pk=pk)
-    car = applications.car
-    # if request.method == 'POST':
-    #     form = ...(request.POST, request.FILES)
-    #     if form.is_valid():
-    #         file_instance = form.save(commit=False)
-    #         file_instance.applications = applications
-    #         file_instance.save()
-    #         return redirect('backend:application_detail', pk=pk)
-    # else:
-    #     form = ...
-    # all_files = ...
+    applications = get_object_or_404(
+        Application.objects.select_related('car'), pk=pk)
+    all_files = Files.objects.prefetch_related(
+        'application').filter(application_id=applications.id)
     return render(
         request, 'application_detail.html',
         {'application': applications,
-         'car': car}
+         'car': applications.car,
+         'all_files': all_files}
     )
 
 
@@ -190,8 +183,8 @@ def create_application(request):
         form = ApplicationForm(request.POST, request.FILES)
         if form.is_valid():
             application = form.save()
-            pdf_create_contract(request, application)  # noq
-            pdf_create_vaucher(request, application)  # noqa  
+            pdf_create_contract(request, application)
+            pdf_create_vaucher(request, application)
             return redirect('backend:applications')
     else:
         form = ApplicationForm()

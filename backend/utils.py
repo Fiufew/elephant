@@ -17,10 +17,10 @@ NUMBER_PDF_PAGE = 0
 
 def other_files_path(instance, filename):
     folder = os.path.join(
-        settings.MEDIA_ROOT, f"other_files/Application_{instance.application_id}")
+        settings.MEDIA_ROOT,
+        "other_files", f"Application_{instance.application_id}")
     os.makedirs(folder, exist_ok=True)
-    edit_str = f'other_files/Application_{instance.application_id}/'
-    return f'{edit_str}{filename}'
+    return os.path.join(folder, filename)
 
 
 def pdf_create_contract(request, application):
