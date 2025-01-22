@@ -27,8 +27,10 @@ def index(request):
                     'year_manufactored': car.year_manufactored,
                     'license_plate': car.license_plate,
                     'is_availaible': car.is_availaible,
-                    'detail_url': reverse('backend:car_detail', args=[car.slug]),
-                    'edit_url': reverse('backend:car_edit', args=[car.slug]),
+                    'detail_url': reverse(
+                        'backend:car_detail', args=[car.slug]),
+                    'edit_url': reverse(
+                        'backend:car_edit', args=[car.slug]),
                 }
                 for car in cars
             ]
@@ -162,10 +164,11 @@ def application_detail(request, pk):
         'application').filter(application_id=applications.id)
     return render(
         request, 'application_detail.html',
-        {'application': applications,
-         'car': applications.car,
-         'all_files': all_files}
-    )
+        {
+            'application': applications,
+            'car': applications.car,
+            'all_files': all_files
+        })
 
 
 def create_application(request):
