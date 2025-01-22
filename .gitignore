@@ -1,154 +1,226 @@
-# Byte-compiled / optimized / DLL files
+# Папка с скомпилированными байт-кодами Python
 __pycache__/
+
+# Скомпилированные файлы Python
 *.py[cod]
+
+# Файлы Java, сгенерированные при сборке Python-кода
 *$py.class
 
-# C extensions
+# C расширения
 *.so
 
-# Distribution / packaging
+# Распределение / упаковка
+# Файл Python для настройки виртуальной среды
 .Python
+# Папка для сборки
 build/
+# Папка для development-eggs
 develop-eggs/
+# Папка для выходных данных, например, архивы дистрибутива
 dist/
+# Папка для скачанных файлов
 downloads/
+# Папка для egg-файлов
 eggs/
+# Папка для egg-файлов
 .eggs/
+# Папка для библиотек
 lib/
+# Папка для 64-битных библиотек
 lib64/
+# Папка для частей сборки
 parts/
+# Папка для исходного дистрибутива
 sdist/
+# Папка для переменных данных
 var/
+# Папка для сгенерированных файлов wheel
 wheels/
+# Папка с мета-данными для pip-wheel
 pip-wheel-metadata/
+# Папка для распределения Python-колес
 share/python-wheels/
+# Информация о пакете Egg
 *.egg-info/
+# Конфигурационный файл установки
 .installed.cfg
+# Файлы с расширением .egg
 *.egg
+# Манифест для пакетов
 MANIFEST
 
 # PyInstaller
-#  Usually these files are written by a python script from a template
-#  before PyInstaller builds the exe, so as to inject date/other infos into it.
+# Манифесты для PyInstaller
 *.manifest
+# Спецификации для PyInstaller
 *.spec
 
-# Installer logs
+# Логи установщика
+# Логи установки pip
 pip-log.txt
+# Временные файлы pip
 pip-delete-this-directory.txt
 
-# Unit test / coverage reports
+# Отчеты тестов / покрытия
+# Папка с отчетами покрытия в формате HTML
 htmlcov/
+# Папка для тестирования через tox
 .tox/
+# Папка для тестов в nox
 .nox/
+# Файл с данными покрытия
 .coverage
+# Файлы с данными покрытия с различными расширениями
 .coverage.*
+# Кэш для тестов
 .cache
+# XML-отчеты для nose
 nosetests.xml
+# XML-отчеты для покрытия
 coverage.xml
+# Файлы покрытия
 *.cover
+# Файлы покрытия для Python
 *.py,cover
+# Папка для данных гипотез
 .hypothesis/
+# Кэш pytest
 .pytest_cache/
 
-# Translations
+# Переводы
+# Файлы скомпилированных переводов
 *.mo
+# Шаблоны переводов
 *.pot
 
-# Django stuff:
+# Django файлы
+# Лог-файлы Django
 *.log
+# Локальные настройки Django
 local_settings.py
+# Файл базы данных SQLite
 db.sqlite3
+# Журнал базы данных SQLite
 db.sqlite3-journal
 
-# Flask stuff:
+# Flask файлы
+# Папка для инстансов Flask-приложений
 instance/
+# Кэш для веб-активов Flask
 .webassets-cache
 
-# Scrapy stuff:
+# Scrapy файлы
+# Папка для Scrapy-проектов
 .scrapy
 
-# Sphinx documentation
+# Документация Sphinx
+# Папка для собранной документации Sphinx
 docs/_build/
 
 # PyBuilder
+# Папка для целей сборки PyBuilder
 target/
 
 # Jupyter Notebook
+# Папка для контрольных точек Jupyter
 .ipynb_checkpoints
 
 # IPython
+# Профили для IPython
 profile_default/
+# Конфигурация IPython
 ipython_config.py
 
 # pyenv
+# Файл с версией Python для pyenv
 .python-version
 
 # pipenv
-#   According to pypa/pipenv#598, it is recommended to include Pipfile.lock in version control.
-#   However, in case of collaboration, if having platform-specific dependencies or dependencies
-#   having no cross-platform support, pipenv may install dependencies that don't work, or not
-#   install all needed dependencies.
-#Pipfile.lock
-
-# PEP 582; used by e.g. github.com/David-OConnor/pyflow
+# Папка для пакетов, используемая в PEP 582
 __pypackages__/
 
-# Celery stuff
+# Celery
+# Планировщик Celery
 celerybeat-schedule
+# PID процесс Celery
 celerybeat.pid
 
-# SageMath parsed files
+# SageMath
+# Файлы SageMath
 *.sage.py
 
-# Environments
+# Среды
+# Файл для переменных окружения
 .env
+# Папка для виртуальных окружений
 .venv
+# Папка для окружений
 env/
+# Папка для виртуальных окружений
 venv/
+# Папка для окружений
 ENV/
+# Резервные папки для окружений
 env.bak/
 venv.bak/
 
-# Spyder project settings
+# Spyder
+# Настройки проекта Spyder
 .spyderproject
+# Настройки проекта Spyder
 .spyproject
 
-# Rope project settings
+# Rope
+# Настройки проекта Rope
 .ropeproject
 
-# mkdocs documentation
+# mkdocs
+# Папка для сайта, сгенерированного mkdocs
 /site
 
 # mypy
+# Кэш mypy
 .mypy_cache/
+# Конфигурация mypy
 .dmypy.json
 dmypy.json
 
-# Pyre type checker
+# Pyre
+# Папка для Pyre
 .pyre/
 
-# Папки, создаваемые средой разработки
+# Среда разработки
+# Настройки для IDE JetBrains (например, PyCharm)
 .idea
+# Файл macOS, сохраняющий метаданные
 .DS_Store
+# Файл для обмена данными с macOS
 .AppleDouble
+# Файл для обмена данными с macOS
 .LSOverride
 
+# Настройки Sublime Text
 *.sublime-project
 *.sublime-workspace
 
+# VSCode
+# Папка настроек для VSCode
 .vscode/
+# Рабочее пространство VSCode
 *.code-workspace
 
-# Local History for Visual Studio Code
+# Локальная история для Visual Studio Code
 .history/
 
-.mypy_cache
-
-# папки со статикой и медиа
+# Папка для медиафайлов
 media/
 
+# Папка для отправленных писем
 sent_emails/
 
+# Игнорирование папок контрактов и ваучеров
+# Папка для контрактов
 contracts/
+# Папка для ваучеров
 vauchers/
