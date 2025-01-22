@@ -5,12 +5,8 @@ from django.core.exceptions import ObjectDoesNotExist
 
 from .models import Car, Application
 from .forms import CarForm, PriceForm, ApplicationForm
-<<<<<<< HEAD
-from .services import ApplicationService, PriceService
 from .utils import pdf_create_contract, pdf_create_vaucher
-=======
 from .services import ApplicationService, PriceService, CarService
->>>>>>> refactoring
 
 
 def index(request):
