@@ -5,6 +5,7 @@ from autoslug import AutoSlugField
 
 from .utils import other_files_path
 
+
 class Category(models.Model):
     name = models.CharField(max_length=128)
     slug = models.SlugField(unique=True)
@@ -110,24 +111,30 @@ class CarManager(models.Manager):
 
 
 class Car(models.Model):
-    category = models.ForeignKey(Category,
-                                 related_name='categories',
-                                 on_delete=models.CASCADE)
-    color = models.ForeignKey(Color,
-                              related_name='colors',
-                              on_delete=models.CASCADE)
-    brand = models.ForeignKey(Brand,
-                              related_name='brands_in_car',
-                              on_delete=models.CASCADE)
-    model = models.ForeignKey(Model,
-                              related_name='models_in_car',
-                              on_delete=models.CASCADE)
-    investor = models.ForeignKey(Investor,
-                                 related_name='investors',
-                                 on_delete=models.CASCADE)
-    insurance = models.ForeignKey(Insurance,
-                                  related_name='car_insurance',
-                                  on_delete=models.CASCADE)
+    category = models.ForeignKey(
+        Category,
+        related_name='categories',
+        on_delete=models.CASCADE)
+    color = models.ForeignKey(
+        Color,
+        related_name='colors',
+        on_delete=models.CASCADE)
+    brand = models.ForeignKey(
+        Brand,
+        related_name='brands_in_car',
+        on_delete=models.CASCADE)
+    model = models.ForeignKey(
+        Model,
+        related_name='models_in_car',
+        on_delete=models.CASCADE)
+    investor = models.ForeignKey(
+        Investor,
+        related_name='investors',
+        on_delete=models.CASCADE)
+    insurance = models.ForeignKey(
+        Insurance,
+        related_name='car_insurance',
+        on_delete=models.CASCADE)
     slug = AutoSlugField(populate_from='model', unique=True)
     car_name = models.CharField(max_length=255, blank=True, null=True)
     year_manufactored = models.IntegerField(null=True)
@@ -162,8 +169,9 @@ class Car(models.Model):
 
 
 class Price(models.Model):
-    car_price = models.OneToOneField(Car, on_delete=models.CASCADE,
-                                     related_name='price')
+    car_price = models.OneToOneField(
+        Car, on_delete=models.CASCADE,
+        related_name='price')
     winter_price = models.DecimalField(max_digits=10, decimal_places=2)
     spring_price = models.DecimalField(max_digits=10, decimal_places=2)
     summer_price = models.DecimalField(max_digits=10, decimal_places=2)
@@ -196,11 +204,13 @@ class Application(models.Model):
         ('aggregator3', 'Aggregator 3'),
     ]
 
-    car = models.ForeignKey(Car, related_name='booking_requests',
-                            on_delete=models.CASCADE)
-    price = models.ForeignKey(Price, related_name='booking_requests_price',
-                              on_delete=models.CASCADE,
-                              null=True, blank=True)
+    car = models.ForeignKey(
+        Car, related_name='booking_requests',
+        on_delete=models.CASCADE)
+    price = models.ForeignKey(
+        Price, related_name='booking_requests_price',
+        on_delete=models.CASCADE,
+        null=True, blank=True)
     pickup_location = models.CharField(max_length=512)
     dropoff_location = models.CharField(max_length=512)
     pickup_time = models.DateTimeField()
@@ -208,12 +218,14 @@ class Application(models.Model):
     renter_name = models.CharField(max_length=128)
     renter_phone = models.CharField(max_length=32)
     renter_email = models.EmailField(null=True, blank=True)
-    status = models.CharField(max_length=16, choices=STATUS_CHOICES,
-                              blank=True, default=ACTIVE)
+    status = models.CharField(
+        max_length=16, choices=STATUS_CHOICES,
+        blank=True, default=ACTIVE)
     application_preparer = models.CharField(max_length=64, null=True)
     aggregator_id = models.IntegerField(null=True, blank=True)
-    aggregator = models.CharField(max_length=32, choices=AGGREGATOR_CHOICES,
-                                  null=True, blank=True)
+    aggregator = models.CharField(
+        max_length=32, choices=AGGREGATOR_CHOICES,
+        null=True, blank=True)
     comment = models.TextField(blank=True, null=True)
     contract = models.FileField(
         upload_to='contract_dir', null=True, blank=True)
@@ -236,9 +248,10 @@ class Application(models.Model):
 
 
 class Problem(models.Model):
-    car_problem = models.ForeignKey(Car, related_name='problem_car',
-                                    on_delete=models.CASCADE,
-                                    null=True)
+    car_problem = models.ForeignKey(
+        Car, related_name='problem_car',
+        on_delete=models.CASCADE,
+        null=True)
     issue = models.TextField()
     is_solved = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)

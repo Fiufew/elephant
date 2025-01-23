@@ -1,7 +1,5 @@
 import io
 import os
-
-import fitz
 from django.http import HttpResponseRedirect
 from django.conf import settings
 from django.urls import reverse
@@ -9,13 +7,14 @@ from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfbase import pdfmetrics
-
+import fitz
 
 FONT_SIZE = 7
 NUMBER_PDF_PAGE = 0
 
 
 def other_files_path(instance, filename):
+    """Функция создания пути к прочим файлам."""
     folder = os.path.join(
         settings.MEDIA_ROOT,
         "other_files", f"Application_{instance.application_id}")
@@ -23,78 +22,76 @@ def other_files_path(instance, filename):
     return os.path.join(folder, filename)
 
 
-def pdf_create_contract(request, application):
+def create_text_layer_with_coordinates(
+        font_name, font_size, text_data, output_path):
+    """Создания текста по координатам."""
+    packet = io.BytesIO()
+    c = canvas.Canvas(packet, pagesize=A4)
+    c.setFont(font_name, font_size)
+    for text, (x, y) in text_data.items():
+        c.drawString(x, y, text)
+    c.save()
+    packet.seek(0)
+    with open(output_path, "wb") as f:
+        f.write(packet.getvalue())
+
+
+def merge_pdfs(template_path, text_layer_path, output_path):
+    """Слияние pdf-файлов."""
+    with fitz.open(template_path) as template_pdf:
+        with fitz.open(text_layer_path) as text_layer_pdf:
+            for page_num in range(template_pdf.page_count):
+                page = template_pdf[page_num]
+                page.show_pdf_page(page.rect, text_layer_pdf, NUMBER_PDF_PAGE)
+            template_pdf.save(output_path)
+
+
+def generate_pdf(
+        application,
+        folder_name,
+        template_name,
+        output_name,
+        data_key,
+        text_positions):
+    """Генерация PDF файла."""
     application_folder = os.path.join(
-        settings.MEDIA_ROOT, f"contracts/Application_{application.id}")
+        settings.MEDIA_ROOT, f"{folder_name}/Application_{application.id}")
     os.makedirs(application_folder, exist_ok=True)
-    template_path = "backend/pdf_create/contract_template.pdf"
-    output_path = os.path.join(application_folder, f"Contract_№{application.id}.pdf")
-    temp_text_pdf = os.path.join(application_folder, "текст для договора.pdf")
-
-    data = {"Name": application.renter_name}
-
+    template_path = f"backend/pdf_create/{template_name}"
+    output_path = os.path.join(
+        application_folder, f"{output_name}_№{application.id}.pdf")
+    temp_text_pdf = os.path.join(application_folder, "temp_text.pdf")
     pdfmetrics.registerFont(TTFont(
         "Calibri", "backend/pdf_create/font_Calibri.ttf"))
-
-    def create_text_layer(temp_text_pdf, data):
-        packet = io.BytesIO()
-        c = canvas.Canvas(packet, pagesize=A4)
-        c.setFont("Calibri", FONT_SIZE)
-        c.drawString(160, 648, f"{data['Name']}")
-        c.save()
-        packet.seek(0)
-        with open(temp_text_pdf, "wb") as f:
-            f.write(packet.getvalue())
-
-    def merge_pdfs(template_path, temp_text_pdf, output_path):
-        with fitz.open(template_path) as template_pdf:
-            with fitz.open(temp_text_pdf) as text_layer_pdf:
-                for page_num in range(template_pdf.page_count):
-                    page = template_pdf[page_num]
-                    page.show_pdf_page(
-                        page.rect, text_layer_pdf, NUMBER_PDF_PAGE)
-                template_pdf.save(output_path)
-    create_text_layer(temp_text_pdf, data)
+    create_text_layer_with_coordinates(
+        "Calibri", FONT_SIZE, text_positions, temp_text_pdf)
     merge_pdfs(template_path, temp_text_pdf, output_path)
-    application.contract = f"contracts/Application_{application.id}/Contract_№{application.id}.pdf"
+    setattr(
+        application, data_key, f"{folder_name}/Application_{application.id}/{output_name}_№{application.id}.pdf")
     application.save()
-    return HttpResponseRedirect(reverse("backend:application_detail", args=[application.id]))
+    os.remove(temp_text_pdf)
+    return output_path
+
+
+def pdf_create_contract(request, application):
+    """Функция создания договора."""
+    text_positions = {
+        f"{application.renter_name}": (160, 648),  # имя
+    }
+    generate_pdf(
+        application, "contracts",
+        "contract_template.pdf", "Contract", "contract", text_positions)
+    return HttpResponseRedirect(reverse(
+        "backend:application_detail", args=[application.id]))
 
 
 def pdf_create_vaucher(request, application):
-    application_folder = os.path.join(
-        settings.MEDIA_ROOT, f"vauchers/Application_{application.id}")
-    os.makedirs(application_folder, exist_ok=True)
-    template_path = "backend/pdf_create/vaucher_template.pdf"
-    output_path = os.path.join(application_folder, f"Vaucher_№{application.id}.pdf")
-    temp_text_pdf = os.path.join(application_folder, "текст для Vaucherа.pdf")
-
-    data = {"Name": application.renter_name}
-
-    pdfmetrics.registerFont(TTFont(
-        "Calibri", "backend/pdf_create/font_Calibri.ttf"))
-
-    def create_text_layer(temp_text_pdf, data):
-        packet = io.BytesIO()
-        c = canvas.Canvas(packet, pagesize=A4)
-        c.setFont("Calibri", FONT_SIZE)
-        c.drawString(160, 648, f"{data['Name']}")
-        c.save()
-        packet.seek(0)
-        with open(temp_text_pdf, "wb") as f:
-            f.write(packet.getvalue())
-
-    def merge_pdfs(template_path, temp_text_pdf, output_path):
-        with fitz.open(template_path) as template_pdf:
-            with fitz.open(temp_text_pdf) as text_layer_pdf:
-                for page_num in range(template_pdf.page_count):
-                    page = template_pdf[page_num]
-                    page.show_pdf_page(
-                        page.rect, text_layer_pdf, NUMBER_PDF_PAGE)
-                template_pdf.save(output_path)
-    create_text_layer(temp_text_pdf, data)
-    merge_pdfs(template_path, temp_text_pdf, output_path)
-    application.vaucher = f"vauchers/Application_{application.id}/Vaucher_№{application.id}.pdf"
-    application.save()
-    return HttpResponseRedirect(
-        reverse("backend:application_detail", args=[application.id]))
+    """Функция создания ваучера."""
+    text_positions = {
+        f"{application.renter_name}": (200, 700),  # имя
+    }
+    generate_pdf(
+        application, "vauchers",
+        "vaucher_template.pdf", "Vaucher", "vaucher", text_positions)
+    return HttpResponseRedirect(reverse(
+        "backend:application_detail", args=[application.id]))

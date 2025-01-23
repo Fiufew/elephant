@@ -39,8 +39,9 @@ class CarForm(forms.ModelForm):
         insurance_expired_date = self.cleaned_data.get(
             'insurance_expired_date')
 
-        if insurance_symbol and (insurance_start_date and
-                                 insurance_expired_date):
+        if insurance_symbol and (
+            insurance_start_date and
+                insurance_expired_date):
             insurance, created = Insurance.objects.get_or_create(
                 symbol=insurance_symbol,
                 start_date=insurance_start_date,
@@ -77,8 +78,9 @@ class CarForm(forms.ModelForm):
 class PriceForm(forms.ModelForm):
     class Meta:
         model = Price
-        fields = ['winter_price', 'spring_price', 'summer_price',
-                  'autumn_price', 'currency']
+        fields = [
+            'winter_price', 'spring_price', 'summer_price',
+            'autumn_price', 'currency']
 
 
 class ApplicationForm(forms.ModelForm):
