@@ -1,7 +1,10 @@
 from django.contrib import admin
-from .models import (Category, Color, Brand, Model, Car,
-                     Price, Application, Investor, Insurance,
-                     Problem)
+
+from .models import (
+    Application, Brand,
+    Car, Category, Color,
+    Insurance, Investor,
+    Model, Price, Problem)
 
 
 @admin.register(Category)
@@ -40,8 +43,9 @@ class ModelAdmin(admin.ModelAdmin):
 
 @admin.register(Car)
 class CarAdmin(admin.ModelAdmin):
-    list_display = ('brand', 'model', 'is_availaible',
-                    'created_at', 'updated_at')
+    list_display = (
+        'brand', 'model', 'is_availaible',
+        'created_at', 'updated_at')
     list_filter = ('brand', 'model', 'is_availaible')
     exclude = ('car_name',)
     search_fields = ('brand__name', 'model__name', 'license_plate')
@@ -49,18 +53,20 @@ class CarAdmin(admin.ModelAdmin):
 
 @admin.register(Price)
 class PriceAdmin(admin.ModelAdmin):
-    list_display = ('winter_price', 'spring_price',
-                    'summer_price', 'autumn_price',
-                    'currency', 'car_price')
+    list_display = (
+        'winter_price', 'spring_price',
+        'summer_price', 'autumn_price',
+        'currency', 'car_price')
 
 
 @admin.register(Application)
 class ApplicationAdmin(admin.ModelAdmin):
-    list_display = ('car', 'price', 'pickup_location',
-                    'dropoff_location', 'pickup_time', 'dropoff_time',
-                    'renter_name', 'renter_phone',
-                    'renter_email',
-                    'comment', 'status')
+    list_display = (
+        'car', 'price', 'pickup_location',
+        'dropoff_location', 'pickup_time', 'dropoff_time',
+        'renter_name', 'renter_phone',
+        'renter_email',
+        'comment', 'status')
     list_filter = ('car', 'price')
 
 

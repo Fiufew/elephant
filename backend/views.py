@@ -11,7 +11,7 @@ from .services import ApplicationService, PriceService, CarService
 
 def index(request):
     '''
-    Отображает список автомобилей на главной странице
+    Отображает список автомобилей на главной странице.
     '''
     try:
         search_query = request.GET.get('search', '')
@@ -216,9 +216,10 @@ def edit_application(request, pk):
             return redirect('backend:applications')
     else:
         form = ApplicationForm(instance=application)
-    return render(request,
-                  'application_form.html',
-                  {'form': form, 'application': application})
+    return render(
+        request,
+        'application_form.html',
+        {'form': form, 'application': application})
 
 
 def remove_application(request, pk):
@@ -273,6 +274,8 @@ def update_price(request, pk):
             return redirect('backend:car_list')
     else:
         form = PriceForm(instance=price)
-    return render(request, 'price_form.html', {'form': form,
-                                               'car': car,
-                                               'price_exists': True})
+    return render(
+        request, 'price_form.html', {
+            'form': form,
+            'car': car,
+            'price_exists': True})
