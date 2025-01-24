@@ -3,12 +3,12 @@ from django.utils import timezone
 
 from autoslug import AutoSlugField
 
-from .utils import other_files_path
+from .utils import other_files_path_for_application, car_image_upload_to
 
 
 class Category(models.Model):
     name = models.CharField(max_length=128)
-    slug = models.SlugField(unique=True)
+    slug = models.SlugField(unique=True)    
 
     class Meta:
         ordering = ['name']
@@ -140,7 +140,7 @@ class Car(models.Model):
     year_manufactored = models.IntegerField(null=True)
     license_plate = models.CharField(max_length=20, null=True)
     is_availaible = models.BooleanField(default=False)
-    image = models.ImageField(blank=True, upload_to='cars/%Y/%m/%d')
+    image = models.ImageField(blank=True, upload_to=car_image_upload_to)
     created_at = models.DateField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -269,6 +269,6 @@ class Problem(models.Model):
 
 class Files(models.Model):
     application = models.ForeignKey(
-        Application, related_name='files', on_delete=models.CASCADE
-    )
-    files = models.FileField(upload_to=other_files_path, null=True, blank=True)
+        Application, related_name='files', on_delete=models.CASCADE)
+    files_application = models.FileField(
+        upload_to=other_files_path_for_application, null=True, blank=True)

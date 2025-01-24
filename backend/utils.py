@@ -14,7 +14,13 @@ FONT_SIZE = 7
 NUMBER_PDF_PAGE = 0
 
 
-def other_files_path(instance, filename):
+def car_image_upload_to(instance, filename):
+    car_name = instance.car_name
+    year = instance.year_manufactored
+    return f"files_dir/cars/{car_name}_{year}/{filename}"
+
+
+def other_files_path_for_application(instance, filename): # пока не работает
     """Функция создания пути к прочим файлам."""
     folder = os.path.join(
         settings.MEDIA_ROOT,
@@ -56,7 +62,8 @@ def generate_pdf(
         text_positions):
     """Генерация PDF файла."""
     application_folder = os.path.join(
-        settings.MEDIA_ROOT, f"{folder_name}/Application_{application.id}")
+        settings.MEDIA_ROOT,
+        f"files_dir/applications/{folder_name}/Application_{application.id}")
     os.makedirs(application_folder, exist_ok=True)
     template_path = f"backend/pdf_create/{template_name}"
     output_path = os.path.join(
@@ -68,7 +75,10 @@ def generate_pdf(
         "Calibri", FONT_SIZE, text_positions, temp_text_pdf)
     merge_pdfs(template_path, temp_text_pdf, output_path)
     setattr(
-        application, data_key, f"{folder_name}/Application_{application.id}/{output_name}_№{application.id}.pdf")
+        application,
+        data_key,
+        f"files_dir/applications/{folder_name}/"
+        f"Application_{application.id}/{output_name}_№{application.id}.pdf")
     application.save()
     os.remove(temp_text_pdf)
     return output_path

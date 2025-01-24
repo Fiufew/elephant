@@ -221,6 +221,6 @@ sent_emails/
 
 # Игнорирование папок контрактов и ваучеров
 # Папка для контрактов
-contracts/
+files_dir/applications/contracts
 # Папка для ваучеров
-vauchers/
+files_dir/applications/vauchers
