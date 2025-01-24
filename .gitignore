@@ -219,8 +219,7 @@ media/
 # Папка для отправленных писем
 sent_emails/
 
-# Игнорирование папок контрактов и ваучеров
-# Папка для контрактов
-files_dir/applications/contracts
-# Папка для ваучеров
-files_dir/applications/vauchers
+
+applications/
+
+
