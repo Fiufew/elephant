@@ -143,6 +143,10 @@ class Car(models.Model):
     image = models.ImageField(blank=True, upload_to=car_image_upload_to)
     created_at = models.DateField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    winter_price = models.DecimalField(max_digits=10, decimal_places=2)
+    spring_price = models.DecimalField(max_digits=10, decimal_places=2)
+    summer_price = models.DecimalField(max_digits=10, decimal_places=2)
+    autumn_price = models.DecimalField(max_digits=10, decimal_places=2)
 
     objects = CarManager()
 
@@ -167,25 +171,6 @@ class Car(models.Model):
     def __str__(self):
         return f'{self.brand}: {self.model}'
 
-
-class Price(models.Model):
-    car_price = models.OneToOneField(
-        Car, on_delete=models.CASCADE,
-        related_name='price')
-    winter_price = models.DecimalField(max_digits=10, decimal_places=2)
-    spring_price = models.DecimalField(max_digits=10, decimal_places=2)
-    summer_price = models.DecimalField(max_digits=10, decimal_places=2)
-    autumn_price = models.DecimalField(max_digits=10, decimal_places=2)
-    currency = models.CharField(max_length=10, null=True)
-
-    class Meta:
-        verbose_name = 'Price'
-        verbose_name_plural = 'Prices'
-
-    def __str__(self):
-        return 'Актуальная цена'
-
-
 class Application(models.Model):
 
     CANCELED = 'canceled'
@@ -207,10 +192,7 @@ class Application(models.Model):
     car = models.ForeignKey(
         Car, related_name='booking_requests',
         on_delete=models.CASCADE)
-    price = models.ForeignKey(
-        Price, related_name='booking_requests_price',
-        on_delete=models.CASCADE,
-        null=True, blank=True)
+    price = models.IntegerField(null=True, blank=True)
     pickup_location = models.CharField(max_length=512)
     dropoff_location = models.CharField(max_length=512)
     pickup_time = models.DateTimeField()

@@ -2,7 +2,7 @@ from django import forms
 from bootstrap_datepicker_plus.widgets import (
     DateTimePickerInput, DatePickerInput)
 
-from .models import Car, Price, Insurance, Application
+from .models import Car, Insurance, Application
 
 
 class CarForm(forms.ModelForm):
@@ -73,14 +73,6 @@ class CarForm(forms.ModelForm):
             'model': 'Модель',
             'investor': 'Инвестор',
         }
-
-
-class PriceForm(forms.ModelForm):
-    class Meta:
-        model = Price
-        fields = [
-            'winter_price', 'spring_price', 'summer_price',
-            'autumn_price', 'currency']
 
 
 class ApplicationForm(forms.ModelForm):

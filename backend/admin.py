@@ -4,7 +4,7 @@ from .models import (
     Application, Brand,
     Car, Category, Color,
     Insurance, Investor,
-    Model, Price, Problem)
+    Model, Problem)
 
 
 @admin.register(Category)
@@ -49,14 +49,6 @@ class CarAdmin(admin.ModelAdmin):
     list_filter = ('brand', 'model', 'is_availaible')
     exclude = ('car_name',)
     search_fields = ('brand__name', 'model__name', 'license_plate')
-
-
-@admin.register(Price)
-class PriceAdmin(admin.ModelAdmin):
-    list_display = (
-        'winter_price', 'spring_price',
-        'summer_price', 'autumn_price',
-        'currency', 'car_price')
 
 
 @admin.register(Application)

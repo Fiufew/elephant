@@ -4,9 +4,9 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.core.exceptions import ObjectDoesNotExist
 
 from .models import Car, Application, Files
-from .forms import CarForm, PriceForm, ApplicationForm
-from .utils import pdf_create_contract, pdf_create_vaucher
-from .services import ApplicationService, PriceService, CarService
+from .forms import CarForm, ApplicationForm
+from .utils import pdf_create_contract, pdf_create_vaucher, get_price_for_application
+from .services import ApplicationService, CarService
 
 
 def index(request):
@@ -186,6 +186,13 @@ def create_application(request):
         form = ApplicationForm(request.POST, request.FILES)
         if form.is_valid():
             application = form.save()
+            application.price = get_price_for_application(
+                application.car.winter_price,
+                application.car.spring_price,
+                application.car.summer_price,
+                application.car.autumn_price,
+                application.pickup_time,
+                application.dropoff_time)
             pdf_create_contract(request, application)
             pdf_create_vaucher(request, application)
             return redirect('backend:applications')

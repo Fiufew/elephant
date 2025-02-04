@@ -21,6 +21,7 @@
                 <th>Клиент</th>
                 <th>Описание</th>
                 <th>Работник</th>
+                <th>Итоговая цена</th>
                 <th>Ваучер</th>
                 <th>Контракт</th>
                 <th>Действия</th>
@@ -37,6 +38,7 @@
                 <td>{{ application.renter_name }}</td>
                 <td>{{ application.application_preparer }}</td>
                 <td>{{ application.comment }}</td>
+                <td>{{ application.price }}</td>
                 <td>
                     {% if application.application_preparer %}
                       {{ application.application_preparer }}

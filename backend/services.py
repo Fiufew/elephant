@@ -1,7 +1,7 @@
 from django.shortcuts import redirect
 from django.db.models import Q
 
-from .models import Application, Price, Car
+from .models import Application, Car
 
 
 class ApplicationService:
@@ -33,19 +33,3 @@ class CarService:
         if booked_only:
             cars = Car.objects.available_cars()
         return cars
-
-
-class PriceService:
-
-    @staticmethod
-    def create_price(car, price_data):
-        price = Price(car_price=car, **price_data)
-        price.save()
-        return price
-
-    @staticmethod
-    def update_price(price, price_data):
-        for key, value in price_data.items():
-            setattr(price, key, value)
-        price.save()
-        return price

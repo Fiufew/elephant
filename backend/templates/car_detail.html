@@ -35,9 +35,6 @@
             </td>
             <td>{{ car.insurance }}</td>
             <td>
-                {{ car.price.winter_price }} {{car.price.currency}}
-            </td>
-            <td>
                 <a href="{% url 'backend:car_edit' car.slug %}"><button class="btn btn-primary">Изменить</button></a>
             </td>
         </tbody>

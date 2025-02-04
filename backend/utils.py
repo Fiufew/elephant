@@ -1,3 +1,4 @@
+import datetime
 import io
 import os
 
@@ -12,6 +13,19 @@ import fitz
 
 FONT_SIZE = 7
 NUMBER_PDF_PAGE = 0
+schedule_winter_season = datetime.datetime.strptime(
+    '2025-12-01 00:00:01', '%Y-%m-%d %H:%M:%S')
+
+def get_price_for_application(
+        price_winter,
+        price_spring,
+        price_summer,
+        price_autumn,
+        delivery_date,
+        return_date):
+    if delivery_date >= schedule_winter_season:
+        print(1)
+    return price_winter
 
 
 def car_image_upload_to(instance, filename):
