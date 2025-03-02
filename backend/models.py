@@ -1,46 +1,22 @@
-from django.db import models
+from django.db import models, transaction
+from django.conf import settings
 from django.utils import timezone
+from django.core.exceptions import ValidationError
+from django.core.validators import MinValueValidator, MaxValueValidator
 
-from autoslug import AutoSlugField
-
-from .utils import other_files_path_for_application, car_image_upload_to
-
-
-class Category(models.Model):
-    name = models.CharField(max_length=128)
-    slug = models.SlugField(unique=True)    
-
-    class Meta:
-        ordering = ['name']
-        indexes = [
-            models.Index(fields=['name'])
-        ]
-        verbose_name = 'Category'
-        verbose_name_plural = 'Categories'
-
-    def __str__(self):
-        return self.name
-
-
-class Color(models.Model):
-    name = models.CharField(max_length=64)
-    slug = models.SlugField(unique=True)
-
-    class Meta:
-        ordering = ['name']
-        indexes = [
-            models.Index(fields=['name'])
-        ]
-        verbose_name = 'Color'
-        verbose_name_plural = 'Colors'
-
-    def __str__(self):
-        return self.name
+from .const import (CURRENCY_CHOICES, MAX_PROBLEM_LEN,
+                    ENGINE_CHOICES, TRANSMISSION_CHOICES,
+                    DRIVE_CHOICES, CATEGORY_DRIVES_LICENSE_CHOICES,
+                    AIR_CONDITIONER_CHOICES, INTERIOR_CHOICES,
+                    ROOF_CHOICES, POWERED_WINDOW_CHOICES,
+                    SIDE_WHEEL_CHOICES, COLOR_CHOICES,
+                    BODY_TYPE_CHOICES)
 
 
 class Brand(models.Model):
-    name = models.CharField(max_length=255, unique=True)
-    slug = models.SlugField(unique=True)
+    name = models.CharField(
+        max_length=128
+    )
 
     class Meta:
         ordering = ['name']
@@ -54,44 +30,10 @@ class Brand(models.Model):
         return self.name
 
 
-class Investor(models.Model):
-    name = models.CharField(max_length=255)
-
-    class Meta:
-        ordering = ['name']
-        indexes = [
-            models.Index(fields=['name'])
-        ]
-        verbose_name = 'Investor'
-        verbose_name_plural = 'Investors'
-
-    def __str__(self):
-        return self.name
-
-
-class Insurance(models.Model):
-    symbol = models.CharField(max_length=128, null=True)
-    start_date = models.DateTimeField()
-    expired_date = models.DateTimeField()
-
-    def check_expiration(self):
-        return self.expired_date < self.start_date
-
-    def __str__(self):
-        return self.symbol
-
-    class Meta:
-        ordering = ['symbol']
-        indexes = [
-            models.Index(fields=['symbol'])
-        ]
-        verbose_name = 'insurance'
-        verbose_name_plural = 'insurances'
-
-
-class Model(models.Model):
-    name = models.CharField(max_length=255)
-    slug = models.SlugField(unique=True)
+class CarModel(models.Model):
+    name = models.CharField(
+        max_length=128
+    )
 
     class Meta:
         ordering = ['name']
@@ -105,152 +47,296 @@ class Model(models.Model):
         return self.name
 
 
-class CarManager(models.Manager):
-    def available_cars(self):
-        return self.filter(is_availaible=True)
-
-
-class Car(models.Model):
-    category = models.ForeignKey(
-        Category,
-        related_name='categories',
-        on_delete=models.CASCADE)
-    color = models.ForeignKey(
-        Color,
-        related_name='colors',
-        on_delete=models.CASCADE)
-    brand = models.ForeignKey(
-        Brand,
-        related_name='brands_in_car',
-        on_delete=models.CASCADE)
-    model = models.ForeignKey(
-        Model,
-        related_name='models_in_car',
-        on_delete=models.CASCADE)
-    investor = models.ForeignKey(
-        Investor,
-        related_name='investors',
-        on_delete=models.CASCADE)
-    insurance = models.ForeignKey(
-        Insurance,
-        related_name='car_insurance',
-        on_delete=models.CASCADE)
-    slug = AutoSlugField(populate_from='model', unique=True)
-    car_name = models.CharField(max_length=255, blank=True, null=True)
-    year_manufactored = models.IntegerField(null=True)
-    license_plate = models.CharField(max_length=20, null=True)
-    is_availaible = models.BooleanField(default=False)
-    image = models.ImageField(blank=True, upload_to=car_image_upload_to)
-    created_at = models.DateField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    winter_price = models.DecimalField(max_digits=10, decimal_places=2)
-    spring_price = models.DecimalField(max_digits=10, decimal_places=2)
-    summer_price = models.DecimalField(max_digits=10, decimal_places=2)
-    autumn_price = models.DecimalField(max_digits=10, decimal_places=2)
-
-    objects = CarManager()
-
-    def mark_as_rented(self):
-        self.is_availaible = True
-        self.save()
-
-    def save(self, *args, **kwargs):
-        self.car_name = f"{self.brand} {self.model}"
-        super().save(*args, **kwargs)
+class Problems(models.Model):
+    name = models.TextField(
+        null=True,
+        blank=True
+    )
+    is_solved = models.BooleanField(
+        default=False
+    )
+    created_at = models.DateTimeField(
+        auto_now_add=True
+    )
+    solved_at = models.DateTimeField(
+        blank=True,
+        null=True
+    )
 
     class Meta:
-        ordering = ['brand']
+        ordering = ['name']
         indexes = [
-            models.Index(fields=['car_name']),
-            models.Index(fields=['-created_at']),
-            models.Index(fields=['is_availaible']),
+            models.Index(fields=['name'])
         ]
-        verbose_name = 'Car'
-        verbose_name_plural = 'Cars'
-
-    def __str__(self):
-        return f'{self.brand}: {self.model}'
-
-class Application(models.Model):
-
-    CANCELED = 'canceled'
-    EXPIRED = 'expired'
-    ACTIVE = 'active'
-
-    STATUS_CHOICES = [
-        (CANCELED, 'Canceled'),
-        (EXPIRED, 'Expired'),
-        (ACTIVE, 'Active'),
-    ]
-
-    AGGREGATOR_CHOICES = [
-        ('aggregator1', 'Aggregator 1'),
-        ('aggregator2', 'Aggregator 2'),
-        ('aggregator3', 'Aggregator 3'),
-    ]
-
-    car = models.ForeignKey(
-        Car, related_name='booking_requests',
-        on_delete=models.CASCADE)
-    price = models.IntegerField(null=True, blank=True)
-    pickup_location = models.CharField(max_length=512)
-    dropoff_location = models.CharField(max_length=512)
-    pickup_time = models.DateTimeField()
-    dropoff_time = models.DateTimeField()
-    renter_name = models.CharField(max_length=128)
-    renter_phone = models.CharField(max_length=32)
-    renter_email = models.EmailField(null=True, blank=True)
-    status = models.CharField(
-        max_length=16, choices=STATUS_CHOICES,
-        blank=True, default=ACTIVE)
-    application_preparer = models.CharField(max_length=64, null=True)
-    aggregator_id = models.IntegerField(null=True, blank=True)
-    aggregator = models.CharField(
-        max_length=32, choices=AGGREGATOR_CHOICES,
-        null=True, blank=True)
-    comment = models.TextField(blank=True, null=True)
-    contract = models.FileField(
-        upload_to='contract_dir', null=True, blank=True)
-    vaucher = models.FileField(
-        upload_to='vaucher_dir', null=True, blank=True)
-
-    def check_expiration(self):
-        return self.dropoff_time < timezone.now()
-
-    def change_status(self, new_status):
-        if new_status in [self.CANCELED, self.EXPIRED, self.ACTIVE]:
-            self.status = new_status
-            self.save()
-        else:
-            raise ValueError(f"Invalid status: {new_status}")
-
-    class Meta:
-        verbose_name = 'Application'
-        verbose_name_plural = 'Applications'
-
-
-class Problem(models.Model):
-    car_problem = models.ForeignKey(
-        Car, related_name='problem_car',
-        on_delete=models.CASCADE,
-        null=True)
-    issue = models.TextField()
-    is_solved = models.BooleanField(default=False)
-    created_at = models.DateTimeField(auto_now_add=True)
-    solved_at = models.DateTimeField(blank=True, null=True)
-
-    def solve_problem(self):
-        self.is_solved = True
-        self.solved_at = timezone.now()
-        self.save()
-
-    class Meta:
         verbose_name = 'Problem'
         verbose_name_plural = 'Problems'
 
+    def save(self, *args, **kwargs):
+        if len(self.name) > MAX_PROBLEM_LEN:
+            raise ValidationError('Text is too long')
+        super().save(*args, **kwargs)
 
-class Files(models.Model):
-    application = models.ForeignKey(
-        Application, related_name='files', on_delete=models.CASCADE)
-    files_application = models.FileField(
-        upload_to=other_files_path_for_application, null=True, blank=True)
+    def solve(self):
+        with transaction.atomic():
+            self.is_solved = True
+            self.solved_at = timezone.now()
+            self.save()
+
+    def __str__(self):
+        return self.name
+
+
+class Engine(models.Model):
+    engine_type = models.DecimalField(
+        max_digits=3,
+        decimal_places=1
+    )
+    capacity = models.PositiveIntegerField()
+    fuel = models.CharField(
+        max_length=64,
+        choices=ENGINE_CHOICES
+    )
+    tank = models.PositiveIntegerField()
+    fuel_consumption = models.PositiveIntegerField()
+
+    class Meta:
+        ordering = ['engine_type']
+        verbose_name = 'Engine'
+        verbose_name_plural = 'Engines'
+
+
+class Chassis(models.Model):
+    transmission = models.CharField(
+        max_length=64,
+        choices=TRANSMISSION_CHOICES
+    )
+    drive = models.CharField(
+        max_length=64,
+        choices=DRIVE_CHOICES
+    )
+    chassis_abs = models.BooleanField(
+        default=False
+    )
+    chassis_ebd = models.BooleanField(
+        default=False
+    )
+    chassis_esp = models.BooleanField(
+        default=False
+    )
+
+    class Meta:
+        ordering = ['transmission']
+        verbose_name = 'Chassis'
+        verbose_name_plural = 'Chassis'
+
+
+class Music(models.Model):
+    radio = models.BooleanField(
+        default=False
+    )
+    audio_cd = models.BooleanField(
+        default=False
+    )
+    audio_mp3 = models.BooleanField(
+        default=False
+    )
+    audio_usb = models.BooleanField(
+        default=False
+    )
+    audio_aux = models.BooleanField(
+        default=False
+    )
+    audio_bluetooth = models.BooleanField(
+        default=False
+    )
+
+    class Meta:
+        ordering = ['radio']
+        verbose_name = 'Music'
+        verbose_name_plural = 'Musics'
+
+
+class Other(models.Model):
+    category_drivers_license = models.CharField(
+        max_length=64,
+        choices=CATEGORY_DRIVES_LICENSE_CHOICES
+    )
+    seats = models.PositiveIntegerField()
+    doors = models.PositiveIntegerField()
+    air_conditioner = models.IntegerField(
+        max_length=64,
+        choices=AIR_CONDITIONER_CHOICES
+    )
+    interior = models.CharField(
+        max_length=128,
+        choices=INTERIOR_CHOICES
+    )
+    roof = models.CharField(
+        max_length=128,
+        choices=ROOF_CHOICES
+    )
+    powered_window = models.IntegerField(
+        max_length=64,
+        choices=POWERED_WINDOW_CHOICES
+    )
+    airbags = models.PositiveIntegerField()
+    side_wheel = models.CharField(
+        max_length=64,
+        choices=SIDE_WHEEL_CHOICES
+    )
+    cruise_control = models.BooleanField(
+        default=False
+    )
+    rear_view_camera = models.BooleanField(
+        default=False
+    )
+    parking_assist = models.BooleanField(
+        default=False
+    )
+
+
+class Insurance(models.Model):
+    number = models.CharField(
+        max_length=128
+    )
+    is_expired = models.BooleanField(
+        default=False
+    )
+    expired_at = models.DateTimeField()
+
+    def __str__(self):
+        return self.number
+
+
+class Photo(models.Model):
+    car_image = models.ImageField(
+        null=True,
+        blank=True
+    )
+
+
+class Car(models.Model):
+    brand = models.ForeignKey(
+        Brand,
+        on_delete=models.CASCADE,
+        related_name='cars',
+        verbose_name='Brand'
+    )
+    model = models.ForeignKey(
+        CarModel,
+        on_delete=models.CASCADE,
+        related_name='cars',
+        verbose_name='Model'
+    )
+    insurance = models.ForeignKey(
+        Insurance,
+        on_delete=models.CASCADE,
+        related_name='insurances',
+        verbose_name='Car'
+    )
+    engine = models.OneToOneField(
+        Engine,
+        on_delete=models.CASCADE,
+        related_name='car',
+        verbose_name='Engine'
+    )
+    chassis = models.OneToOneField(
+        Chassis,
+        on_delete=models.CASCADE,
+        related_name='car',
+        verbose_name='Chassis'
+    )
+    music = models.OneToOneField(
+        Music,
+        on_delete=models.CASCADE,
+        related_name='car',
+        verbose_name='Music'
+    )
+    other = models.OneToOneField(
+        Other,
+        on_delete=models.CASCADE,
+        related_name='car',
+        verbose_name='Other Features'
+    )
+    photos = models.ManyToManyField(
+        Photo,
+        related_name='cars',
+        verbose_name='Photos'
+    )
+    problems = models.ManyToManyField(
+        Problems,
+        related_name='cars',
+        verbose_name='Problems',
+        blank=True
+    )
+    number = models.CharField(
+        max_length=64,
+    )
+    year_manufactured = models.PositiveIntegerField(
+        validators=[
+            MinValueValidator(1950),
+            MaxValueValidator(2030)
+        ],
+        verbose_name='Year Manufactured'
+    )
+    body_type = models.CharField(
+        max_length=128,
+        choices=BODY_TYPE_CHOICES
+    )
+    deposit = models.PositiveIntegerField()
+    color = models.CharField(
+        max_length=64,
+        choices=COLOR_CHOICES
+    )
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name='Created At'
+    )
+    updated_at = models.DateTimeField(
+        auto_now=True,
+        verbose_name='Updated At'
+    )
+
+    class Meta:
+        ordering = ['brand', 'model']
+        verbose_name = 'Car'
+        verbose_name_plural = 'Cars'
+        indexes = [
+            models.Index(fields=['year_manufactured'],
+                         name='year_manufactured_idx'),
+            models.Index(fields=['brand', 'model'], name='brand_model_idx'),
+            models.Index(fields=['-created_at'], name='created_at_idx'),
+            models.Index(fields=['-updated_at'], name='updated_at_idx'),
+        ]
+
+    def __str__(self):
+        return f'{self.brand.name} {self.model.name}'
+
+
+class Price(models.Model):
+    car_price = models.OneToOneField(
+        Car,
+        on_delete=models.CASCADE,
+        related_name='price'
+        )
+    winter_price = models.DecimalField(
+        max_digits=10,
+        decimal_places=2
+        )
+    spring_price = models.DecimalField(
+        max_digits=10,
+        decimal_places=2
+        )
+    summer_price = models.DecimalField(
+        max_digits=10,
+        decimal_places=2
+        )
+    autumn_price = models.DecimalField(
+        max_digits=10,
+        decimal_places=2
+        )
+    currency = models.CharField(
+        max_length=10,
+        null=True,
+        choices=CURRENCY_CHOICES
+        )
