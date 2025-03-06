@@ -53,3 +53,7 @@ COLOR_CHOICES = [
 BODY_TYPE_CHOICES = [
     (),
 ]
+
+AGGREGATOR_CHOICES = [
+    (),
+]

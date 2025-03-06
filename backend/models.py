@@ -1,16 +1,21 @@
+from random import randint
+
 from django.db import models, transaction
 from django.conf import settings
 from django.utils import timezone
 from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator, MaxValueValidator
 
-from .const import (CURRENCY_CHOICES, MAX_PROBLEM_LEN,
-                    ENGINE_CHOICES, TRANSMISSION_CHOICES,
-                    DRIVE_CHOICES, CATEGORY_DRIVES_LICENSE_CHOICES,
-                    AIR_CONDITIONER_CHOICES, INTERIOR_CHOICES,
-                    ROOF_CHOICES, POWERED_WINDOW_CHOICES,
-                    SIDE_WHEEL_CHOICES, COLOR_CHOICES,
-                    BODY_TYPE_CHOICES)
+from .validators import validate_manufactured_year
+from .const import (
+    CURRENCY_CHOICES, MAX_PROBLEM_LEN,
+    ENGINE_CHOICES, TRANSMISSION_CHOICES,
+    DRIVE_CHOICES, CATEGORY_DRIVES_LICENSE_CHOICES,
+    AIR_CONDITIONER_CHOICES, INTERIOR_CHOICES,
+    ROOF_CHOICES, POWERED_WINDOW_CHOICES,
+    SIDE_WHEEL_CHOICES, COLOR_CHOICES,
+    BODY_TYPE_CHOICES, AGGREGATOR_CHOICES
+    )
 
 
 class Brand(models.Model):
@@ -47,7 +52,7 @@ class CarModel(models.Model):
         return self.name
 
 
-class Problems(models.Model):
+class Problem(models.Model):
     name = models.TextField(
         null=True,
         blank=True
@@ -77,6 +82,8 @@ class Problems(models.Model):
         super().save(*args, **kwargs)
 
     def solve(self):
+        if self.is_solved:
+            return
         with transaction.atomic():
             self.is_solved = True
             self.solved_at = timezone.now()
@@ -164,7 +171,6 @@ class Other(models.Model):
     seats = models.PositiveIntegerField()
     doors = models.PositiveIntegerField()
     air_conditioner = models.IntegerField(
-        max_length=64,
         choices=AIR_CONDITIONER_CHOICES
     )
     interior = models.CharField(
@@ -176,7 +182,6 @@ class Other(models.Model):
         choices=ROOF_CHOICES
     )
     powered_window = models.IntegerField(
-        max_length=64,
         choices=POWERED_WINDOW_CHOICES
     )
     airbags = models.PositiveIntegerField()
@@ -202,7 +207,10 @@ class Insurance(models.Model):
     is_expired = models.BooleanField(
         default=False
     )
-    expired_at = models.DateTimeField()
+    expired_at = models.DateTimeField(
+        null=True,
+        blank=True
+    )
 
     def __str__(self):
         return self.number
@@ -231,7 +239,7 @@ class Car(models.Model):
     insurance = models.ForeignKey(
         Insurance,
         on_delete=models.CASCADE,
-        related_name='insurances',
+        related_name='car_insurance',
         verbose_name='Car'
     )
     engine = models.OneToOneField(
@@ -264,7 +272,7 @@ class Car(models.Model):
         verbose_name='Photos'
     )
     problems = models.ManyToManyField(
-        Problems,
+        Problem,
         related_name='cars',
         verbose_name='Problems',
         blank=True
@@ -274,8 +282,7 @@ class Car(models.Model):
     )
     year_manufactured = models.PositiveIntegerField(
         validators=[
-            MinValueValidator(1950),
-            MaxValueValidator(2030)
+            validate_manufactured_year
         ],
         verbose_name='Year Manufactured'
     )
@@ -340,3 +347,62 @@ class Price(models.Model):
         null=True,
         choices=CURRENCY_CHOICES
         )
+
+
+class Application(models.Model):
+    num = models.IntegerField(
+        unique=True,
+        null=True,
+        blank=True
+    )
+    aggregator = models.CharField(
+        max_length=128,
+        choices=AGGREGATOR_CHOICES
+    )
+    date = models.DateField()
+    auto = models.CharField(
+        max_length=258
+    )
+    location_delivery = models.CharField(
+        max_length=256
+    )
+    location_return = models.CharField(
+        max_length=256
+    )
+    name = models.CharField(
+        max_length=256
+    )
+    contacts = models.CharField(
+        max_length=64
+    )
+    deposit_in_hand = models.IntegerField()
+    currency = models.CharField(
+        choices=CURRENCY_CHOICES
+    )
+    price = models.IntegerField()
+
+    def save(self, *args, **kwargs):
+        if not self.num:
+            while True:
+                new_num = randint(1000, 9999)
+                if not Application.objects.filter(num=new_num).exists():
+                    self.num = new_num
+                    break
+        super().save(*args, **kwargs)
+
+
+class Misc(models.Model):
+    contract = models.FileField(upload_to='contracts/',
+                                null=True,
+                                blank=True)
+    vaucher = models.FileField(upload_to='vauchers/',
+                               null=True,
+                               blank=True)
+    video = models.FileField(upload_to='videos/',
+                             null=True,
+                             blank=True)
+    application = models.ForeignKey(
+        Application,
+        on_delete=models.CASCADE,
+        related_name='misc_files',
+    )
