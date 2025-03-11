@@ -9,7 +9,7 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 from .validators import validate_manufactured_year
 from .const import (
     CURRENCY_CHOICES, MAX_PROBLEM_LEN,
-    ENGINE_CHOICES, TRANSMISSION_CHOICES,
+    FUEL_CHOICES, TRANSMISSION_CHOICES,
     DRIVE_CHOICES, CATEGORY_DRIVES_LICENSE_CHOICES,
     AIR_CONDITIONER_CHOICES, INTERIOR_CHOICES,
     ROOF_CHOICES, POWERED_WINDOW_CHOICES,
@@ -101,7 +101,7 @@ class Engine(models.Model):
     capacity = models.PositiveIntegerField()
     fuel = models.CharField(
         max_length=64,
-        choices=ENGINE_CHOICES
+        choices=FUEL_CHOICES
     )
     tank = models.PositiveIntegerField()
     fuel_consumption = models.PositiveIntegerField()
@@ -309,8 +309,9 @@ class Car(models.Model):
         verbose_name = 'Car'
         verbose_name_plural = 'Cars'
         indexes = [
-            models.Index(fields=['year_manufactured'],
-                         name='year_manufactured_idx'),
+            models.Index(
+                fields=['year_manufactured'],
+                name='year_manufactured_idx'),
             models.Index(fields=['brand', 'model'], name='brand_model_idx'),
             models.Index(fields=['-created_at'], name='created_at_idx'),
             models.Index(fields=['-updated_at'], name='updated_at_idx'),
@@ -360,8 +361,11 @@ class Application(models.Model):
         choices=AGGREGATOR_CHOICES
     )
     date = models.DateField()
-    auto = models.CharField(
-        max_length=258
+    auto = models.ForeignKey(
+        'Car', 
+        on_delete=models.CASCADE,
+        related_name='applications',
+        verbose_name='Car'
     )
     location_delivery = models.CharField(
         max_length=256
@@ -377,7 +381,8 @@ class Application(models.Model):
     )
     deposit_in_hand = models.IntegerField()
     currency = models.CharField(
-        choices=CURRENCY_CHOICES
+        choices=CURRENCY_CHOICES,
+        max_length=256
     )
     price = models.IntegerField()
 
@@ -391,16 +396,29 @@ class Application(models.Model):
         super().save(*args, **kwargs)
 
 
+class Date(models.Model):
+    application = models.OneToOneField(
+        'Application',
+        on_delete=models.CASCADE,
+        related_name='rental_dates'
+    )
+    date_delivery = models.DateField()
+    date_return = models.DateField()
+
+
 class Misc(models.Model):
-    contract = models.FileField(upload_to='contracts/',
-                                null=True,
-                                blank=True)
-    vaucher = models.FileField(upload_to='vauchers/',
-                               null=True,
-                               blank=True)
-    video = models.FileField(upload_to='videos/',
-                             null=True,
-                             blank=True)
+    contract = models.FileField(
+        upload_to='contracts/',
+        null=True,
+        blank=True)
+    vaucher = models.FileField(
+        upload_to='vauchers/',
+        null=True,
+        blank=True)
+    video = models.FileField(
+        upload_to='videos/',
+        null=True,
+        blank=True)
     application = models.ForeignKey(
         Application,
         on_delete=models.CASCADE,
