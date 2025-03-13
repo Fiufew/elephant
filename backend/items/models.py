@@ -170,7 +170,8 @@ class Other(models.Model):
     )
     seats = models.PositiveIntegerField()
     doors = models.PositiveIntegerField()
-    air_conditioner = models.IntegerField(
+    air_conditioner = models.CharField(
+        max_length=128,
         choices=AIR_CONDITIONER_CHOICES
     )
     interior = models.CharField(
@@ -219,7 +220,8 @@ class Insurance(models.Model):
 class Photo(models.Model):
     car_image = models.ImageField(
         null=True,
-        blank=True
+        blank=True,
+        upload_to="files/documents_and_other/"
     )
 
 
@@ -362,7 +364,7 @@ class Application(models.Model):
     )
     date = models.DateField()
     auto = models.ForeignKey(
-        'Car', 
+        'Car',
         on_delete=models.CASCADE,
         related_name='applications',
         verbose_name='Car'
@@ -389,7 +391,7 @@ class Application(models.Model):
     def save(self, *args, **kwargs):
         if not self.num:
             while True:
-                new_num = randint(1000, 9999)
+                new_num = randint(100000, 999999)
                 if not Application.objects.filter(num=new_num).exists():
                     self.num = new_num
                     break
