@@ -1,12 +1,15 @@
 from rest_framework import viewsets
 from items.models import (
-    Brand, CarModel, Problem, Engine, Music, Other,
-    Insurance, Photo, Chassis, Car, Price, Date, Application, Misc
+    Brand, CarModel, Problem, Engine, Chassis,
+    Insurance, Photo, Car, Price,
+    Date, Application, Misc, Music,
+    Other
 )
 from .serializers import (
     BrandSerializer, CarModelSerializer, ProblemSerializer, EngineSerializer,
-    MusicSerializer, OtherSerializer, InsuranceSerializer, PhotoSerializer,
-    ChassisSerializer, CarSerializer, PriceSerializer, CarRentalDatesSerializer
+    InsuranceSerializer, PhotoSerializer, ChassisSerializer,
+    CarSerializer, PriceSerializer, CarRentalDatesSerializer,
+    MusicSerializer, OtherSerializer
 )
 
 

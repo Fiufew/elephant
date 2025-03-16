@@ -3,10 +3,11 @@ from rest_framework import routers
 
 from .views import (
     BrandViewSet, CarModelViewSet, ProblemViewSet,
-    EngineViewSet, MusicViewSet, PriceViewSet,
-    OtherViewSet, InsuranceViewSet, PhotoViewSet,
-    ChassisViewSet, CarViewSet, CarRentalDatesViewSet,
+    EngineViewSet, PriceViewSet, ChassisViewSet,
+    InsuranceViewSet, PhotoViewSet,
+    CarViewSet, CarRentalDatesViewSet,
     ApplicationViewSet, MiscViewSet,
+    MusicViewSet, OtherViewSet
 )
 
 app_name = 'api'

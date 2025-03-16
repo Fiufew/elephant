@@ -7,9 +7,10 @@ from rest_framework.serializers import (
 
 from items.models import (
     Brand, CarModel, Problem,
-    Engine, Music, Other,
-    Insurance, Photo, Chassis,
-    Car, Price, Date
+    Engine, Chassis,
+    Insurance, Photo,
+    Car, Price, Date,
+    Music, Other
     )
 
 
@@ -104,41 +105,78 @@ class PriceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Price
         fields = [
-            'car_price', 'winter_price',
+            'winter_price',
             'spring_price', 'summer_price',
             'autumn_price', 'currency'
         ]
 
 
 class CarSerializer(serializers.ModelSerializer):
-    brand = StringRelatedField()
-    model = StringRelatedField()
-    price = SerializerMethodField()
-    insurance = InsuranceSerializer(read_only=True)
-    engine = EngineSerializer(read_only=True)
-    chassis = ChassisSerializer(read_only=True)
-    music = MusicSerializer(read_only=True)
-    other = OtherSerializer(read_only=True)
-    photos = SerializerMethodField()
-    problems = PrimaryKeyRelatedField(many=True, read_only=True)
+    brand = BrandSerializer()
+    model = CarModelSerializer()
+    price = PriceSerializer()
+    insurance = InsuranceSerializer()
+    engine = EngineSerializer()
+    chassis = ChassisSerializer()
+    music = MusicSerializer()
+    other = OtherSerializer()
+    photos = PhotoSerializer(many=True)
+    problems = ProblemSerializer(many=True)
 
     class Meta:
         model = Car
         fields = [
+            'id',
             'brand', 'model',
             'insurance', 'engine',
+            'photos', 'price',
             'chassis', 'music',
-            'other', 'photos',
+            'other',
             'problems', 'number',
             'year_manufactured', 'body_type',
             'deposit', 'color',
             'created_at', 'updated_at'
         ]
 
-    def get_price(self, obj):
-        price = obj.price
-        return PriceSerializer(price).data if price else None
+    def create(self, validated_data):
+        brand_data = validated_data.pop('brand')
+        model_data = validated_data.pop('model')
+        price_data = validated_data.pop('price')
+        insurance_data = validated_data.pop('insurance')
+        engine_data = validated_data.pop('engine')
+        chassis_data = validated_data.pop('chassis')
+        photos_data = validated_data.pop('photos')
+        problems_data = validated_data.pop('problems')
+        music_data = validated_data.pop('music')
+        other_data = validated_data.pop('other')
 
-    def get_photos(self, obj):
-        photos = obj.photos.all()
-        return [photo.car_image.url for photo in photos] if photos else []
+        brand = Brand.objects.create(**brand_data)
+        model = CarModel.objects.create(**model_data)
+        price = Price.objects.create(**price_data)
+        insurance = Insurance.objects.create(**insurance_data)
+        engine = Engine.objects.create(**engine_data)
+        chassis = Chassis.objects.create(**chassis_data)
+        music = Music.objects.create(**music_data)
+        other = Other.objects.create(**other_data)
+
+        car = Car.objects.create(
+            brand=brand,
+            model=model,
+            price=price,
+            insurance=insurance,
+            engine=engine,
+            chassis=chassis,
+            music=music,
+            other=other,
+            **validated_data
+        )
+        if price_data:
+            Price.objects.create(car_price=car, **price_data)
+
+        for photo_data in photos_data:
+            Photo.objects.create(car=car, **photo_data)
+
+        for problem_data in problems_data:
+            Problem.objects.create(car=car, **problem_data)
+
+        return car

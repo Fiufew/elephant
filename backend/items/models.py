@@ -271,7 +271,8 @@ class Car(models.Model):
     photos = models.ManyToManyField(
         Photo,
         related_name='cars',
-        verbose_name='Photos'
+        verbose_name='Photos',
+        blank=True
     )
     problems = models.ManyToManyField(
         Problem,
@@ -327,28 +328,38 @@ class Price(models.Model):
     car_price = models.OneToOneField(
         Car,
         on_delete=models.CASCADE,
-        related_name='price'
+        related_name='price',
+        null=True,
+        blank=True
         )
     winter_price = models.DecimalField(
         max_digits=10,
-        decimal_places=2
+        decimal_places=2,
+        null=True,
+        blank=True
         )
     spring_price = models.DecimalField(
         max_digits=10,
-        decimal_places=2
+        decimal_places=2,
+        null=True,
+        blank=True
         )
     summer_price = models.DecimalField(
         max_digits=10,
-        decimal_places=2
+        decimal_places=2,
+        null=True,
+        blank=True
         )
     autumn_price = models.DecimalField(
         max_digits=10,
-        decimal_places=2
+        decimal_places=2,
+        null=True,
+        blank=True
         )
     currency = models.CharField(
         max_length=10,
         null=True,
-        choices=CURRENCY_CHOICES
+        choices=CURRENCY_CHOICES,
         )
 
 

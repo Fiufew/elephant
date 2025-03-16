@@ -1,7 +1,8 @@
 from django.contrib import admin
 from .models import (
-    Brand, CarModel, Problem, Engine, Chassis, Music, Other, Insurance, 
-    Photo, Car, Price, Application, Date, Misc
+    Brand, CarModel, Problem, Engine, Insurance,
+    Photo, Car, Price, Application, Date, Misc,
+    Chassis, Music, Other
 )
 
 
