@@ -10,7 +10,7 @@ from items.models import (
     Engine, Chassis,
     Insurance, Photo,
     Car, Price, Date,
-    Music, Other
+    Music, Other, Application,
     )
 
 
@@ -180,3 +180,25 @@ class CarSerializer(serializers.ModelSerializer):
             Problem.objects.create(car=car, **problem_data)
 
         return car
+
+
+class ApplicationSerializer(serializers.ModelSerializer):
+    rental_dates = CarRentalDatesSerializer()
+
+    def create(self, validated_data):
+        rental_dates_data = validated_data.pop('rental_dates')
+        application = Application.objects.create(
+            **validated_data
+        )
+        if rental_dates_data:
+            Date.objects.create(application=application, **rental_dates_data)
+
+        return application
+
+    class Meta:
+        model = Application
+        fields = [
+            'num', 'aggregator', 'date', 'auto', 'location_delivery',
+            'location_return', 'name', 'contacts', 'deposit_in_hand',
+            'currency', 'price', 'rental_dates'
+        ]

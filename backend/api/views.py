@@ -9,7 +9,7 @@ from .serializers import (
     BrandSerializer, CarModelSerializer, ProblemSerializer, EngineSerializer,
     InsuranceSerializer, PhotoSerializer, ChassisSerializer,
     CarSerializer, PriceSerializer, CarRentalDatesSerializer,
-    MusicSerializer, OtherSerializer
+    MusicSerializer, OtherSerializer, ApplicationSerializer
 )
 
 
@@ -75,7 +75,7 @@ class CarRentalDatesViewSet(viewsets.ModelViewSet):
 
 class ApplicationViewSet(viewsets.ModelViewSet):
     queryset = Application.objects.all()
-    serializer_class = CarRentalDatesSerializer
+    serializer_class = ApplicationSerializer
 
 
 class MiscViewSet(viewsets.ModelViewSet):
