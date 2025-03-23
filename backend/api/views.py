@@ -1,4 +1,5 @@
-from rest_framework import viewsets
+from rest_framework import viewsets, permissions, generics
+
 from items.models import (
     Brand, CarModel, Problem, Engine, Chassis,
     Insurance, Photo, Car, Price,
@@ -9,7 +10,8 @@ from .serializers import (
     BrandSerializer, CarModelSerializer, ProblemSerializer, EngineSerializer,
     InsuranceSerializer, PhotoSerializer, ChassisSerializer,
     CarSerializer, PriceSerializer, CarRentalDatesSerializer,
-    MusicSerializer, OtherSerializer, ApplicationSerializer
+    MusicSerializer, OtherSerializer, ApplicationSerializer,
+    UserRegistrationSerializer
 )
 
 
@@ -81,3 +83,8 @@ class ApplicationViewSet(viewsets.ModelViewSet):
 class MiscViewSet(viewsets.ModelViewSet):
     queryset = Misc.objects.all()
     serializer_class = CarRentalDatesSerializer
+
+
+class UserRegistrationView(generics.CreateAPIView):
+    serializer_class = UserRegistrationSerializer
+    permission_classes = [permissions.AllowAny]

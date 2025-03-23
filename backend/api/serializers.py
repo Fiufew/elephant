@@ -1,10 +1,6 @@
 from rest_framework import serializers
-from rest_framework.serializers import (
-    PrimaryKeyRelatedField,
-    StringRelatedField,
-    SerializerMethodField
-    )
 
+from users.models import CustomElephantUser
 from items.models import (
     Brand, CarModel, Problem,
     Engine, Chassis,
@@ -202,3 +198,18 @@ class ApplicationSerializer(serializers.ModelSerializer):
             'location_return', 'name', 'contacts', 'deposit_in_hand',
             'currency', 'price', 'rental_dates'
         ]
+
+
+class UserRegistrationSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True)
+
+    class Meta:
+        model = CustomElephantUser
+        fields = ['username', 'password']
+
+    def create(self, validated_data):
+        user = CustomElephantUser.objects.create_user(
+            username=validated_data['username'],
+            password=validated_data['password']
+        )
+        return user
