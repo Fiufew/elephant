@@ -7,6 +7,7 @@ from items.models import (
     Insurance, Photo,
     Car, Price, Date,
     Music, Other, Application,
+    Misc
     )
 
 
@@ -107,6 +108,17 @@ class PriceSerializer(serializers.ModelSerializer):
         ]
 
 
+class MiscSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Misc
+        fields = ['contract', 'vaucher', 'video']
+        extra_kwargs = {
+            'contract': {'required': False, 'allow_null': True},
+            'vaucher': {'required': False, 'allow_null': True},
+            'video': {'required': False, 'allow_null': True},
+        }
+
+
 class CarSerializer(serializers.ModelSerializer):
     brand = BrandSerializer()
     model = CarModelSerializer()
@@ -179,15 +191,19 @@ class CarSerializer(serializers.ModelSerializer):
 
 
 class ApplicationSerializer(serializers.ModelSerializer):
-    rental_dates = CarRentalDatesSerializer()
+    rental_dates = CarRentalDatesSerializer(required=False)
+    misc_files = MiscSerializer()
 
     def create(self, validated_data):
         rental_dates_data = validated_data.pop('rental_dates')
+        misc_data = validated_data.pop('misc_files', None)
         application = Application.objects.create(
             **validated_data
         )
         if rental_dates_data:
             Date.objects.create(application=application, **rental_dates_data)
+        if misc_data:
+            Misc.objects.create(application=application, **misc_data)
 
         return application
 
@@ -196,7 +212,8 @@ class ApplicationSerializer(serializers.ModelSerializer):
         fields = [
             'num', 'aggregator', 'date', 'auto', 'location_delivery',
             'location_return', 'name', 'contacts', 'deposit_in_hand',
-            'currency', 'price', 'rental_dates'
+            'currency', 'price', 'rental_dates', 'birthdate',
+            'contact_type', 'client_email', 'status', 'misc_files'
         ]
 
 

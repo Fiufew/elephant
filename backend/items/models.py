@@ -14,7 +14,8 @@ from .const import (
     AIR_CONDITIONER_CHOICES, INTERIOR_CHOICES,
     ROOF_CHOICES, POWERED_WINDOW_CHOICES,
     SIDE_WHEEL_CHOICES, COLOR_CHOICES,
-    BODY_TYPE_CHOICES, AGGREGATOR_CHOICES
+    BODY_TYPE_CHOICES, AGGREGATOR_CHOICES,
+    STATUS_CHOICES, CONTACT_CHOICES
     )
 
 
@@ -389,8 +390,21 @@ class Application(models.Model):
     name = models.CharField(
         max_length=256
     )
+    birthdate = models.DateField(
+        blank=True,
+        null=True
+    )
     contacts = models.CharField(
         max_length=64
+    )
+    contact_type = models.CharField(
+        max_length=64,
+        choices=CONTACT_CHOICES,
+        default='Telegram'
+    )
+    client_email = models.EmailField(
+        blank=True,
+        null=True
     )
     deposit_in_hand = models.IntegerField()
     currency = models.CharField(
@@ -398,6 +412,11 @@ class Application(models.Model):
         max_length=256
     )
     price = models.IntegerField()
+    status = models.CharField(
+        max_length=128,
+        choices=STATUS_CHOICES,
+        default='Active'
+    )
 
     def save(self, *args, **kwargs):
         if not self.num:

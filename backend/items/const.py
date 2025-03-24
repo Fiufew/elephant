@@ -108,3 +108,16 @@ AGGREGATOR_CHOICES = [
     ('Klook', 'klook'),
     ('Rentconnected', 'rentconnected'),
 ]
+
+STATUS_CHOICES = [
+    ('Active', 'active'),
+    ('Closed', 'closed'),
+    ('Expired', 'expired')
+]
+
+CONTACT_CHOICES = [
+    ('Phone', 'phone'),
+    ('Telegram', 'telegram'),
+    ('WhatsApp', 'whatsapp'),
+    ('Viber', 'viber')
+]
