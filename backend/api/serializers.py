@@ -192,19 +192,13 @@ class CarSerializer(serializers.ModelSerializer):
 
 class ApplicationSerializer(serializers.ModelSerializer):
     rental_dates = CarRentalDatesSerializer(required=False)
-    misc_files = MiscSerializer()
+    misc_files = MiscSerializer(many=True, read_only=True)
 
     def create(self, validated_data):
-        rental_dates_data = validated_data.pop('rental_dates')
-        misc_data = validated_data.pop('misc_files', None)
-        application = Application.objects.create(
-            **validated_data
-        )
+        rental_dates_data = validated_data.pop('rental_dates', None)
+        application = Application.objects.create(**validated_data)
         if rental_dates_data:
             Date.objects.create(application=application, **rental_dates_data)
-        if misc_data:
-            Misc.objects.create(application=application, **misc_data)
-
         return application
 
     class Meta:

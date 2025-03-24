@@ -14,7 +14,7 @@ from .serializers import (
     InsuranceSerializer, PhotoSerializer, ChassisSerializer,
     CarSerializer, PriceSerializer, CarRentalDatesSerializer,
     MusicSerializer, OtherSerializer, ApplicationSerializer,
-    UserRegistrationSerializer
+    UserRegistrationSerializer, MiscSerializer
 )
 
 
@@ -85,7 +85,7 @@ class ApplicationViewSet(viewsets.ModelViewSet):
 
 class MiscViewSet(viewsets.ModelViewSet):
     queryset = Misc.objects.all()
-    serializer_class = CarRentalDatesSerializer
+    serializer_class = MiscSerializer
 
 
 class UserRegistrationView(generics.CreateAPIView):
