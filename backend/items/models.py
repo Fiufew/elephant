@@ -19,8 +19,8 @@ from .const import (
     )
 
 
-class Brand(models.Model):
-    name = models.CharField(
+class CarBrand(models.Model):
+    name = models.CharField(  # наименовение бренда авто (сделать выбор)
         max_length=128
     )
 
@@ -37,7 +37,7 @@ class Brand(models.Model):
 
 
 class CarModel(models.Model):
-    name = models.CharField(
+    name = models.CharField(  # наименовение модели авто
         max_length=128
     )
 
@@ -54,17 +54,17 @@ class CarModel(models.Model):
 
 
 class Problem(models.Model):
-    name = models.TextField(
+    name = models.TextField(  # наименовение проблемы у авто
         null=True,
         blank=True
     )
-    is_solved = models.BooleanField(
+    is_solved = models.BooleanField(  # флаг решения или актуальности проблемы, изначально нерешенная
         default=False
     )
-    created_at = models.DateTimeField(
+    created_at = models.DateTimeField(  # дата создания (автоматически)
         auto_now_add=True
     )
-    solved_at = models.DateTimeField(
+    solved_at = models.DateTimeField(  # дата решения
         blank=True,
         null=True
     )
@@ -77,12 +77,12 @@ class Problem(models.Model):
         verbose_name = 'Problem'
         verbose_name_plural = 'Problems'
 
-    def save(self, *args, **kwargs):
+    def save(self, *args, **kwargs):  # ограничение на длину текста проблемы
         if len(self.name) > MAX_PROBLEM_LEN:
             raise ValidationError('Text is too long')
         super().save(*args, **kwargs)
 
-    def solve(self):
+    def solve(self):  # изменение флага решенности проблемы и сохранение времени при его изменении
         if self.is_solved:
             return
         with transaction.atomic():
@@ -95,17 +95,14 @@ class Problem(models.Model):
 
 
 class Engine(models.Model):
-    engine_type = models.DecimalField(
-        max_digits=3,
-        decimal_places=1
-    )
-    capacity = models.PositiveIntegerField()
-    fuel = models.CharField(
+    fuel = models.CharField(  # тип топлива
         max_length=64,
         choices=FUEL_CHOICES
     )
-    tank = models.PositiveIntegerField()
-    fuel_consumption = models.PositiveIntegerField()
+    capacity = models.PositiveIntegerField()  # объем двигателя
+    power = models.PositiveIntegerField()  # мощность двигателя
+    tank = models.PositiveIntegerField()  # объем бака
+    fuel_consumption = models.PositiveIntegerField()  # расход л/100
 
     class Meta:
         ordering = ['engine_type']
@@ -114,21 +111,21 @@ class Engine(models.Model):
 
 
 class Chassis(models.Model):
-    transmission = models.CharField(
+    transmission = models.CharField(  # вид трансмиссии
         max_length=64,
         choices=TRANSMISSION_CHOICES
     )
-    drive = models.CharField(
+    drive = models.CharField(  # вид привода
         max_length=64,
         choices=DRIVE_CHOICES
     )
-    chassis_abs = models.BooleanField(
+    chassis_abs = models.BooleanField(  # наличие абс
         default=False
     )
-    chassis_ebd = models.BooleanField(
+    chassis_ebd = models.BooleanField(  # наличие ебд
         default=False
     )
-    chassis_esp = models.BooleanField(
+    chassis_esp = models.BooleanField(  # наличие есп
         default=False
     )
 
@@ -139,22 +136,22 @@ class Chassis(models.Model):
 
 
 class Music(models.Model):
-    radio = models.BooleanField(
+    radio = models.BooleanField(  # наличие радио
         default=False
     )
-    audio_cd = models.BooleanField(
+    audio_cd = models.BooleanField(  # наличие сд
         default=False
     )
-    audio_mp3 = models.BooleanField(
+    audio_mp3 = models.BooleanField(  # наличие мп3
         default=False
     )
-    audio_usb = models.BooleanField(
+    audio_usb = models.BooleanField(  # наличие наличие юсб
         default=False
     )
-    audio_aux = models.BooleanField(
+    audio_aux = models.BooleanField(  # наличие аукса
         default=False
     )
-    audio_bluetooth = models.BooleanField(
+    audio_bluetooth = models.BooleanField(  # наличие блютуза
         default=False
     )
 
@@ -165,44 +162,92 @@ class Music(models.Model):
 
 
 class Other(models.Model):
-    category_drivers_license = models.CharField(
+    category_drivers_license = models.CharField(  # категория прав для авто
         max_length=64,
         choices=CATEGORY_DRIVES_LICENSE_CHOICES
     )
-    seats = models.PositiveIntegerField()
-    doors = models.PositiveIntegerField()
-    air_conditioner = models.CharField(
+    seats = models.PositiveIntegerField()  # количество мест (сделать выбор)
+    doors = models.PositiveIntegerField()  # количество дверей (сделать выбор)
+    air_conditioner = models.CharField(  # тип кондиционирования
         max_length=128,
         choices=AIR_CONDITIONER_CHOICES
     )
-    interior = models.CharField(
+    interior = models.CharField(  # тип интерьера
         max_length=128,
         choices=INTERIOR_CHOICES
     )
-    roof = models.CharField(
+    roof = models.CharField(  # тип крыши
         max_length=128,
         choices=ROOF_CHOICES
     )
-    powered_window = models.IntegerField(
+    powered_window = models.IntegerField(  # количество стеклоподъемников
         choices=POWERED_WINDOW_CHOICES
     )
-    airbags = models.PositiveIntegerField()
-    side_wheel = models.CharField(
+    airbags = models.PositiveIntegerField()  # количество подушек безопасности (сделать выбор)
+    side_wheel = models.CharField(  # сторона руля
         max_length=64,
         choices=SIDE_WHEEL_CHOICES
     )
-    cruise_control = models.BooleanField(
+    cruise_control = models.BooleanField(  # наличие круиз контроля
         default=False
     )
-    rear_view_camera = models.BooleanField(
+    rear_view_camera = models.BooleanField(  # наличие камеры заднего вида
         default=False
     )
-    parking_assist = models.BooleanField(
+    parking_assist = models.BooleanField(  # наличие парктроника
         default=False
     )
 
 
-class Insurance(models.Model):
+class ACT(models.Model):
+    number = models.CharField(  
+        max_length=128
+    )
+    is_expired = models.BooleanField(
+        default=False
+    )
+    expired_at = models.DateTimeField(
+        null=True,
+        blank=True
+    )
+
+    def __str__(self):
+        return self.number
+
+
+class FirstClass(models.Model):
+    number = models.CharField(
+        max_length=128
+    )
+    is_expired = models.BooleanField(
+        default=False
+    )
+    expired_at = models.DateTimeField(
+        null=True,
+        blank=True
+    )
+
+    def __str__(self):
+        return self.number
+
+
+class SecondClass(models.Model):
+    number = models.CharField(
+        max_length=128
+    )
+    is_expired = models.BooleanField(
+        default=False
+    )
+    expired_at = models.DateTimeField(
+        null=True,
+        blank=True
+    )
+
+    def __str__(self):
+        return self.number
+
+
+class Tax(models.Model):
     number = models.CharField(
         max_length=128
     )
@@ -228,7 +273,7 @@ class Photo(models.Model):
 
 class Car(models.Model):
     brand = models.ForeignKey(
-        Brand,
+        CarBrand,
         on_delete=models.CASCADE,
         related_name='cars',
         verbose_name='Brand'
@@ -236,48 +281,66 @@ class Car(models.Model):
     model = models.ForeignKey(
         CarModel,
         on_delete=models.CASCADE,
-        related_name='cars',
+        related_name='cars_model',
         verbose_name='Model'
     )
-    insurance = models.ForeignKey(
-        Insurance,
+    act = models.ForeignKey(
+        ACT,
         on_delete=models.CASCADE,
-        related_name='car_insurance',
+        related_name='car_act',
+        verbose_name='Car'
+    )
+    first_class = models.ForeignKey(
+        FirstClass,
+        on_delete=models.CASCADE,
+        related_name='car_first_class',
+        verbose_name='Car'
+    )
+    second_class = models.ForeignKey(
+        SecondClass,
+        on_delete=models.CASCADE,
+        related_name='car_second_class',
+        verbose_name='Car'
+    )
+    tax = models.ForeignKey(
+        Tax,
+        on_delete=models.CASCADE,
+        related_name='car_tax',
         verbose_name='Car'
     )
     engine = models.OneToOneField(
         Engine,
         on_delete=models.CASCADE,
-        related_name='car',
+        related_name='car_engine',
         verbose_name='Engine'
     )
     chassis = models.OneToOneField(
         Chassis,
         on_delete=models.CASCADE,
-        related_name='car',
+        related_name='car_chassis',
         verbose_name='Chassis'
     )
     music = models.OneToOneField(
         Music,
         on_delete=models.CASCADE,
-        related_name='car',
+        related_name='car_music',
         verbose_name='Music'
     )
     other = models.OneToOneField(
         Other,
         on_delete=models.CASCADE,
-        related_name='car',
+        related_name='car_other',
         verbose_name='Other Features'
     )
     photos = models.ManyToManyField(
         Photo,
-        related_name='cars',
+        related_name='cars_photos',
         verbose_name='Photos',
         blank=True
     )
     problems = models.ManyToManyField(
         Problem,
-        related_name='cars',
+        related_name='cars_problems',
         verbose_name='Problems',
         blank=True
     )
@@ -325,33 +388,21 @@ class Car(models.Model):
         return f'{self.brand.name} {self.model.name}'
 
 
+
 class Price(models.Model):
-    car_price = models.OneToOneField(
-        Car,
-        on_delete=models.CASCADE,
-        related_name='price',
-        null=True,
-        blank=True
-        )
-    winter_price = models.DecimalField(
+    pick_season = models.DecimalField(
         max_digits=10,
         decimal_places=2,
         null=True,
         blank=True
         )
-    spring_price = models.DecimalField(
+    high_season = models.DecimalField(
         max_digits=10,
         decimal_places=2,
         null=True,
         blank=True
         )
-    summer_price = models.DecimalField(
-        max_digits=10,
-        decimal_places=2,
-        null=True,
-        blank=True
-        )
-    autumn_price = models.DecimalField(
+    low_season = models.DecimalField(
         max_digits=10,
         decimal_places=2,
         null=True,

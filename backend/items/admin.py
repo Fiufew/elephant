@@ -1,8 +1,9 @@
 from django.contrib import admin
 from .models import (
-    Brand, CarModel, Problem, Engine, Insurance,
+    Brand, CarModel, Problem, Engine, ACT,
     Photo, Car, Price, Application, Date, Misc,
-    Chassis, Music, Other
+    Chassis, Music, Other, FirstClass, SecondClass,
+    Tax
 )
 
 
@@ -47,8 +48,26 @@ class OtherAdmin(admin.ModelAdmin):
     list_display = ('category_drivers_license', 'seats', 'doors', 'air_conditioner', 'cruise_control')
 
 
-@admin.register(Insurance)
-class InsuranceAdmin(admin.ModelAdmin):
+@admin.register(ACT)
+class ACTAdmin(admin.ModelAdmin):
+    list_display = ('number', 'is_expired', 'expired_at')
+    list_filter = ('is_expired',)
+
+
+@admin.register(FirstClass)
+class FirstClassAdmin(admin.ModelAdmin):
+    list_display = ('number', 'is_expired', 'expired_at')
+    list_filter = ('is_expired',)
+
+
+@admin.register(SecondClass)
+class SecondClassAdmin(admin.ModelAdmin):
+    list_display = ('number', 'is_expired', 'expired_at')
+    list_filter = ('is_expired',)
+
+
+@admin.register(Tax)
+class TaxAdmin(admin.ModelAdmin):
     list_display = ('number', 'is_expired', 'expired_at')
     list_filter = ('is_expired',)
 
@@ -67,7 +86,7 @@ class CarAdmin(admin.ModelAdmin):
 
 @admin.register(Price)
 class PriceAdmin(admin.ModelAdmin):
-    list_display = ('car_price', 'winter_price', 'spring_price', 'summer_price', 'autumn_price', 'currency')
+    list_display = ('pick_season', 'high_season', 'low_season', 'currency')
     list_filter = ('currency',)
 
 
@@ -87,5 +106,3 @@ class DateAdmin(admin.ModelAdmin):
 @admin.register(Misc)
 class MiscAdmin(admin.ModelAdmin):
     list_display = ('application', 'contract', 'vaucher', 'video')
-
-

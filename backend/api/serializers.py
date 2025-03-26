@@ -3,11 +3,11 @@ from rest_framework import serializers
 from users.models import CustomElephantUser
 from items.models import (
     Brand, CarModel, Problem,
-    Engine, Chassis,
-    Insurance, Photo,
+    Engine, Chassis, FirstClass,
+    ACT, Photo, SecondClass,
     Car, Price, Date,
     Music, Other, Application,
-    Misc
+    Misc, Tax
     )
 
 
@@ -42,7 +42,7 @@ class EngineSerializer(serializers.ModelSerializer):
     class Meta:
         model = Engine
         fields = [
-            'engine_type', 'capacity',
+            'power', 'capacity',
             'fuel', 'tank',
             'fuel_consumption'
         ]
@@ -81,9 +81,36 @@ class OtherSerializer(serializers.ModelSerializer):
         ]
 
 
-class InsuranceSerializer(serializers.ModelSerializer):
+class ACTSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Insurance
+        model = ACT
+        fields = [
+            'number', 'is_expired',
+            'expired_at'
+        ]
+
+
+class FirstClassSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = FirstClass
+        fields = [
+            'number', 'is_expired',
+            'expired_at'
+        ]
+
+
+class SecondClassSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SecondClass
+        fields = [
+            'number', 'is_expired',
+            'expired_at'
+        ]
+
+
+class TaxSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Tax
         fields = [
             'number', 'is_expired',
             'expired_at'
@@ -102,9 +129,9 @@ class PriceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Price
         fields = [
-            'winter_price',
-            'spring_price', 'summer_price',
-            'autumn_price', 'currency'
+            'pick_season',
+            'high_season', 'low_season',
+            'currency'
         ]
 
 
@@ -118,12 +145,22 @@ class MiscSerializer(serializers.ModelSerializer):
             'video': {'required': False, 'allow_null': True},
         }
 
+    def create(self, validated_data):
+        request = self.context.get('request')
+        validated_data['contract'] = request.FILES.get('contract')
+        validated_data['vaucher'] = request.FILES.get('vaucher')
+        validated_data['video'] = request.FILES.get('video')
+        return super().create(validated_data)
+
 
 class CarSerializer(serializers.ModelSerializer):
     brand = BrandSerializer()
     model = CarModelSerializer()
     price = PriceSerializer()
-    insurance = InsuranceSerializer()
+    act = ACTSerializer()
+    first_class = FirstClassSerializer()
+    second_class = SecondClassSerializer()
+    tax = TaxSerializer()
     engine = EngineSerializer()
     chassis = ChassisSerializer()
     music = MusicSerializer()
@@ -136,10 +173,11 @@ class CarSerializer(serializers.ModelSerializer):
         fields = [
             'id',
             'brand', 'model',
-            'insurance', 'engine',
+            'engine',
             'photos', 'price',
             'chassis', 'music',
-            'other',
+            'other', 'act', 'first_class',
+            'second_class', 'tax',
             'problems', 'number',
             'year_manufactured', 'body_type',
             'deposit', 'color',
@@ -150,7 +188,10 @@ class CarSerializer(serializers.ModelSerializer):
         brand_data = validated_data.pop('brand')
         model_data = validated_data.pop('model')
         price_data = validated_data.pop('price')
-        insurance_data = validated_data.pop('insurance')
+        act_data = validated_data.pop('act')
+        first_class_data = validated_data.pop('first_class')
+        second_class_data = validated_data.pop('second_class')
+        tax_data = validated_data.pop('tax')
         engine_data = validated_data.pop('engine')
         chassis_data = validated_data.pop('chassis')
         photos_data = validated_data.pop('photos')
@@ -161,7 +202,10 @@ class CarSerializer(serializers.ModelSerializer):
         brand = Brand.objects.create(**brand_data)
         model = CarModel.objects.create(**model_data)
         price = Price.objects.create(**price_data)
-        insurance = Insurance.objects.create(**insurance_data)
+        act = ACT.objects.create(**act_data)
+        first_class = FirstClass.objects.create(**first_class_data)
+        second_class = SecondClass.objects.create(**second_class_data)
+        tax = Tax.objects.create(**tax_data)
         engine = Engine.objects.create(**engine_data)
         chassis = Chassis.objects.create(**chassis_data)
         music = Music.objects.create(**music_data)
@@ -171,7 +215,10 @@ class CarSerializer(serializers.ModelSerializer):
             brand=brand,
             model=model,
             price=price,
-            insurance=insurance,
+            act=act,
+            first_class=first_class,
+            second_class=second_class,
+            tax=tax,
             engine=engine,
             chassis=chassis,
             music=music,
@@ -192,14 +239,9 @@ class CarSerializer(serializers.ModelSerializer):
 
 class ApplicationSerializer(serializers.ModelSerializer):
     rental_dates = CarRentalDatesSerializer(required=False)
-    misc_files = MiscSerializer(many=True, read_only=True)
-
-    def create(self, validated_data):
-        rental_dates_data = validated_data.pop('rental_dates', None)
-        application = Application.objects.create(**validated_data)
-        if rental_dates_data:
-            Date.objects.create(application=application, **rental_dates_data)
-        return application
+    contract = serializers.FileField(required=False, allow_null=True)
+    vaucher = serializers.FileField(required=False, allow_null=True)
+    video = serializers.FileField(required=False, allow_null=True)
 
     class Meta:
         model = Application
@@ -207,7 +249,8 @@ class ApplicationSerializer(serializers.ModelSerializer):
             'num', 'aggregator', 'date', 'auto', 'location_delivery',
             'location_return', 'name', 'contacts', 'deposit_in_hand',
             'currency', 'price', 'rental_dates', 'birthdate',
-            'contact_type', 'client_email', 'status', 'misc_files'
+            'contact_type', 'client_email', 'status',
+            'contract', 'vaucher', 'video'
         ]
 
 
