@@ -237,7 +237,6 @@ class CarSerializer(serializers.ModelSerializer):
 
 
 class ApplicationSerializer(serializers.ModelSerializer):
-    rental_dates = CarRentalDatesSerializer(required=False)
     contract = serializers.FileField(required=False, allow_null=True)
     vaucher = serializers.FileField(required=False, allow_null=True)
     other_files = serializers.FileField(required=False, allow_null=True)
@@ -247,10 +246,24 @@ class ApplicationSerializer(serializers.ModelSerializer):
         fields = [
             'num', 'aggregator', 'auto', 'location_delivery',
             'location_return', 'contacts', 'deposit_in_hand',
-            'currency', 'price', 'rental_dates', 'birthdate',
+            'currency', 'price', 'birthdate',
             'contact_type', 'client_email', 'status',
             'contract', 'vaucher', 'other_files'
         ]
+    
+    def create(self, validated_data):
+        contract = validated_data.pop('contract', None)
+        vaucher = validated_data.pop('vaucher', None)
+        other_files = validated_data.pop('other_files', None)
+        application = Application.objects.create(**validated_data)
+        if contract:
+            application.contract = contract
+        if vaucher:
+            application.vaucher = vaucher
+        if other_files:
+            application.other_files = other_files
+        application.save()
+        return application
 
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
