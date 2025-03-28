@@ -15,13 +15,15 @@ from .const import (
     ROOF_CHOICES, POWERED_WINDOW_CHOICES,
     SIDE_WHEEL_CHOICES, COLOR_CHOICES,
     BODY_TYPE_CHOICES, AGGREGATOR_CHOICES,
-    STATUS_CHOICES, CONTACT_CHOICES
+    STATUS_CHOICES, CONTACT_CHOICES, BRAND_CHOICES,
+    DOORS_CHOICES, AIRBAGS_CHOICES
     )
 
 
 class CarBrand(models.Model):
     name = models.CharField(  # наименовение бренда авто (сделать выбор)
-        max_length=128
+        max_length=128,
+        choices=BRAND_CHOICES
     )
 
     class Meta:
@@ -78,7 +80,7 @@ class Problem(models.Model):
         verbose_name_plural = 'Problems'
 
     def save(self, *args, **kwargs):  # ограничение на длину текста проблемы
-        if len(self.name) > MAX_PROBLEM_LEN:
+        if self.name and len(self.name) > MAX_PROBLEM_LEN:
             raise ValidationError('Text is too long')
         super().save(*args, **kwargs)
 
@@ -105,7 +107,6 @@ class Engine(models.Model):
     fuel_consumption = models.PositiveIntegerField()  # расход л/100
 
     class Meta:
-        ordering = ['engine_type']
         verbose_name = 'Engine'
         verbose_name_plural = 'Engines'
 
@@ -166,8 +167,11 @@ class Other(models.Model):
         max_length=64,
         choices=CATEGORY_DRIVES_LICENSE_CHOICES
     )
-    seats = models.PositiveIntegerField()  # количество мест (сделать выбор)
-    doors = models.PositiveIntegerField()  # количество дверей (сделать выбор)
+    seats = models.PositiveIntegerField()
+    doors = models.CharField(
+        choices=DOORS_CHOICES,
+        max_length=255
+    ) # количество дверей (сделать выбор)
     air_conditioner = models.CharField(  # тип кондиционирования
         max_length=128,
         choices=AIR_CONDITIONER_CHOICES
@@ -180,10 +184,14 @@ class Other(models.Model):
         max_length=128,
         choices=ROOF_CHOICES
     )
-    powered_window = models.IntegerField(  # количество стеклоподъемников
-        choices=POWERED_WINDOW_CHOICES
+    powered_window = models.CharField(  # количество стеклоподъемников
+        choices=POWERED_WINDOW_CHOICES,
+        max_length=255
     )
-    airbags = models.PositiveIntegerField()  # количество подушек безопасности (сделать выбор)
+    airbags = models.CharField(
+        choices=AIRBAGS_CHOICES,
+        max_length=255
+    )  # количество подушек безопасности (сделать выбор)
     side_wheel = models.CharField(  # сторона руля
         max_length=64,
         choices=SIDE_WHEEL_CHOICES
@@ -212,7 +220,7 @@ class ACT(models.Model):
     )
 
     def __str__(self):
-        return self.number
+        return self.name
 
 
 class FirstClass(models.Model):
@@ -228,7 +236,7 @@ class FirstClass(models.Model):
     )
 
     def __str__(self):
-        return self.number
+        return self.name
 
 
 class SecondClass(models.Model):
@@ -244,7 +252,7 @@ class SecondClass(models.Model):
     )
 
     def __str__(self):
-        return self.number
+        return self.name
 
 
 class Tax(models.Model):
@@ -260,7 +268,7 @@ class Tax(models.Model):
     )
 
     def __str__(self):
-        return self.number
+        return self.name
 
 
 class Bluebook(models.Model):
@@ -274,9 +282,14 @@ class Bluebook(models.Model):
         null=True,
         blank=True
     )
-    # добавить фото
+    bluebook_image = models.ImageField(  # фотография авто
+        null=True,
+        blank=True,
+        upload_to="files/bluebook/"
+    )
+
     def __str__(self):
-        return self.number
+        return self.name
 
 
 class Photo(models.Model):
@@ -285,6 +298,26 @@ class Photo(models.Model):
         blank=True,
         upload_to="files/documents_and_other/"
     )
+
+
+class Price(models.Model):
+    pick_season = models.IntegerField(
+        null=True,
+        blank=True
+    )
+    high_season = models.IntegerField(
+        null=True,
+        blank=True
+    )
+    low_season = models.IntegerField(
+        null=True,
+        blank=True
+    )
+    currency = models.CharField(  # тип валюты? нужен ли и как испольлзовать вопрос
+        max_length=10,
+        null=True,
+        choices=CURRENCY_CHOICES,
+        )
 
 
 class Car(models.Model):
@@ -304,31 +337,41 @@ class Car(models.Model):
         ACT,
         on_delete=models.CASCADE,
         related_name='car_act',
-        verbose_name='Car'
+        verbose_name='act',
+        null=True,
+        blank=True
     )
     first_class = models.ForeignKey( # информация о страховке, сторонний класс
         FirstClass,
         on_delete=models.CASCADE,
         related_name='car_first_class',
-        verbose_name='Car'
+        verbose_name='first_class',
+        null=True,
+        blank=True
     )
     second_class = models.ForeignKey(  # информация о страховке, сторонний класс
         SecondClass,
         on_delete=models.CASCADE,
         related_name='car_second_class',
-        verbose_name='Car'
+        verbose_name='second_class',
+        null=True,
+        blank=True
     )
     tax = models.ForeignKey(  #  информация о страховке, сторонний класс
         Tax,
         on_delete=models.CASCADE,
         related_name='car_tax',
-        verbose_name='Car'
+        verbose_name='tax',
+        null=True,
+        blank=True
     )
     bluebook = models.ForeignKey(  # информация о страховке, сторонний класс
         Bluebook,
         on_delete=models.CASCADE,
         related_name='car_bluebook',
-        verbose_name='Car'
+        verbose_name='bluebook',
+        null=True,
+        blank=True
     )
     engine = models.OneToOneField(  # информация о двигателе, сторонний класс
         Engine,
@@ -354,19 +397,23 @@ class Car(models.Model):
         related_name='car_other',
         verbose_name='Other Features'
     )
-    photos = models.ManyToManyField(  # фотографии автомобилей сторонний класс
+    photos = models.OneToOneField(  # фотографии автомобилей сторонний класс
         Photo,
+        on_delete=models.CASCADE,
         related_name='cars_photos',
         verbose_name='Photos',
-        blank=True
+        blank=True,
+        null=True
     )
-    problems = models.ManyToManyField(  # проблемы с автомобилем сторонний класс 
+    problems = models.OneToOneField(  # проблемы с автомобилем сторонний класс
         Problem,
+        on_delete=models.CASCADE,
         related_name='cars_problems',
         verbose_name='Problems',
-        blank=True
+        blank=True,
+        null=True
     )
-    number = models.CharField( # гос номер
+    number = models.CharField(  # гос номер
         max_length=64,
     )
     year_manufactured = models.PositiveIntegerField(  # год выпуска авто
@@ -375,7 +422,7 @@ class Car(models.Model):
         ],
         verbose_name='Year Manufactured'
     )
-    body_type = models.CharField(  #  тип кузова 
+    body_type = models.CharField(  #  тип кузова
         max_length=128,
         choices=BODY_TYPE_CHOICES
     )
@@ -391,6 +438,14 @@ class Car(models.Model):
     updated_at = models.DateTimeField(  #  дата и время изменения записи об авто в бд
         auto_now=True,
         verbose_name='Updated At'
+    )
+    price = models.OneToOneField(
+        Price,
+        on_delete=models.CASCADE,
+        related_name='car',
+        verbose_name='Price',
+        blank=True,
+        null=True
     )
 
     class Meta:
@@ -408,32 +463,6 @@ class Car(models.Model):
 
     def __str__(self):
         return f'{self.brand.name} {self.model.name}'
-
-
-class Price(models.Model):
-    pick_season = models.DecimalField(  # цена в пиковом сезоне
-        max_digits=10,
-        decimal_places=2,
-        null=True,
-        blank=True
-        )
-    high_season = models.DecimalField(  # цена в высоком сезоне
-        max_digits=10,
-        decimal_places=2,
-        null=True,
-        blank=True
-        )
-    low_season = models.DecimalField(  # цена в низком сезоне
-        max_digits=10,
-        decimal_places=2,
-        null=True,
-        blank=True
-        )
-    currency = models.CharField(  # тип валюты? нужен ли и как испольлзовать вопрос
-        max_length=10,
-        null=True,
-        choices=CURRENCY_CHOICES,
-        )
 
 
 class Application(models.Model):
@@ -461,35 +490,34 @@ class Application(models.Model):
     client_name = models.CharField(  # имя клиента
         max_length=256
     )
-    birthdate = models.DateField(  # дата рождения клиента 
+    birthdate = models.DateField(  # дата рождения клиента
         blank=True,
         null=True
     )
-    contacts = models.CharField(
+    contacts = models.CharField(  # номер телефона
         max_length=64
     )
-    contact_type = models.CharField(
+    contact_type = models.CharField(  # тип связи с клиентом
         max_length=64,
         choices=CONTACT_CHOICES,
-        default='Telegram'
     )
-    client_email = models.EmailField(
+    client_email = models.EmailField(  # почта клиента
         blank=True,
         null=True
     )
-    deposit_in_hand = models.IntegerField()
-    currency = models.CharField(
+    deposit_in_hand = models.IntegerField()  # депозит на руки
+    currency = models.CharField(  # тип валюты
         choices=CURRENCY_CHOICES,
         max_length=256
     )
-    price = models.IntegerField()
-    status = models.CharField(
+    price = models.IntegerField()  # цена
+    status = models.CharField(  # статус заявки
         max_length=128,
         choices=STATUS_CHOICES,
         default='Active'
     )
 
-    def save(self, *args, **kwargs):
+    def save(self, *args, **kwargs):  # генерация номера
         if not self.num:
             while True:
                 new_num = randint(100000, 999999)
@@ -500,29 +528,29 @@ class Application(models.Model):
 
 
 class Date(models.Model):
-    application = models.OneToOneField(
+    application = models.OneToOneField(  # инфо о заявке
         'Application',
         on_delete=models.CASCADE,
         related_name='rental_dates'
     )
-    date_delivery = models.DateField()
-    date_return = models.DateField()
+    date_delivery = models.DateField()  # дата доставки
+    date_return = models.DateField()  # дата возврата
 
 
 class Misc(models.Model):
-    contract = models.FileField(
+    contract = models.FileField(  # контракт
         upload_to='contracts/',
         null=True,
         blank=True)
-    vaucher = models.FileField(
+    vaucher = models.FileField(  # ваучер
         upload_to='vauchers/',
         null=True,
         blank=True)
-    video = models.FileField(
-        upload_to='videos/',
+    other_files = models.FileField(  # ваучер
+        upload_to='other_files/',
         null=True,
         blank=True)
-    application = models.ForeignKey(
+    application = models.ForeignKey(  # файлы у заявки
         Application,
         on_delete=models.CASCADE,
         related_name='misc_files',

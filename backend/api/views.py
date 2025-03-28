@@ -1,10 +1,10 @@
-from rest_framework import viewsets, permissions, generics, status
-from rest_framework.response import Response
+from rest_framework import viewsets, permissions, generics
 from rest_framework.parsers import JSONParser, MultiPartParser
-import json
+from rest_framework.response import Response
+from rest_framework import status
 
 from items.models import (
-    Brand, CarModel, Problem, Engine, Chassis,
+    CarBrand, CarModel, Problem, Engine, Chassis,
     ACT, Photo, Car, Price, FirstClass,
     Date, Application, Misc, Music,
     Other, SecondClass, Tax
@@ -20,7 +20,7 @@ from .serializers import (
 
 
 class BrandViewSet(viewsets.ModelViewSet):
-    queryset = Brand.objects.all()
+    queryset = CarBrand.objects.all()
     serializer_class = BrandSerializer
 
 

@@ -1,63 +1,92 @@
 MAX_PROBLEM_LEN = 512
 
 CURRENCY_CHOICES = [
-    ('thb', 'thb'),
-    ('usd', 'usd'),
-    ('rub', 'rub'),
+    ('THB', 'thb'),
+    ('USD', 'usd'),
+    ('RUB', 'rub'),
+]
+
+DOORS_CHOICES = [
+    (2, 2),
+    (4, 4),
+]
+
+AIRBAGS_CHOICES = [
+    (1, 1),
+    (2, 2),
+    (3, 3),
+    (4, 4),
+    (5, 5),
+    (6, 6),
+    (7, 7),
+    (8, 8),
+]
+
+BRAND_CHOICES = [
+    ('toyota', 'Toyota'),
+    ('bmw', 'BMW'),
+    ('mercedes_benz', 'Mercedes-Benz'),
+    ('audi', 'Audi'),
+    ('ford', 'Ford'),
+    ('chevrolet', 'Chevrolet'),
+    ('honda', 'Honda'),
+    ('nissan', 'Nissan'),
+    ('hyundai', 'Hyundai'),
+    ('volkswagen', 'Volkswagen'),
 ]
 
 FUEL_CHOICES = [
-    ('Benzin', 'benzin'),
-    ('Dizel', 'dizel'),
-    ('Hybrid', 'hybrid'),
-    ('Turbo Dizel', 'turbo dizel'),
-    ('Gaz', 'gaz'),
-    ('Electricity', 'electricity'),
+    ('benzin', 'Benzin'),
+    ('dizel', 'Dizel'),
+    ('hybrid', 'Hybrid'),
+    ('turbo dizel', 'Turbo Dizel'),
+    ('gaz', 'Gaz'),
+    ('electricity', 'Electricity'),
 ]
 
 TRANSMISSION_CHOICES = [
-    ('Manual', 'manual'),
-    ('Automatic', 'automatic'),
-    ('Automatic + Manual', 'automatic + manual'),
+    ('manual', 'Manual'),
+    ('automatic', 'Automatic'),
+    ('automatic + manual', 'Automatic + Manual'),
 ]
 
 DRIVE_CHOICES = [
-    ('Front wheel', 'front wheel'),
-    ('Rear wheel', 'rear wheel'),
+    ('front wheel', 'Front wheel'),
+    ('rear wheel', 'Rear wheel'),
     ('4 wheels', '4 wheels'),
 ]
 
 CATEGORY_DRIVES_LICENSE_CHOICES = [
-    ('A', 'a'),
-    ('A1', 'a1'),
-    ('A or B or M', 'a or b or m'),
-    ('B', 'b'),
-    ('B1', 'b1'),
-    ('BE', 'be'),
-    ('M', 'm'),
+    ('a', 'A'),
+    ('a1', 'A1'),
+    ('a or b or m', 'A or B or M'),
+    ('b', 'B'),
+    ('b1', 'B1'),
+    ('be', 'BE'),
+    ('m', 'M'),
 ]
 
 AIR_CONDITIONER_CHOICES = [
-    ('Air conditioning', 'air conditioning'),
+    ('air conditioning', 'Air conditioning'),
     ('1-zone climate control', '1-zone climate control'),
     ('2-zone climate control', '2-zone climate control'),
     ('4-zone climate control', '4-zone climate control'),
-    ('None', 'none'),
+    ('none', 'None'),
 ]
 
 INTERIOR_CHOICES = [
-    ('Fabric', 'fabric'),
-    ('Leather', 'leather'),
-    ('Sport', 'sport'),
-    ('Sport Leather', 'sport leather'),
+    ('fabric', 'Fabric'),
+    ('leather', 'Leather'),
+    ('sport', 'Sport'),
+    ('sport leather', 'Sport Leather'),
 ]
 
 ROOF_CHOICES = [
-    ('Standard', 'standard'),
-    ('Sunroof', 'sunroof'),
-    ('Rigid foldable automatic', 'rigid foldable automatic'),
-    ('Soft foldable manual', 'soft foldable manual'),
-    ('Soft foldable automatic', 'soft foldable automatic'),
+    ('standard', 'Standard'),
+    ('sunroof', 'Sunroof'),
+    ('rigid foldable automatic', 'Rigid foldable automatic'),
+    ('soft foldable manual', 'Soft foldable manual'),
+    ('soft foldable automatic', 'Soft foldable automatic'),
 ]
 
 POWERED_WINDOW_CHOICES = [
@@ -66,58 +95,58 @@ POWERED_WINDOW_CHOICES = [
 ]
 
 SIDE_WHEEL_CHOICES = [
-    ('Left', 'left'),
-    ('Right', 'right'),
+    ('left', 'Left'),
+    ('right', 'Right'),
 ]
 
 COLOR_CHOICES = [
-    ('White', 'white'),
-    ('Black', 'black'),
-    ('Grey', 'grey'),
-    ('Red', 'red'),
-    ('Blue', 'blue'),
-    ('Green', 'green'),
-    ('Yellow', 'yellow'),
-    ('Brown', 'brown'),
-    ('Beige', 'beige'),
-    ('Orange', 'orange'),
-    ('Silver', 'silver'),
-    ('Sky blue', 'sky blue'),
-    ('Purple', 'purple'),
+    ('white', 'White'),
+    ('black', 'Black'),
+    ('grey', 'Grey'),
+    ('red', 'Red'),
+    ('blue', 'Blue'),
+    ('green', 'Green'),
+    ('yellow', 'Yellow'),
+    ('brown', 'Brown'),
+    ('beige', 'Beige'),
+    ('orange', 'Orange'),
+    ('silver', 'Silver'),
+    ('sky blue', 'Sky blue'),
+    ('purple', 'Purple'),
 ]
 
 BODY_TYPE_CHOICES = [
-    ('Sedan', 'sedan'),
-    ('Hatchback', 'hatchback'),
-    ('Wagon', 'wagon'),
-    ('Minivan', 'minivan'),
-    ('Minibus', 'minibus'),
-    ('Crossover', 'crossover'),
-    ('Pickup', 'pickup'),
-    ('Convertible', 'convertible'),
-    ('Scooter', 'scooter'),
-    ('Motorcycle', 'motorcycle'),
-    ('ATV', 'atv'),
-    ('Buggy', 'buggy'),
-    ('Coupe', 'coupe'),
+    ('sedan', 'Sedan'),
+    ('hatchback', 'Hatchback'),
+    ('wagon', 'Wagon'),
+    ('minivan', 'Minivan'),
+    ('minibus', 'Minibus'),
+    ('crossover', 'Crossover'),
+    ('pickup', 'Pickup'),
+    ('convertible', 'Convertible'),
+    ('scooter', 'Scooter'),
+    ('motorcycle', 'Motorcycle'),
+    ('atv', 'ATV'),
+    ('buggy', 'Buggy'),
+    ('coupe', 'Coupe'),
 ]
 
 AGGREGATOR_CHOICES = [
-    ('Localrent', 'localrent'),
-    ('Trip', 'trip'),
-    ('Klook', 'klook'),
-    ('Rentconnected', 'rentconnected'),
+    ('localrent', 'Localrent'),
+    ('trip', 'Trip'),
+    ('klook', 'Klook'),
+    ('rentconnected', 'Rentconnected'),
 ]
 
 STATUS_CHOICES = [
-    ('Active', 'active'),
-    ('Closed', 'closed'),
-    ('Expired', 'expired')
+    ('active', 'Active'),
+    ('closed', 'Closed'),
+    ('expired', 'Expired')
 ]
 
 CONTACT_CHOICES = [
-    ('Phone', 'phone'),
-    ('Telegram', 'telegram'),
-    ('WhatsApp', 'whatsapp'),
-    ('Viber', 'viber')
+    ('phone', 'Phone'),
+    ('telegram', 'Telegram'),
+    ('whatsapp', 'WhatsApp'),
+    ('viber', 'Viber')
 ]
