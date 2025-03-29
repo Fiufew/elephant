@@ -240,6 +240,7 @@ class ApplicationSerializer(serializers.ModelSerializer):
     contract = serializers.FileField(required=False, allow_null=True)
     vaucher = serializers.FileField(required=False, allow_null=True)
     other_files = serializers.FileField(required=False, allow_null=True)
+    bluebook = serializers.FileField(required=False, allow_null=True)
 
     class Meta:
         model = Application
@@ -250,11 +251,12 @@ class ApplicationSerializer(serializers.ModelSerializer):
             'contact_type', 'client_email', 'status',
             'contract', 'vaucher', 'other_files'
         ]
-    
+
     def create(self, validated_data):
         contract = validated_data.pop('contract', None)
         vaucher = validated_data.pop('vaucher', None)
         other_files = validated_data.pop('other_files', None)
+        bluebook = validated_data.pop('bluebook', None)
         application = Application.objects.create(**validated_data)
         if contract:
             application.contract = contract
@@ -262,6 +264,8 @@ class ApplicationSerializer(serializers.ModelSerializer):
             application.vaucher = vaucher
         if other_files:
             application.other_files = other_files
+        if bluebook:
+            application.bluebook = bluebook
         application.save()
         return application
 
