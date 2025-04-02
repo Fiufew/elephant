@@ -1,152 +1,185 @@
 MAX_PROBLEM_LEN = 512
 
 CURRENCY_CHOICES = [
-    ('THB', 'thb'),
-    ('USD', 'usd'),
-    ('RUB', 'rub'),
+    ('Thb', 'thb'),
+    ('Usd', 'usd'),
+    ('Rub', 'rub'),
 ]
 
 DOORS_CHOICES = [
-    (2, 2),
-    (4, 4),
+    (2, '2'),
+    (4, '4'),
 ]
 
 AIRBAGS_CHOICES = [
-    (1, 1),
-    (2, 2),
-    (3, 3),
-    (4, 4),
-    (5, 5),
-    (6, 6),
-    (7, 7),
-    (8, 8),
+    (1, '1'),
+    (2, '2'),
+    (3, '3'),
+    (4, '4'),
+    (5, '5'),
+    (6, '6'),
+    (7, '7'),
+    (8, '8'),
 ]
 
 BRAND_CHOICES = [
-    ('toyota', 'Toyota'),
-    ('bmw', 'BMW'),
-    ('mercedes_benz', 'Mercedes-Benz'),
-    ('audi', 'Audi'),
-    ('ford', 'Ford'),
-    ('chevrolet', 'Chevrolet'),
-    ('honda', 'Honda'),
-    ('nissan', 'Nissan'),
-    ('hyundai', 'Hyundai'),
-    ('volkswagen', 'Volkswagen'),
+    ('Toyota', 'toyota'),
+    ('BMW', 'bmw'),
+    ('Mercedes-Benz', 'mercedes_benz'),
+    ('Audi', 'audi'),
+    ('Ford', 'ford'),
+    ('Chevrolet', 'chevrolet'),
+    ('Honda', 'honda'),
+    ('Nissan', 'nissan'),
+    ('Hyundai', 'hyundai'),
+    ('Volkswagen', 'volkswagen'),
 ]
 
 FUEL_CHOICES = [
-    ('benzin', 'Benzin'),
-    ('dizel', 'Dizel'),
-    ('hybrid', 'Hybrid'),
-    ('turbo dizel', 'Turbo Dizel'),
-    ('gaz', 'Gaz'),
-    ('electricity', 'Electricity'),
+    ('Benzin', 'benzin'),
+    ('Dizel', 'dizel'),
+    ('Hybrid', 'hybrid'),
+    ('Turbo Dizel', 'turbo dizel'),
+    ('Gaz', 'gaz'),
+    ('Electricity', 'electricity'),
 ]
 
 TRANSMISSION_CHOICES = [
-    ('manual', 'Manual'),
-    ('automatic', 'Automatic'),
-    ('automatic + manual', 'Automatic + Manual'),
+    ('Manual', 'manual'),
+    ('Automatic', 'automatic'),
+    ('Automatic + Manual', 'automatic + manual'),
 ]
 
 DRIVE_CHOICES = [
-    ('front wheel', 'Front wheel'),
-    ('rear wheel', 'Rear wheel'),
+    ('Front wheel', 'front wheel'),
+    ('Rear wheel', 'rear wheel'),
     ('4 wheels', '4 wheels'),
 ]
 
 CATEGORY_DRIVES_LICENSE_CHOICES = [
-    ('a', 'A'),
-    ('a1', 'A1'),
-    ('a or b or m', 'A or B or M'),
-    ('b', 'B'),
-    ('b1', 'B1'),
-    ('be', 'BE'),
-    ('m', 'M'),
+    ('A', 'a'),
+    ('A1', 'a1'),
+    ('A or B or M', 'a or b or m'),
+    ('B', 'b'),
+    ('B1', 'b1'),
+    ('BE', 'be'),
+    ('M', 'm'),
 ]
 
 AIR_CONDITIONER_CHOICES = [
-    ('air conditioning', 'Air conditioning'),
+    ('Air conditioning', 'air conditioning'),
     ('1-zone climate control', '1-zone climate control'),
     ('2-zone climate control', '2-zone climate control'),
     ('4-zone climate control', '4-zone climate control'),
-    ('none', 'None'),
+    ('-', '-'),
 ]
 
 INTERIOR_CHOICES = [
-    ('fabric', 'Fabric'),
-    ('leather', 'Leather'),
-    ('sport', 'Sport'),
-    ('sport leather', 'Sport Leather'),
+    ('Fabric', 'fabric'),
+    ('Leather', 'leather'),
+    ('Sport', 'sport'),
+    ('Sport Leather', 'sport leather'),
 ]
 
 ROOF_CHOICES = [
-    ('standard', 'Standard'),
-    ('sunroof', 'Sunroof'),
-    ('rigid foldable automatic', 'Rigid foldable automatic'),
-    ('soft foldable manual', 'Soft foldable manual'),
-    ('soft foldable automatic', 'Soft foldable automatic'),
+    ('Standard', 'standard'),
+    ('Sunroof', 'sunroof'),
+    ('Rigid foldable automatic', 'rigid foldable automatic'),
+    ('Soft foldable manual', 'soft foldable manual'),
+    ('Soft foldable automatic', 'soft foldable automatic'),
 ]
 
 POWERED_WINDOW_CHOICES = [
-    (2, 2),
-    (4, 4),
+    (2, '2'),
+    (4, '4'),
 ]
 
 SIDE_WHEEL_CHOICES = [
-    ('left', 'Left'),
-    ('right', 'Right'),
+    ('Left', 'left'),
+    ('Right', 'right'),
 ]
 
 COLOR_CHOICES = [
-    ('white', 'White'),
-    ('black', 'Black'),
-    ('grey', 'Grey'),
-    ('red', 'Red'),
-    ('blue', 'Blue'),
-    ('green', 'Green'),
-    ('yellow', 'Yellow'),
-    ('brown', 'Brown'),
-    ('beige', 'Beige'),
-    ('orange', 'Orange'),
-    ('silver', 'Silver'),
-    ('sky blue', 'Sky blue'),
-    ('purple', 'Purple'),
+    ('White', 'white'),
+    ('Black', 'black'),
+    ('Grey', 'grey'),
+    ('Red', 'red'),
+    ('Blue', 'blue'),
+    ('Green', 'green'),
+    ('Yellow', 'yellow'),
+    ('Brown', 'brown'),
+    ('Beige', 'beige'),
+    ('Orange', 'orange'),
+    ('Silver', 'silver'),
+    ('Sky blue', 'sky blue'),
+    ('Purple', 'purple'),
 ]
 
 BODY_TYPE_CHOICES = [
-    ('sedan', 'Sedan'),
-    ('hatchback', 'Hatchback'),
-    ('wagon', 'Wagon'),
-    ('minivan', 'Minivan'),
-    ('minibus', 'Minibus'),
-    ('crossover', 'Crossover'),
-    ('pickup', 'Pickup'),
-    ('convertible', 'Convertible'),
-    ('scooter', 'Scooter'),
-    ('motorcycle', 'Motorcycle'),
-    ('atv', 'ATV'),
-    ('buggy', 'Buggy'),
-    ('coupe', 'Coupe'),
+    ('Sedan', 'sedan'),
+    ('Hatchback', 'hatchback'),
+    ('Wagon', 'wagon'),
+    ('Minivan', 'minivan'),
+    ('Minibus', 'minibus'),
+    ('Crossover', 'crossover'),
+    ('Pickup', 'pickup'),
+    ('Convertible', 'convertible'),
+    ('Scooter', 'scooter'),
+    ('Motorcycle', 'motorcycle'),
+    ('ATV', 'atv'),
+    ('Buggy', 'buggy'),
+    ('Coupe', 'coupe'),
 ]
 
-AGGREGATOR_CHOICES = [
-    ('localrent', 'Localrent'),
-    ('trip', 'Trip'),
-    ('klook', 'Klook'),
-    ('rentconnected', 'Rentconnected'),
+AGREGATOR_CHOICES = [
+    ('Localrent', 'localrent'),
+    ('Trip', 'trip'),
+    ('Klook', 'klook'),
+    ('Rentconnected', 'rentconnected'),
 ]
 
 STATUS_CHOICES = [
-    ('active', 'Active'),
-    ('closed', 'Closed'),
-    ('expired', 'Expired')
+    ('Active', 'active'),
+    ('Closed', 'closed'),
+    ('Expired', 'expired'),
 ]
 
 CONTACT_CHOICES = [
-    ('phone', 'Phone'),
-    ('telegram', 'Telegram'),
-    ('whatsapp', 'WhatsApp'),
-    ('viber', 'Viber')
+    ('Phone', 'phone'),
+    ('Telegram', 'telegram'),
+    ('WhatsApp', 'whatsapp'),
+    ('Viber', 'viber'),
+]
+
+BABY_SEAT_CHOICES = [
+    ('Baby seat low', 'baby seat low'),
+    ('Baby seat high', 'baby seat high'),
+    ('Booster', 'booster'),
+    ('-', '-'),
+]
+
+ANOTHER_REGIONS_CHOICES = [
+    (
+        'Southern provinces (Phuket, Phang Nga, Krabi-mainland)',
+        'southern provinces (phuket, phang nga, krabi-mainland)'
+    ),
+    (
+        'Islands (Phangan, Samui)',
+        'islands (phangan, samui)'
+    ),
+    (
+        'Central Provinces (Bangkok, Pattaya, Hua Hin)',
+        'central provinces (bangkok, pattaya, hua hin)'
+    ),
+    (
+        'Northern Provinces (Chiang Mai)',
+        'northern provinces (chiang mai)'
+    ),
+    ('-', '-'),
+]
+
+COMPLEX_INSURANCE_CHOICES = [
+    ('Full insurance', 'full insurance'),
+    ('Super Insurance', 'super insurance'),
+    ('-', '-'),
 ]

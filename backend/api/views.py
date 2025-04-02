@@ -5,13 +5,13 @@ from rest_framework import status
 
 from items.models import (
     CarBrand, CarModel, Problem, Engine, Chassis,
-    ACT, Photo, Car, Price, FirstClass,
+    Act, Photo, Car, Price, FirstClass,
     Date, Application, Misc, Music,
     Other, SecondClass, Tax
 )
 from .serializers import (
-    BrandSerializer, CarModelSerializer, ProblemSerializer, EngineSerializer,
-    ACTSerializer, PhotoSerializer, ChassisSerializer,
+    CarBrandSerializer, CarModelSerializer, ProblemSerializer, EngineSerializer,
+    ActSerializer, PhotoSerializer, ChassisSerializer,
     CarSerializer, PriceSerializer, CarRentalDatesSerializer,
     MusicSerializer, OtherSerializer, ApplicationSerializer,
     UserRegistrationSerializer, MiscSerializer, FirstClassSerializer,
@@ -21,7 +21,7 @@ from .serializers import (
 
 class BrandViewSet(viewsets.ModelViewSet):
     queryset = CarBrand.objects.all()
-    serializer_class = BrandSerializer
+    serializer_class = CarBrandSerializer
 
 
 class CarModelViewSet(viewsets.ModelViewSet):
@@ -49,9 +49,9 @@ class OtherViewSet(viewsets.ModelViewSet):
     serializer_class = OtherSerializer
 
 
-class ACTViewSet(viewsets.ModelViewSet):
-    queryset = ACT.objects.all()
-    serializer_class = ACTSerializer
+class ActViewSet(viewsets.ModelViewSet):
+    queryset = Act.objects.all()
+    serializer_class = ActSerializer
 
 
 class FirstClassViewSet(viewsets.ModelViewSet):
