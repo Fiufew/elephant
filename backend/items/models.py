@@ -543,7 +543,7 @@ class Misc(models.Model):
         null=True,
         blank=True)
     vaucher = models.FileField(  # ваучер
-        upload_to='vauchers/',
+        upload_to='applications/vauchers/',
         null=True,
         blank=True)
     other_files = models.FileField(  # ваучер
