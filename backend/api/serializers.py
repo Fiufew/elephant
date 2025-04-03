@@ -182,8 +182,19 @@ class CarSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Car
-        fields = '__all__'
-        read_only_fields = ['created_at', 'updated_at']
+        fields = [
+            'id',
+            'brand', 'model',
+            'engine',
+            'photos', 'price',
+            'chassis', 'music',
+            'other', 'act', 'first_class',
+            'second_class', 'tax',
+            'problems', 'number',
+            'year_manufactured', 'body_type',
+            'deposit', 'color',
+            'created_at', 'updated_at'
+        ]
 
     def create(self, validated_data):
         brand_data = validated_data.pop('brand')
