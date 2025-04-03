@@ -9,10 +9,10 @@ from rest_framework_simplejwt.views import (
 from .views import (
     BrandViewSet, CarModelViewSet, ProblemViewSet,
     EngineViewSet, PriceViewSet, ChassisViewSet,
-    InsuranceViewSet, PhotoViewSet,
-    CarViewSet, CarRentalDatesViewSet,
-    ApplicationViewSet, MiscViewSet,
-    MusicViewSet, OtherViewSet
+    ACTViewSet, PhotoViewSet, FirstClassViewSet,
+    CarViewSet, CarRentalDatesViewSet, SecondClassViewSet,
+    ApplicationViewSet, MiscViewSet, TaxViewSet,
+    MusicViewSet, OtherViewSet, UserRegistrationView
 )
 
 app_name = 'api'
@@ -25,7 +25,10 @@ router.register(r'engines', EngineViewSet, basename='engine')
 router.register(r'music', MusicViewSet, basename='music')
 router.register(r'prices', PriceViewSet, basename='price')
 router.register(r'others', OtherViewSet, basename='other')
-router.register(r'insurances', InsuranceViewSet, basename='insurance')
+router.register(r'act', ACTViewSet, basename='act')
+router.register(r'first-class', FirstClassViewSet, basename='first-class')
+router.register(r'second-class', SecondClassViewSet, basename='second-class')
+router.register(r'tax', TaxViewSet, basename='tax')
 router.register(r'photos', PhotoViewSet, basename='photo')
 router.register(r'chassis', ChassisViewSet, basename='chassis')
 router.register(r'cars', CarViewSet, basename='car')
@@ -38,10 +41,11 @@ router.register(r'misc', MiscViewSet, basename='misc')
 
 urlpatterns = [
     path('', include(router.urls)),
+    path('registration/', UserRegistrationView.as_view(), name='register'),
     path(
-        'api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+        'token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path(
-        'api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+        'token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path(
-        'api/token/verify/', TokenVerifyView.as_view(), name='token_verify'),
+        'token/verify/', TokenVerifyView.as_view(), name='token_verify'),
 ]

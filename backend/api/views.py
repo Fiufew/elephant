@@ -1,20 +1,26 @@
-from rest_framework import viewsets
+from rest_framework import viewsets, permissions, generics
+from rest_framework.parsers import JSONParser, MultiPartParser
+from rest_framework.response import Response
+from rest_framework import status
+
 from items.models import (
-    Brand, CarModel, Problem, Engine, Chassis,
-    Insurance, Photo, Car, Price,
+    CarBrand, CarModel, Problem, Engine, Chassis,
+    ACT, Photo, Car, Price, FirstClass,
     Date, Application, Misc, Music,
-    Other
+    Other, SecondClass, Tax
 )
 from .serializers import (
     BrandSerializer, CarModelSerializer, ProblemSerializer, EngineSerializer,
-    InsuranceSerializer, PhotoSerializer, ChassisSerializer,
+    ACTSerializer, PhotoSerializer, ChassisSerializer,
     CarSerializer, PriceSerializer, CarRentalDatesSerializer,
-    MusicSerializer, OtherSerializer, ApplicationSerializer
+    MusicSerializer, OtherSerializer, ApplicationSerializer,
+    UserRegistrationSerializer, MiscSerializer, FirstClassSerializer,
+    SecondClassSerializer, TaxSerializer
 )
 
 
 class BrandViewSet(viewsets.ModelViewSet):
-    queryset = Brand.objects.all()
+    queryset = CarBrand.objects.all()
     serializer_class = BrandSerializer
 
 
@@ -43,9 +49,24 @@ class OtherViewSet(viewsets.ModelViewSet):
     serializer_class = OtherSerializer
 
 
-class InsuranceViewSet(viewsets.ModelViewSet):
-    queryset = Insurance.objects.all()
-    serializer_class = InsuranceSerializer
+class ACTViewSet(viewsets.ModelViewSet):
+    queryset = ACT.objects.all()
+    serializer_class = ACTSerializer
+
+
+class FirstClassViewSet(viewsets.ModelViewSet):
+    queryset = FirstClass.objects.all()
+    serializer_class = FirstClassSerializer
+
+
+class SecondClassViewSet(viewsets.ModelViewSet):
+    queryset = SecondClass.objects.all()
+    serializer_class = SecondClassSerializer
+
+
+class TaxViewSet(viewsets.ModelViewSet):
+    queryset = Tax.objects.all()
+    serializer_class = TaxSerializer
 
 
 class PhotoViewSet(viewsets.ModelViewSet):
@@ -80,4 +101,9 @@ class ApplicationViewSet(viewsets.ModelViewSet):
 
 class MiscViewSet(viewsets.ModelViewSet):
     queryset = Misc.objects.all()
-    serializer_class = CarRentalDatesSerializer
+    serializer_class = MiscSerializer
+
+
+class UserRegistrationView(generics.CreateAPIView):
+    serializer_class = UserRegistrationSerializer
+    permission_classes = [permissions.AllowAny]
