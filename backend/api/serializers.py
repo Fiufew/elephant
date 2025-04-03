@@ -183,7 +183,7 @@ class CarSerializer(serializers.ModelSerializer):
             'deposit', 'color',
             'created_at', 'updated_at'
         ]
-    
+
     def create(self, validated_data):
         print("Validated Data:", validated_data)
         brand_data = validated_data.pop('brand')
@@ -199,6 +199,7 @@ class CarSerializer(serializers.ModelSerializer):
         other_data = validated_data.pop('other')
         photos_data = validated_data.pop('photos', [])
         problems_data = validated_data.pop('problems', [])
+
         brand = CarBrand.objects.create(**brand_data)
         model = CarModel.objects.create(**model_data)
         price = Price.objects.create(**price_data)
@@ -249,7 +250,8 @@ class ApplicationSerializer(serializers.ModelSerializer):
             'location_return', 'contacts', 'deposit_in_hand',
             'currency', 'price', 'birthdate',
             'contact_type', 'client_email', 'status',
-            'contract', 'vaucher', 'other_files'
+            'contract', 'vaucher', 'other_files',
+            'bluebook'
         ]
 
     def create(self, validated_data):
