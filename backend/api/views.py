@@ -1,27 +1,28 @@
 from rest_framework import viewsets, permissions, generics
-from rest_framework.parsers import JSONParser, MultiPartParser
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.decorators import action
+
 
 from items.models import (
     CarBrand, CarModel, Problem, Engine, Chassis,
-    ACT, Photo, Car, Price, FirstClass,
+    Act, Photo, Car, Price, FirstClass,
     Date, Application, Misc, Music,
-    Other, SecondClass, Tax
+    Other, SecondClass, Tax,
 )
 from .serializers import (
-    BrandSerializer, CarModelSerializer, ProblemSerializer, EngineSerializer,
-    ACTSerializer, PhotoSerializer, ChassisSerializer,
+    CarBrandSerializer, CarModelSerializer, ProblemSerializer,
+    ActSerializer, PhotoSerializer, ChassisSerializer,
     CarSerializer, PriceSerializer, CarRentalDatesSerializer,
     MusicSerializer, OtherSerializer, ApplicationSerializer,
     UserRegistrationSerializer, MiscSerializer, FirstClassSerializer,
-    SecondClassSerializer, TaxSerializer
+    SecondClassSerializer, TaxSerializer, EngineSerializer,
 )
 
 
 class BrandViewSet(viewsets.ModelViewSet):
     queryset = CarBrand.objects.all()
-    serializer_class = BrandSerializer
+    serializer_class = CarBrandSerializer
 
 
 class CarModelViewSet(viewsets.ModelViewSet):
@@ -32,6 +33,12 @@ class CarModelViewSet(viewsets.ModelViewSet):
 class ProblemViewSet(viewsets.ModelViewSet):
     queryset = Problem.objects.all()
     serializer_class = ProblemSerializer
+
+    @action(detail=True, methods=['post'], url_path='solved')
+    def mark_as_solved(self, request, pk=None):
+        problem = self.get_object()
+        problem.solve()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class EngineViewSet(viewsets.ModelViewSet):
@@ -49,9 +56,9 @@ class OtherViewSet(viewsets.ModelViewSet):
     serializer_class = OtherSerializer
 
 
-class ACTViewSet(viewsets.ModelViewSet):
-    queryset = ACT.objects.all()
-    serializer_class = ACTSerializer
+class ActViewSet(viewsets.ModelViewSet):
+    queryset = Act.objects.all()
+    serializer_class = ActSerializer
 
 
 class FirstClassViewSet(viewsets.ModelViewSet):
