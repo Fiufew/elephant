@@ -521,7 +521,12 @@ class Application(models.Model):
         choices=CURRENCY_CHOICES,
         max_length=64,
     )
-    price = models.IntegerField()
+    price = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        null=True,
+        blank=True,
+    )
     status = models.CharField(
         max_length=64,
         choices=STATUS_CHOICES,

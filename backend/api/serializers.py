@@ -9,6 +9,8 @@ from items.models import (
     Music, Other, Application,
     Misc, Tax, Bluebook
     )
+from items.pdf_generator import generate_contract, generate_vaucher
+
 
 
 class CarBrandSerializer(serializers.ModelSerializer):
@@ -246,9 +248,15 @@ class CarSerializer(serializers.ModelSerializer):
 
 
 class ApplicationSerializer(serializers.ModelSerializer):
-    contract = serializers.FileField(required=False, allow_null=True, write_only=True)
-    vaucher = serializers.FileField(required=False, allow_null=True, write_only=True)
-    other_files = serializers.FileField(required=False, allow_null=True, write_only=True)
+    contract = serializers.FileField(
+        required=False, allow_null=True, write_only=True)
+    vaucher = serializers.FileField(
+        required=False, allow_null=True, write_only=True)
+    other_files = serializers.FileField(
+        required=False, allow_null=True, write_only=True)
+    car = serializers.PrimaryKeyRelatedField(queryset=Car.objects.all())
+    rental_dates = CarRentalDatesSerializer()
+    calculated_price = serializers.SerializerMethodField()
 
     class Meta:
         model = Application
@@ -260,7 +268,7 @@ class ApplicationSerializer(serializers.ModelSerializer):
             'client_email', 'deposit_in_hand', 'currency',
             'price', 'baby_seat', 'another_regions',
             'complex_insurance', 'contract', 'vaucher',
-            'other_files',
+            'other_files', 'rental_dates', 'calculated_price',
         ]
 
     def create(self, validated_data):
@@ -269,6 +277,10 @@ class ApplicationSerializer(serializers.ModelSerializer):
         other_files = validated_data.pop('other_files', None)
 
         application = Application.objects.create(**validated_data)
+
+        contract = generate_contract(application)
+        vaucher = generate_vaucher(application)
+
         Misc.objects.create(
             application=application,
             contract=contract,
