@@ -309,21 +309,6 @@ class Photo(models.Model):
     )
 
 
-class Price(models.Model):
-    pick_season = models.IntegerField(
-        null=True,
-        blank=True,
-    )
-    high_season = models.IntegerField(
-        null=True,
-        blank=True,
-    )
-    low_season = models.IntegerField(
-        null=True,
-        blank=True,
-    )
-
-
 class Car(models.Model):
     brand = models.ForeignKey(
         CarBrand,
@@ -440,13 +425,17 @@ class Car(models.Model):
         auto_now=True,
         verbose_name='Updated At',
     )
-    price = models.OneToOneField(
-        Price,
-        on_delete=models.CASCADE,
-        related_name='car',
-        verbose_name='Price',
-        blank=True,
+    pick_season = models.IntegerField(
         null=True,
+        blank=True,
+    )
+    high_season = models.IntegerField(
+        null=True,
+        blank=True,
+    )
+    low_season = models.IntegerField(
+        null=True,
+        blank=True,
     )
 
     class Meta:
@@ -527,6 +516,10 @@ class Application(models.Model):
         null=True,
         blank=True,
     )
+    rental_dates = models.OneToOneField(
+        'Date',
+        on_delete=models.CASCADE
+    )
     status = models.CharField(
         max_length=64,
         choices=STATUS_CHOICES,
@@ -557,15 +550,24 @@ class Application(models.Model):
                     break
         super().save(*args, **kwargs)
 
+    def __str__(self):
+        return f'{self.num} - {self.client_name}'
+
+    class Meta:
+        ordering = ['-id']
+        verbose_name = 'Application'
+        verbose_name_plural = 'Applications'
+
 
 class Date(models.Model):
     application = models.OneToOneField(
         'Application',
         on_delete=models.CASCADE,
-        related_name='rental_dates'
+        related_name='rental_date'
     )
     date_delivery = models.DateField()
     date_return = models.DateField()
+    number_of_days = models.PositiveIntegerField(default=0)
 
 
 class Misc(models.Model):
@@ -573,7 +575,7 @@ class Misc(models.Model):
         upload_to=applications_path,
         null=True,
         blank=True)
-    vaucher = models.FileField(  # ваучер
+    vaucher = models.FileField(
         upload_to='vauchers/',
         null=True,
         blank=True)

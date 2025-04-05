@@ -2,7 +2,7 @@ from django.contrib import admin
 from .models import (
     CarBrand, CarModel, Problem,
     Engine, Act, Photo,
-    Car, Price, Application,
+    Car, Application,
     Date, Misc, Chassis,
     Music, Other, FirstClass,
     SecondClass, Tax
@@ -139,13 +139,6 @@ class CarAdmin(admin.ModelAdmin):
     )
     search_fields = (
         'brand__name', 'model__name', 'number',
-    )
-
-
-@admin.register(Price)
-class PriceAdmin(admin.ModelAdmin):
-    list_display = (
-        'pick_season', 'high_season', 'low_season',
     )
 
 

@@ -6,14 +6,14 @@ from rest_framework.decorators import action
 
 from items.models import (
     CarBrand, CarModel, Problem, Engine, Chassis,
-    Act, Photo, Car, Price, FirstClass,
+    Act, Photo, Car, FirstClass,
     Date, Application, Misc, Music,
     Other, SecondClass, Tax,
 )
 from .serializers import (
     CarBrandSerializer, CarModelSerializer, ProblemSerializer,
     ActSerializer, PhotoSerializer, ChassisSerializer,
-    CarSerializer, PriceSerializer, CarRentalDatesSerializer,
+    CarSerializer, CarRentalDatesSerializer,
     MusicSerializer, OtherSerializer, ApplicationSerializer,
     UserRegistrationSerializer, MiscSerializer, FirstClassSerializer,
     SecondClassSerializer, TaxSerializer, EngineSerializer,
@@ -89,11 +89,6 @@ class ChassisViewSet(viewsets.ModelViewSet):
 class CarViewSet(viewsets.ModelViewSet):
     queryset = Car.objects.all()
     serializer_class = CarSerializer
-
-
-class PriceViewSet(viewsets.ModelViewSet):
-    queryset = Price.objects.all()
-    serializer_class = PriceSerializer
 
 
 class CarRentalDatesViewSet(viewsets.ModelViewSet):

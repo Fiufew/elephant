@@ -6,7 +6,7 @@ from rest_framework_simplejwt.views import (
 
 from .views import (
     BrandViewSet, CarModelViewSet, ProblemViewSet,
-    EngineViewSet, PriceViewSet, ChassisViewSet,
+    EngineViewSet, ChassisViewSet,
     ActViewSet, PhotoViewSet, FirstClassViewSet,
     CarViewSet, CarRentalDatesViewSet, SecondClassViewSet,
     ApplicationViewSet, MiscViewSet, TaxViewSet,
@@ -30,9 +30,6 @@ router.register(
 )
 router.register(
     r'music', MusicViewSet, basename='music'
-)
-router.register(
-    r'prices', PriceViewSet, basename='price'
 )
 router.register(
     r'others', OtherViewSet, basename='other'

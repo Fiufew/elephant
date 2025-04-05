@@ -5,12 +5,11 @@ from items.models import (
     CarBrand, CarModel, Problem,
     Engine, Chassis, FirstClass,
     Act, Photo, SecondClass,
-    Car, Price, Date,
+    Car, Date,
     Music, Other, Application,
     Misc, Tax, Bluebook
     )
 from items.pdf_generator import generate_contract, generate_vaucher
-
 
 
 class CarBrandSerializer(serializers.ModelSerializer):
@@ -35,6 +34,32 @@ class CarRentalDatesSerializer(serializers.ModelSerializer):
         fields = [
             'date_delivery', 'date_return',
         ]
+        read_only_fields = [
+            'number_of_days'
+        ]
+
+    def validate(self, attrs):
+        date_delivery = attrs.get('date_delivery')
+        date_return = attrs.get('date_return')
+
+        if date_delivery and date_return:
+            if date_return < date_delivery:
+                raise serializers.ValidationError(
+                    "Дата возврата не может быть раньше даты выдачи.")
+        return attrs
+
+    def create(self, validated_data):
+        validated_data['number_of_days'] = (
+            validated_data['date_return'] - validated_data['date_delivery']
+        ).days
+        return super().create(validated_data)
+
+    def update(self, instance, validated_data):
+        date_delivery = validated_data.get(
+            'date_delivery', instance.date_delivery)
+        date_return = validated_data.get('date_return', instance.date_return)
+        validated_data['number_of_days'] = (date_return - date_delivery).days
+        return super().update(instance, validated_data)
 
 
 class ProblemSerializer(serializers.ModelSerializer):
@@ -135,14 +160,6 @@ class PhotoSerializer(serializers.ModelSerializer):
         }
 
 
-class PriceSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Price
-        fields = [
-            'pick_season', 'high_season', 'low_season',
-        ]
-
-
 class MiscSerializer(serializers.ModelSerializer):
     class Meta:
         model = Misc
@@ -166,7 +183,6 @@ class MiscSerializer(serializers.ModelSerializer):
 class CarSerializer(serializers.ModelSerializer):
     brand = CarBrandSerializer()
     model = CarModelSerializer()
-    price = PriceSerializer()
     engine = EngineSerializer()
     chassis = ChassisSerializer()
     music = MusicSerializer()
@@ -185,10 +201,10 @@ class CarSerializer(serializers.ModelSerializer):
     class Meta:
         model = Car
         fields = [
-            'id',
-            'brand', 'model',
+            'id', 'pick_season', 'high_season',
+            'brand', 'model', 'low_season',
             'engine',
-            'photos', 'price',
+            'photos',
             'chassis', 'music',
             'other', 'act', 'first_class',
             'second_class', 'tax',
@@ -201,7 +217,6 @@ class CarSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         brand_data = validated_data.pop('brand')
         model_data = validated_data.pop('model')
-        price_data = validated_data.pop('price')
         engine_data = validated_data.pop('engine')
         chassis_data = validated_data.pop('chassis')
         music_data = validated_data.pop('music')
@@ -215,7 +230,6 @@ class CarSerializer(serializers.ModelSerializer):
 
         brand = CarBrand.objects.create(**brand_data)
         model = CarModel.objects.create(**model_data)
-        price = Price.objects.create(**price_data)
         engine = Engine.objects.create(**engine_data)
         chassis = Chassis.objects.create(**chassis_data)
         music = Music.objects.create(**music_data)
@@ -224,7 +238,6 @@ class CarSerializer(serializers.ModelSerializer):
         car = Car.objects.create(
             brand=brand,
             model=model,
-            price=price,
             engine=engine,
             chassis=chassis,
             music=music,
@@ -255,8 +268,7 @@ class ApplicationSerializer(serializers.ModelSerializer):
     other_files = serializers.FileField(
         required=False, allow_null=True, write_only=True)
     car = serializers.PrimaryKeyRelatedField(queryset=Car.objects.all())
-    rental_dates = CarRentalDatesSerializer()
-    calculated_price = serializers.SerializerMethodField()
+    rental_date = CarRentalDatesSerializer()
 
     class Meta:
         model = Application
@@ -268,23 +280,22 @@ class ApplicationSerializer(serializers.ModelSerializer):
             'client_email', 'deposit_in_hand', 'currency',
             'price', 'baby_seat', 'another_regions',
             'complex_insurance', 'contract', 'vaucher',
-            'other_files', 'rental_dates', 'calculated_price',
+            'other_files', 'rental_date', 'calculated_price',
         ]
 
     def create(self, validated_data):
-        contract = validated_data.pop('contract', None)
-        vaucher = validated_data.pop('vaucher', None)
         other_files = validated_data.pop('other_files', None)
+        rental_dates_data = validated_data.pop('rental_date')
 
         application = Application.objects.create(**validated_data)
-
-        contract = generate_contract(application)
-        vaucher = generate_vaucher(application)
+        Date.objects.create(application=application, **rental_dates_data)
+        generated_contract = generate_contract(application)
+        generated_vaucher = generate_vaucher(application)
 
         Misc.objects.create(
             application=application,
-            contract=contract,
-            vaucher=vaucher,
+            contract=generated_contract,
+            vaucher=generated_vaucher,
             other_files=other_files
         )
         return application
