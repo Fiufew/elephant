@@ -10,9 +10,14 @@ from items.models import (
     Misc, Tax, Bluebook
     )
 from items.pdf_generator import generate_contract, generate_vaucher
+from items.price_counter import calculate_rental_cost
 
 
 class CarBrandSerializer(serializers.ModelSerializer):
+    """
+    Сериализатор для модели CarBrand.
+    """
+
     class Meta:
         model = CarBrand
         fields = [
@@ -21,6 +26,10 @@ class CarBrandSerializer(serializers.ModelSerializer):
 
 
 class CarModelSerializer(serializers.ModelSerializer):
+    """
+    Сериализатор для модели CarModel.
+    """
+
     class Meta:
         model = CarModel
         fields = [
@@ -29,40 +38,23 @@ class CarModelSerializer(serializers.ModelSerializer):
 
 
 class CarRentalDatesSerializer(serializers.ModelSerializer):
+    """
+    Сериализатор для модели Date,
+    содержащий даты доставки и возврата автомобиля.
+    """
+
     class Meta:
         model = Date
         fields = [
             'date_delivery', 'date_return',
         ]
-        read_only_fields = [
-            'number_of_days'
-        ]
-
-    def validate(self, attrs):
-        date_delivery = attrs.get('date_delivery')
-        date_return = attrs.get('date_return')
-
-        if date_delivery and date_return:
-            if date_return < date_delivery:
-                raise serializers.ValidationError(
-                    "Дата возврата не может быть раньше даты выдачи.")
-        return attrs
-
-    def create(self, validated_data):
-        validated_data['number_of_days'] = (
-            validated_data['date_return'] - validated_data['date_delivery']
-        ).days
-        return super().create(validated_data)
-
-    def update(self, instance, validated_data):
-        date_delivery = validated_data.get(
-            'date_delivery', instance.date_delivery)
-        date_return = validated_data.get('date_return', instance.date_return)
-        validated_data['number_of_days'] = (date_return - date_delivery).days
-        return super().update(instance, validated_data)
 
 
 class ProblemSerializer(serializers.ModelSerializer):
+    """
+    Сериализатор для модели Problem.
+    """
+
     class Meta:
         model = Problem
         fields = [
@@ -72,6 +64,10 @@ class ProblemSerializer(serializers.ModelSerializer):
 
 
 class EngineSerializer(serializers.ModelSerializer):
+    """
+    Сериализатор для модели Engine.
+    """
+
     class Meta:
         model = Engine
         fields = [
@@ -81,6 +77,10 @@ class EngineSerializer(serializers.ModelSerializer):
 
 
 class ChassisSerializer(serializers.ModelSerializer):
+    """
+    Сериализатор для модели Chassis.
+    """
+
     class Meta:
         model = Chassis
         fields = [
@@ -90,6 +90,10 @@ class ChassisSerializer(serializers.ModelSerializer):
 
 
 class MusicSerializer(serializers.ModelSerializer):
+    """
+    Сериализатор для модели Music.
+    """
+
     class Meta:
         model = Music
         fields = [
@@ -99,6 +103,11 @@ class MusicSerializer(serializers.ModelSerializer):
 
 
 class OtherSerializer(serializers.ModelSerializer):
+    """
+    Сериализатор для модели Other,
+    описывающей дополнительные характеристики автомобиля.
+    """
+
     class Meta:
         model = Other
         fields = [
@@ -110,6 +119,10 @@ class OtherSerializer(serializers.ModelSerializer):
 
 
 class ActSerializer(serializers.ModelSerializer):
+    """
+    Сериализатор для модели Act.
+    """
+
     class Meta:
         model = Act
         fields = [
@@ -118,6 +131,10 @@ class ActSerializer(serializers.ModelSerializer):
 
 
 class FirstClassSerializer(serializers.ModelSerializer):
+    """
+    Сериализатор для модели FirstClass.
+    """
+
     class Meta:
         model = FirstClass
         fields = [
@@ -126,6 +143,10 @@ class FirstClassSerializer(serializers.ModelSerializer):
 
 
 class SecondClassSerializer(serializers.ModelSerializer):
+    """
+    Сериализатор для модели SecondClass.
+    """
+
     class Meta:
         model = SecondClass
         fields = [
@@ -134,6 +155,10 @@ class SecondClassSerializer(serializers.ModelSerializer):
 
 
 class TaxSerializer(serializers.ModelSerializer):
+    """
+    Сериализатор для модели Tax.
+    """
+
     class Meta:
         model = Tax
         fields = [
@@ -142,6 +167,10 @@ class TaxSerializer(serializers.ModelSerializer):
 
 
 class BluebookSerializer(serializers.ModelSerializer):
+    """
+    Сериализатор для модели Bluebook, включающий изображение синей книги.
+    """
+
     class Meta:
         model = Bluebook
         fields = [
@@ -150,6 +179,10 @@ class BluebookSerializer(serializers.ModelSerializer):
 
 
 class PhotoSerializer(serializers.ModelSerializer):
+    """
+    Сериализатор для модели Photo, представляющий изображения автомобиля.
+    """
+
     class Meta:
         model = Photo
         fields = [
@@ -161,6 +194,11 @@ class PhotoSerializer(serializers.ModelSerializer):
 
 
 class MiscSerializer(serializers.ModelSerializer):
+    """
+    Сериализатор для модели Misc,
+    включающей дополнительные файлы для контракта и ваучера.
+    """
+
     class Meta:
         model = Misc
         fields = [
@@ -173,6 +211,10 @@ class MiscSerializer(serializers.ModelSerializer):
         }
 
     def create(self, validated_data):
+        """
+        Создание записи в Misc с загрузкой файлов
+        (контракт, ваучер, другие файлы).
+        """
         request = self.context.get('request')
         validated_data['contract'] = request.FILES.get('contract')
         validated_data['vaucher'] = request.FILES.get('vaucher')
@@ -181,17 +223,18 @@ class MiscSerializer(serializers.ModelSerializer):
 
 
 class CarSerializer(serializers.ModelSerializer):
+    """
+    Сериализатор для модели Car,
+    представляющий автомобиль с дополнительными характеристиками.
+    """
+
     brand = CarBrandSerializer()
     model = CarModelSerializer()
     engine = EngineSerializer()
     chassis = ChassisSerializer()
     music = MusicSerializer()
     other = OtherSerializer()
-    photos = serializers.ListField(
-        child=serializers.FileField(),
-        write_only=True,
-        required=False
-    )
+    photos = serializers.ImageField(required=False, write_only=True)
     bluebook = serializers.FileField(required=False, write_only=True)
     act_data = ActSerializer(required=False, write_only=True)
     first_class_data = FirstClassSerializer(required=False, write_only=True)
@@ -203,18 +246,18 @@ class CarSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'pick_season', 'high_season',
             'low_season', 'brand', 'model',
-            'engine',
-            'photos',
-            'chassis', 'music',
-            'other', 'act_data', 'first_class_data',
-            'second_class_data', 'tax_data',
-            'problems', 'number',
-            'year_manufactured', 'body_type',
-            'deposit', 'color',
+            'engine', 'photos', 'chassis',
+            'music', 'other', 'act_data',
+            'first_class_data', 'second_class_data', 'tax_data',
+            'problems', 'number', 'year_manufactured',
+            'body_type', 'deposit', 'color',
             'created_at', 'updated_at', 'bluebook',
         ]
 
     def create(self, validated_data):
+        """
+        Создание автомобиля с его характеристиками и дополнительными данными.
+        """
         brand_data = validated_data.pop('brand')
         model_data = validated_data.pop('model')
         engine_data = validated_data.pop('engine')
@@ -255,19 +298,35 @@ class CarSerializer(serializers.ModelSerializer):
             Tax.objects.create(car=car, **tax_data)
         if bluebook_file:
             Bluebook.objects.create(car=car, bluebook_image=bluebook_file)
-        for photo in photos:
-            Photo.objects.create(car=car, car_image=photo)
+        if photos:
+            Photo.objects.create(car=car, car_image=photos)
         return car
 
 
 class ApplicationSerializer(serializers.ModelSerializer):
+    """
+    Сериализатор для модели Application,
+    представляющий заявку на аренду автомобиля.
+    """
+
     contract = serializers.FileField(
-        required=False, allow_null=True, write_only=True)
+        required=False,
+        allow_null=True,
+        write_only=True
+    )
     vaucher = serializers.FileField(
-        required=False, allow_null=True, write_only=True)
+        required=False,
+        allow_null=True,
+        write_only=True
+    )
     other_files = serializers.FileField(
-        required=False, allow_null=True, write_only=True)
-    auto = serializers.PrimaryKeyRelatedField(queryset=Car.objects.all())
+        required=False,
+        allow_null=True,
+        write_only=True
+    )
+    auto = serializers.PrimaryKeyRelatedField(
+        queryset=Car.objects.all()
+    )
     rental_date = CarRentalDatesSerializer()
 
     class Meta:
@@ -284,22 +343,46 @@ class ApplicationSerializer(serializers.ModelSerializer):
         ]
 
     def create(self, validated_data):
-        contract = validated_data.pop('contract', None)
-        vaucher = validated_data.pop('vaucher', None)
-        other_files = validated_data.pop('other_files', None)
-        rental_dates_data = validated_data.pop('rental_date')
+        """
+        Создание заявки на аренду
+        с вычислением стоимости и добавлением файлов (контракт, ваучер).
+        """
+        contract = validated_data.pop(
+            'contract', None
+        )
+        vaucher = validated_data.pop(
+            'vaucher', None
+        )
+        other_files = validated_data.pop(
+            'other_files', None
+        )
+        rental_data = validated_data.pop(
+            'rental_date'
+        )
+        car = validated_data[
+            'auto'
+        ]
 
-        # Create the Application object
+        date_delivery = rental_data['date_delivery']
+        date_return = rental_data['date_return']
+        pricing = {
+            'peak': car.pick_season,
+            'high': car.high_season,
+            'low': car.low_season
+        }
+        rental_price = calculate_rental_cost(
+            date_delivery, date_return, pricing
+        )
+        validated_data['price'] = rental_price
+
         application = Application.objects.create(**validated_data)
 
-        # Create the Date object (for rental dates)
-        Date.objects.create(application=application, **rental_dates_data)
+        rental_data['application'] = application
+        CarRentalDatesSerializer().create(rental_data)
 
-        # Generate contract and voucher
         contract = generate_contract(application)
         vaucher = generate_vaucher(application)
 
-        # Create the Misc object with contract, voucher, and other files
         Misc.objects.create(
             application=application,
             contract=contract,
@@ -311,6 +394,9 @@ class ApplicationSerializer(serializers.ModelSerializer):
 
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
+    """
+    Сериализатор для регистрации нового пользователя.
+    """
     password = serializers.CharField(write_only=True)
 
     class Meta:
@@ -320,6 +406,9 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         ]
 
     def create(self, validated_data):
+        """
+        Создание нового пользователя с заданными данными.
+        """
         user = CustomElephantUser.objects.create_user(
             username=validated_data['username'],
             password=validated_data['password']

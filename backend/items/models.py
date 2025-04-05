@@ -5,7 +5,13 @@ from django.utils import timezone
 from django.core.exceptions import ValidationError
 
 from .validators import validate_manufactured_year
-from .path_file import applications_path, bluebook_upload_path
+from .path_file import (
+    applications_path, bluebook_upload_path,
+    applications_path_for_other_contract,
+    applications_path_for_other_vaucher,
+    car_photo_upload_path,
+    )
+
 from .const import (
     MAX_PROBLEM_LEN, FUEL_CHOICES, TRANSMISSION_CHOICES,
     DRIVE_CHOICES, CATEGORY_DRIVES_LICENSE_CHOICES, AIR_CONDITIONER_CHOICES,
@@ -302,8 +308,8 @@ class Photo(models.Model):
         on_delete=models.CASCADE,
         related_name='car_photos',
     )
-    car_image = models.ImageField(
-        upload_to='car_photos/',
+    car_image = models.ImageField(  # тут должно быть несколько файлов
+        upload_to=car_photo_upload_path,
         null=True,
         blank=True,
     )
@@ -570,22 +576,24 @@ class Date(models.Model):
     )
     date_delivery = models.DateField()
     date_return = models.DateField()
-    number_of_days = models.PositiveIntegerField(default=0)
 
 
 class Misc(models.Model):
     contract = models.FileField(
-        upload_to=applications_path,
+        upload_to=applications_path_for_other_contract,
         null=True,
-        blank=True)
+        blank=True
+    )
     vaucher = models.FileField(
-        upload_to='vauchers/',
+        upload_to=applications_path_for_other_vaucher,
         null=True,
-        blank=True)
-    other_files = models.FileField(
+        blank=True
+    )
+    other_files = models.FileField(  # тут должно быть несколько файлов
         upload_to=applications_path,
         null=True,
-        blank=True)
+        blank=True
+    )
     application = models.ForeignKey(
         Application,
         on_delete=models.CASCADE,

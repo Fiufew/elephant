@@ -16,7 +16,7 @@ def generate_contract(application):
     bid_folder = f"files/applications/Application_{application.num}/contracts/"
     os.makedirs(bid_folder, exist_ok=True)
 
-    base_path = os.path.join(settings.BASE_DIR, "pdf_generator")
+    base_path = os.path.join(settings.BASE_DIR, "items/pdf_generator")
     template_path = os.path.join(base_path, "contract_template.pdf")
     font_path = os.path.join(base_path, "Calibri.ttf")
 
@@ -48,12 +48,11 @@ def generate_contract(application):
     application.save()
 
 
-
 def generate_vaucher(application):
     bid_folder = f"files/applications/Application_{application.num}/vauchers/"
     os.makedirs(bid_folder, exist_ok=True)
 
-    base_path = os.path.join(settings.BASE_DIR, "pdf_generator")
+    base_path = os.path.join(settings.BASE_DIR, "items/pdf_generator")
     template_path = os.path.join(base_path, "vaucher_template.pdf")
     font_path = os.path.join(base_path, "Calibri.ttf")
 
