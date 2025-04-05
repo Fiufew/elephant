@@ -152,13 +152,14 @@ CONTACT_CHOICES = [
 ]
 
 BABY_SEAT_CHOICES = [
+    ('-', '-'),
     ('Baby seat low', 'baby seat low'),
     ('Baby seat high', 'baby seat high'),
     ('Booster', 'booster'),
-    ('-', '-'),
 ]
 
 ANOTHER_REGIONS_CHOICES = [
+    ('-', '-'),
     (
         'Southern provinces (Phuket, Phang Nga, Krabi-mainland)',
         'southern provinces (phuket, phang nga, krabi-mainland)'
@@ -175,11 +176,10 @@ ANOTHER_REGIONS_CHOICES = [
         'Northern Provinces (Chiang Mai)',
         'northern provinces (chiang mai)'
     ),
-    ('-', '-'),
 ]
 
 COMPLEX_INSURANCE_CHOICES = [
+    ('-', '-'),
     ('Full insurance', 'full insurance'),
     ('Super Insurance', 'super insurance'),
-    ('-', '-'),
 ]

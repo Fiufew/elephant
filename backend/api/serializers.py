@@ -202,16 +202,16 @@ class CarSerializer(serializers.ModelSerializer):
         model = Car
         fields = [
             'id', 'pick_season', 'high_season',
-            'brand', 'model', 'low_season',
+            'low_season', 'brand', 'model',
             'engine',
             'photos',
             'chassis', 'music',
-            'other', 'act', 'first_class',
-            'second_class', 'tax',
+            'other', 'act_data', 'first_class_data',
+            'second_class_data', 'tax_data',
             'problems', 'number',
             'year_manufactured', 'body_type',
             'deposit', 'color',
-            'created_at', 'updated_at'
+            'created_at', 'updated_at', 'bluebook',
         ]
 
     def create(self, validated_data):
@@ -267,7 +267,7 @@ class ApplicationSerializer(serializers.ModelSerializer):
         required=False, allow_null=True, write_only=True)
     other_files = serializers.FileField(
         required=False, allow_null=True, write_only=True)
-    car = serializers.PrimaryKeyRelatedField(queryset=Car.objects.all())
+    auto = serializers.PrimaryKeyRelatedField(queryset=Car.objects.all())
     rental_date = CarRentalDatesSerializer()
 
     class Meta:
@@ -280,24 +280,33 @@ class ApplicationSerializer(serializers.ModelSerializer):
             'client_email', 'deposit_in_hand', 'currency',
             'price', 'baby_seat', 'another_regions',
             'complex_insurance', 'contract', 'vaucher',
-            'other_files', 'rental_date', 'calculated_price',
+            'other_files', 'rental_date',
         ]
 
     def create(self, validated_data):
+        contract = validated_data.pop('contract', None)
+        vaucher = validated_data.pop('vaucher', None)
         other_files = validated_data.pop('other_files', None)
         rental_dates_data = validated_data.pop('rental_date')
 
+        # Create the Application object
         application = Application.objects.create(**validated_data)
-        Date.objects.create(application=application, **rental_dates_data)
-        generated_contract = generate_contract(application)
-        generated_vaucher = generate_vaucher(application)
 
+        # Create the Date object (for rental dates)
+        Date.objects.create(application=application, **rental_dates_data)
+
+        # Generate contract and voucher
+        contract = generate_contract(application)
+        vaucher = generate_vaucher(application)
+
+        # Create the Misc object with contract, voucher, and other files
         Misc.objects.create(
             application=application,
-            contract=generated_contract,
-            vaucher=generated_vaucher,
+            contract=contract,
+            vaucher=vaucher,
             other_files=other_files
         )
+
         return application
 
 

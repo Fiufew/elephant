@@ -518,7 +518,10 @@ class Application(models.Model):
     )
     rental_dates = models.OneToOneField(
         'Date',
-        on_delete=models.CASCADE
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE,
+        related_name='application_rental_date'
     )
     status = models.CharField(
         max_length=64,
